@@ -20,6 +20,7 @@ GtkWidget *label1;
 GtkWidget *combo1;
 GtkWidget *combo4;
 GtkWidget *combo5;
+GtkWidget *combo6;
 GtkWidget	*combo_disks;
 GtkWidget	*combo_types;
 
@@ -28,6 +29,7 @@ GtkWidget *entry5;
 GtkWidget *entry6;
 GtkWidget *entry7;
 GtkWidget *entry8;
+GtkWidget *entry9;
 
 GtkWidget	*textview1;
 GtkTextView	*textview2;
@@ -36,82 +38,26 @@ GtkTextBuffer *buffer1;
 
 GtkBuilder	*builder;
 
-int main(int argc, char *argv[]) {
 
-
-
-
-	/* init to zero/NULL just for safety */
-
-
-		
-	gtk_init(&argc, &argv);
-	
-	
-	builder = gtk_builder_new_from_file("glade.glade");
-	window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
-	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
-	gtk_builder_connect_signals(builder, NULL);
-	
-	fixed1 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed1"));
-	fixed2 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed2"));
-	fixed3 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed3"));	
-
-	textview1 =	GTK_WIDGET(gtk_builder_get_object(builder, "text1"));
-	buffer1 =	gtk_text_view_get_buffer((GtkTextView *) textview1);
-
-	grid1 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid1"));
-	grid2 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid2"));
-	combo1 =	GTK_WIDGET(gtk_builder_get_object(builder, "combo5"));
-	entry4 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry4"));
-	entry5 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry5"));
-	entry6 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry6"));
-	entry7 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry7"));
-	entry8 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry8"));
-	scrolled3 = GTK_WIDGET(gtk_builder_get_object(builder, "scrolled3"));
-	
-	combo_disks = gtk_combo_box_text_new();
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "APM");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "BSD");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "BSD64");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "LDM");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "GPT");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "MBR");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "VTOC8");
-	gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo_disks), 0, 3, 1, 1);
-
-
-	combo_types = gtk_combo_box_text_new();
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-boot");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "bios-boot");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "efi");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-boot");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-swap");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-ufs");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-vinum");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-zfs");
-	gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo_types), 0, 3, 1, 1);
-	
-	gtk_widget_show(window);
-	
-	gtk_widget_hide(GTK_WIDGET (combo_disks));
-	gtk_widget_hide(GTK_WIDGET (combo_types));
-	gtk_widget_hide(GTK_WIDGET (entry4));
-	gtk_widget_hide(GTK_WIDGET (entry5));
-	gtk_widget_hide(GTK_WIDGET (entry6));
-	
-	
-//	on_button8_clicked();
-	gtk_main();
-	
-	
-	return EXIT_SUCCESS;
-}
 
 	
 void on_button_quit_clicked(GtkButton *b) {	
 		gtk_main_quit();
+}
+
+void hide_all() {
+
+gtk_widget_hide(GTK_WIDGET (combo_disks) );
+gtk_widget_hide(GTK_WIDGET (combo_types) );
+gtk_widget_hide(GTK_WIDGET (combo4) );
+gtk_widget_hide(GTK_WIDGET (combo5) );
+gtk_widget_hide(GTK_WIDGET (combo6) );
+gtk_widget_hide(GTK_WIDGET (entry4) );
+gtk_widget_hide(GTK_WIDGET (entry5) );
+gtk_widget_hide(GTK_WIDGET (entry6) );
+gtk_widget_hide(GTK_WIDGET (entry7) );
+gtk_widget_hide(GTK_WIDGET (entry8) );
+gtk_widget_hide(GTK_WIDGET (entry9) );
 }
 
 
@@ -121,12 +67,14 @@ gtk_widget_destroy(GTK_WIDGET (dialog));
 }
 void disk_combo() {
 	
-	//create two combo boxes
+	//create three combo boxes
 	// combo4 - disks
 	// combo5 - partitions
+	// combo6 - disks and partitions
 	
 	combo4 = gtk_combo_box_text_new();
 	combo5 = gtk_combo_box_text_new();
+	combo6 = gtk_combo_box_text_new();
 	
 	int row=0;
 	int len=0;
@@ -143,8 +91,8 @@ void disk_combo() {
 		if (child1 != NULL) { // we found a disk!
  	
 			string1 = gtk_entry_get_text(GTK_ENTRY (child1) );
-			printf("child1 has: %s\n", string1);
 			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo4), NULL, (const gchar *)string1);
+			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo6), NULL, (const gchar *)string1);
 			}
 			
 		else {
@@ -159,11 +107,11 @@ void disk_combo() {
 				buf[len] = 'p';// append p - append string 2 - append 0
 				buf[len+1] = '\0';
 				
-				printf("%s\n", buf);
+
 				string2 = gtk_entry_get_text(GTK_ENTRY (child2) );
 				strcpy(&buf[len+1], string2);
-				printf("child2: %s\n", buf);
 				gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo5), NULL, buf);
+				gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo6), NULL, buf);
 				len=0;
 				}
 			}
@@ -175,6 +123,9 @@ void disk_combo() {
 		
 gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo4), 0, 2, 1, 1);
 gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo5), 0, 2, 1, 1);
+gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo6), 0, 2, 1, 1);
+
+printf("disk_combo good!\n");
 }
 
 char * parse_gpart() {
@@ -228,7 +179,6 @@ char * parse_gpart() {
 	while(cnt != 2) {
 		if (( (ptr1[pa] >= 0x30 ) &&  (ptr1[pa] <= 0x39 )  )) {
 			
-			printf("number found\n");
 			// we found a number, so increase cnt
 			cnt++;
 			// set an identifier
@@ -275,11 +225,24 @@ char * parse_gpart() {
 		pb--; // remove newline
 		}
 
+	if( (ptr1[pa] == 'g' ) && (ptr1[pa+1] == 'p') && (ptr1[pa+2] == 't') && (ptr1[pa+3] == 'i') && (ptr1[pa+4] == 'd')) {
+		printf("diskid found!\n");
+		while(1) {
+			if ((ptr1[pa] == 0x0A)  &&  (ptr1[pa+1] == 0x0A)  ) {
+				// end of diskid enry, so leave
+				break;
+				}
+			pa++;
+			}
+		// hack: remove size numbers
+		while(ptr2[pb] != '!')
+				pb--;
+		pb--; // remove newline
+		}
 
 		// disk			
 		if (( (ptr1[pa] >=  'a') &&  (ptr1[pa] <= 'z' )  )) {
 
-				printf("disk parsed\n");
 			// set identifier
 			ptr2[pb] =  '$';
 			pb++;
@@ -302,7 +265,6 @@ while (ptr1[pa] != 0x0A) {
 		// partition number
 		if (( (ptr1[pa] >= 0x30 ) &&  (ptr1[pa] <= 0x39 )  )) {
 
-			printf("partition parsed\n");
 			// set identifier
 			ptr2[pb] =  '#';
 			pb++;
@@ -318,7 +280,6 @@ while (ptr1[pa] != 0x0A) {
 		// -free-
 		else if (ptr1[pa] ==  '-') {
 			
-			printf("-free parsed\n");
 			ptr2[pb] =  '=';
 			ptr2[pb+1] =  'f';
 			ptr2[pb+2] =  'r';
@@ -331,7 +292,6 @@ while (ptr1[pa] != 0x0A) {
 		// type		
 		if (( (ptr1[pa] >=  'a') &&  (ptr1[pa] <= 'z' )  )) {
 
-				printf("type parsed\n");
 			// set identifier
 			ptr2[pb] =  ';';
 			pb++;
@@ -345,8 +305,7 @@ while (ptr1[pa] != 0x0A) {
 
 		// schemes
 		else if (( (ptr1[pa] >=  'A') &&  (ptr1[pa] <= 'Z' )  )) {
-
-				printf("scheme parsed\n");
+			
 			// set identifier
 			ptr2[pb] =  '%';
 			pb++;
@@ -362,8 +321,6 @@ while (ptr1[pa] != 0x0A) {
 		// active		
 		else if( ptr1[pa] ==  '[')  {
 
-				printf("active parsed\n");
-
 			// and copy
 			while (ptr1[pa] !=  ' ') {
 					ptr2[pb] = ptr1[pa];
@@ -375,7 +332,6 @@ while (ptr1[pa] != 0x0A) {
 		//partition size
 		else if ( ptr1[pa] ==  '('  ) {
 
-			printf("size parsed\n");
 			// copy
 			while (ptr1[pa] !=  ')') {
 					ptr2[pb] = ptr1[pa];
@@ -528,7 +484,7 @@ void gpart(char * cmd) {
 	//create buffer, copy file to buffer
 	
 	fread(ptr, 1, fs, fp);	
-	ptr[fs+1] = '/0';
+	ptr[fs] = 0x00;
 	fclose(fp);
 	
 	msg(ptr);
@@ -620,6 +576,8 @@ void on_gpart_refresh_clicked(GtkButton *b) {
   
 	g_list_free(children);
 	
+	//reset combo
+	hide_all();	
 	
 	// go
 	char *ptr;
@@ -795,19 +753,7 @@ end:
 	disk_combo();
 	}
 
-void hide_all() {
 
-gtk_widget_hide(GTK_WIDGET (combo_disks) );
-gtk_widget_hide(GTK_WIDGET (combo_types) );
-gtk_widget_hide(GTK_WIDGET (combo4) );
-gtk_widget_hide(GTK_WIDGET (combo5) );
-gtk_widget_hide(GTK_WIDGET (entry4) );
-gtk_widget_hide(GTK_WIDGET (entry5) );
-gtk_widget_hide(GTK_WIDGET (entry6) );
-gtk_widget_hide(GTK_WIDGET (entry7) );
-gtk_widget_hide(GTK_WIDGET (entry8) );
-
-}
 
 void on_gpart_combo_changed(GtkWidget *b)  {
 	
@@ -829,15 +775,13 @@ void on_gpart_combo_changed(GtkWidget *b)  {
 		}
 
 	else if(strcmp(string, "create") == 0) {
-		printf("create\n");
-		gtk_widget_show(GTK_WIDGET (combo4) );
+		gtk_widget_show(GTK_WIDGET (combo6) );
 		gtk_widget_show(GTK_WIDGET(combo_disks));
 		gtk_widget_show(GTK_WIDGET(entry5));
-		gtk_widget_show(GTK_WIDGET(entry7));
+		//gtk_widget_show(GTK_WIDGET(entry7));
 		}
 	
 	else if(strcmp(string, "add") == 0) {
-		printf("add\n");
 		gtk_widget_show(GTK_WIDGET (combo4));
 		gtk_widget_show(GTK_WIDGET (combo_types));
 		gtk_widget_show(GTK_WIDGET (entry4));
@@ -846,7 +790,6 @@ void on_gpart_combo_changed(GtkWidget *b)  {
 		}
 		
 	else if(strcmp(string, "modify") == 0) {
-		printf("modify\n");	
 		gtk_widget_show(GTK_WIDGET (combo5));
 		gtk_widget_show(GTK_WIDGET (combo_types));
 		gtk_widget_show(GTK_WIDGET(entry7));
@@ -854,28 +797,29 @@ void on_gpart_combo_changed(GtkWidget *b)  {
 	
 	
 	else if(strcmp(string, "delete") == 0) {
-		printf("Delete\n");
 		gtk_widget_show( GTK_WIDGET (combo5));
 		}	
 		
 	else if(strcmp(string, "set") == 0) {
-		printf("set\n");
-		gtk_widget_show(GTK_WIDGET (combo5));
+		gtk_widget_show(GTK_WIDGET (combo6));
 		gtk_widget_show(GTK_WIDGET(entry8));
 		}	
 		
 	else if(strcmp(string, "unset") == 0) {
-		printf("unset\n");
-		gtk_widget_show(GTK_WIDGET(combo5));
+		gtk_widget_show(GTK_WIDGET(combo6));
 		gtk_widget_show(GTK_WIDGET(entry8));
 		}		 
 		
 	else if(strcmp(string, "resize") == 0) {
-		printf("resize\n");
 		gtk_widget_show(GTK_WIDGET(combo5));
 		gtk_widget_show(GTK_WIDGET (entry4));
 		gtk_widget_show(GTK_WIDGET (entry6));
 		}	
+	
+	else if(strcmp(string, "bootcode") == 0) {
+		gtk_widget_show(GTK_WIDGET(combo6));
+		gtk_widget_show(GTK_WIDGET (entry9));
+		}
 		
 	g_free(string);
 }
@@ -889,7 +833,9 @@ void on_gpart_submit_clicked(GtkButton *b) {
 	// execute it
 	// return string in msg box
 	
-	char cmd[300] ="/sbin/gpart ";
+	char cmd[200] ="/sbin/gpart ";
+	int i=0;
+	char part[20]="------------";
 	int len=0;
 	
 
@@ -908,7 +854,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		g_free((void *)action);		
 		
 		msg(cmd);
-		//gpart(cmd);
+		gpart(cmd);
 		}
 
 	else if(strcmp(action, "create") == 0) {
@@ -929,13 +875,38 @@ void on_gpart_submit_clicked(GtkButton *b) {
 			strcat(cmd, " -n ");
 			strcat(cmd, action);
 			}
+			
 		//append disk
-		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo4) );
+		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo6) );
 		strcat(cmd, " ");
-		strcat(cmd, action);
+		
+		// if we create on a partition, we need
+		// to replace p with s, as in ada2s1
+		// therefore this hack:
+		
+		strcpy(part, action);
+		len=0;
+		while(part[len]  !=  '-') {
+			len++;
+			}
+		len--;
+		len--;
+		i=len;
+
+		while( (part[i] >= 0x30 ) &&  (part[i] <= 0x39 )  ) 
+			i--;
+		
+		if (part[i] == 'p') // we have a partition
+			{
+			printf("creating on partition, %c, i=%c\n", part[i-1], part[i]);
+			if ( (part[i-1] >= 0x30 ) &&  (part[i-1] <= 0x39 ) ) {
+				part[i]='s';
+			}
+			}
+		strcat(cmd, part);
 		g_free((void *)action);	
 		
-		msg(cmd);
+		gpart(cmd);
 		}
 	
 	else if(strcmp(action, "add") == 0) {
@@ -989,7 +960,8 @@ void on_gpart_submit_clicked(GtkButton *b) {
 
 		g_free((void *)action);	
 
-		msg(cmd);
+
+		gpart(cmd);
 		}
 		
 	else if(strcmp(action, "modify") == 0) {
@@ -1007,6 +979,32 @@ void on_gpart_submit_clicked(GtkButton *b) {
 			strcat(cmd, action);
 			}
 		
+	
+		//append index
+		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo5) );
+		strcpy(part, action);
+		
+		printf(" string:%s \n", part);
+		//extract partition number
+		strcat(cmd, " -i ");
+		len=0;
+		while(part[len]  !=  '-') {
+			len++;
+			}
+		len--;
+		len--;
+		printf(" string:%s , len:%i\n", part, len);
+		i=len;
+
+		while( (part[i] >= 0x30 ) &&  (part[i] <= 0x39 )  ) {
+			i--;
+		}
+		
+		strcat(cmd, &part[i+1]);
+		
+		part[i]='\0';
+		g_free((void *)action);	
+
 		// append types
 		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_types) );
 		len = strlen(action);
@@ -1016,15 +1014,12 @@ void on_gpart_submit_clicked(GtkButton *b) {
 			};
 		g_free((void *)action);	
 
-		
-		//append disks
-		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo5) );
+		//append disk
 		strcat(cmd, " ");
-		strcat(cmd, action);
+		strcat(cmd, part);
 
-		g_free((void *)action);
 
-		msg(cmd);
+		gpart(cmd);
 		}
 	
 	
@@ -1034,21 +1029,67 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		strcat(cmd, action);	
 		g_free((void *)action);	
 
-
-		//append disks
+		//append index
 		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo5) );
-		strcat(cmd, " ");
-		strcat(cmd, action);
+		strcpy(part, action);
+		
+		printf(" string:%s \n", part);
+		//extract partition number
+		strcat(cmd, " -i ");
+		len=0;
+		while(part[len]  !=  '-') {
+			len++;
+			}
+		len--;
+		len--;
+		i=len;
+
+		while( (part[i] >= 0x30 ) &&  (part[i] <= 0x39 )  ) {
+			i--;
+		}
+		
+		strcat(cmd, &part[i+1]);
+		
+		part[i]='\0';
 		g_free((void *)action);	
-		msg(cmd);
+
+		//append disk
+		strcat(cmd, " ");
+		strcat(cmd, part);
+	
+			gpart(cmd);
 		}	
 		
-	else if(strcmp(action, "set") == 0) {
+	else if( (strcmp(action, "set") == 0) || (strcmp(action, "unset") == 0) ) {
 		
 		strcat(cmd, action);
 		g_free((void *)action);	
 				
+		//append index
+		
+		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo6) );
+		g_free((void *)action);	
+		strcpy(part, action);
+		
+		printf(" resizing:%s \n", part);
+		//extract partition number
+		strcat(cmd, " -i ");
+		len=0;
+		while(part[len]  !=  '-') {
+			len++;
+			}
+		len--;
+		len--;
+		printf(" resizing2::%s , len:%i\n", part, len);
+		i=len;
 
+		while( (part[i] >= 0x30 ) &&  (part[i] <= 0x39 )  ) {
+			i--;
+		}
+		
+		strcat(cmd, &part[i+1]);
+		part[i]='\0';
+		
 		//append attributes
 		action = gtk_entry_get_text(GTK_ENTRY (entry8));
 		len = strlen(action);
@@ -1057,47 +1098,53 @@ void on_gpart_submit_clicked(GtkButton *b) {
 			strcat(cmd, action);
 			}
 			
-		//partition
-		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo5) );		
+			
+		//append disk
 		strcat(cmd, " ");
-		strcat(cmd, action);
-		g_free((void *)action);	
-		msg(cmd);
+		strcat(cmd, part);
+		
+		gpart(cmd);
 		}	
 		
-	else if(strcmp(action, "unset") == 0) {
-		
-		strcat(cmd, action);
-		g_free((void *)action);	
-				
-
-		//append attributes
-		action = gtk_entry_get_text(GTK_ENTRY (entry8));
-		len = strlen(action);
-		if (len != 0) {
-			strcat(cmd, " -a ");
-			strcat(cmd, action);
-			}
-		
-		//partition
-		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo5) );
-		strcat(cmd, " ");
-		strcat(cmd, action);
-		g_free((void *)action);
-		msg(cmd);
-		}		
 		
 	else if(strcmp(action, "resize") == 0) {
 		
 		strcat(cmd, action);
 		g_free((void *)action);	
+
+		//append index
+		
+		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo5) );
+		strcpy(part, action);
+		
+		printf(" resizing:%s \n", part);
+		//extract partition number
+		strcat(cmd, " -i ");
+		len=0;
+		while(part[len]  !=  '-') {
+			len++;
+			}
+		len--;
+		len--;
+		printf(" resizing2::%s , len:%i\n", part, len);
+		i=len;
+
+		while( (part[i] >= 0x30 ) &&  (part[i] <= 0x39 )  ) {
+			i--;
+		}
+		
+		strcat(cmd, &part[i+1]);
+		part[i]='\0';
+		
+		printf(" resizing2:%s\n", cmd);
 		
 		//append size
 		strcat(cmd, " -s ");
 		
 		action = gtk_entry_get_text(GTK_ENTRY (entry4));
 		strcat(cmd, action);
-
+		printf(" resizing2:%s\n", cmd);
+		
 		//append align
 		action = gtk_entry_get_text(GTK_ENTRY (entry6));
 		len = strlen(action);
@@ -1106,13 +1153,176 @@ void on_gpart_submit_clicked(GtkButton *b) {
 			strcat(cmd, action);
 			} 
 			
-		//partition
-		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo5) );
+//		g_free((void *)action);	
+
+		//append disk
 		strcat(cmd, " ");
+		strcat(cmd, part);
+
+				printf(" resizing2:%s\n", cmd);
+		gpart(cmd);
+		}	
+	
+	else if(strcmp(action, "bootcode") == 0) {
+	msg("bootcode!");
+		
 		strcat(cmd, action);
-		g_free((void *)action);
+		g_free((void *)action);	
+		
+		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo6) );
+	
+	// if we create on a partition, we need -i,
+	// else just write -b bootfile ada1
+		
+		strcpy(part, action);
+		len=0;
+		while(part[len]  !=  '-') {
+			len++;
+			}
+		len--;
+		len--;
+		i=len;
+
+	while( (part[i] >= 0x30 ) &&  (part[i] <= 0x39 )  ) 
+		i--;
+		
+	if (part[i] == 'p') // we have a partition
+			{
+
+		// append partition code
+	
+		action = gtk_entry_get_text(GTK_ENTRY (entry9));
+		len=strlen(action);
+		if (len !=0 ) {
+			strcat(cmd, " -p ");	
+			strcat(cmd, action);
+			}
+		//append index and disk
+		//append index
+		
+		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo6) );
+		strcpy(part, action);
+		
+		printf(" bootcoding:%s \n", part);
+		//extract partition number
+		strcat(cmd, " -i ");
+		len=0;
+		while(part[len]  !=  '-') {
+			len++;
+			}
+		len--;
+		len--;
+		i=len;
+
+		while( (part[i] >= 0x30 ) &&  (part[i] <= 0x39 )  ) {
+			i--;
+		}
+		
+		strcat(cmd, &part[i+1]);
+		part[i]='\0';
+				
+		//append disk
+		strcat(cmd, " ");
+		strcat(cmd, part);
+
+		msg(cmd);
+		
+			}
+			
+	else { //disk, so..
+		
+		// append bootcode		
+		action = gtk_entry_get_text(GTK_ENTRY (entry9));
+			if (len !=0 ) {
+			strcat(cmd, " -b ");	
+			strcat(cmd, action);
+			}	
+		// append disk
+		strcat(cmd, " ");
+		strcat(cmd, part);
+		}
+			
+
 		
 		msg(cmd);
-		}	
-
 	}
+	
+	on_gpart_refresh_clicked(GTK_BUTTON (window));
+			
+	//hide_all();
+	
+	}
+
+
+int main(int argc, char *argv[]) {
+
+
+
+
+	/* init to zero/NULL just for safety */
+
+
+	gtk_init(&argc, &argv);
+	
+	
+	builder = gtk_builder_new_from_file("glade.glade");
+	window = GTK_WIDGET(gtk_builder_get_object(builder, "window"));
+	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
+	gtk_builder_connect_signals(builder, NULL);
+	
+	fixed1 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed1"));
+	fixed2 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed2"));
+	fixed3 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed3"));	
+
+	textview1 =	GTK_WIDGET(gtk_builder_get_object(builder, "text1"));
+	buffer1 =	gtk_text_view_get_buffer((GtkTextView *) textview1);
+
+	grid1 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid1"));
+	grid2 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid2"));
+	combo1 =	GTK_WIDGET(gtk_builder_get_object(builder, "combo5"));
+	entry4 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry4"));
+	entry5 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry5"));
+	entry6 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry6"));
+	entry7 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry7"));
+	entry8 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry8"));
+	entry9 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry9"));
+	scrolled3 = GTK_WIDGET(gtk_builder_get_object(builder, "scrolled3"));
+	
+	combo_disks = gtk_combo_box_text_new();
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "APM");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "BSD");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "BSD64");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "LDM");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "GPT");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "MBR");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "VTOC8");
+	gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo_disks), 0, 3, 1, 1);
+
+
+	combo_types = gtk_combo_box_text_new();
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-boot");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "bios-boot");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "efi");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-boot");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-swap");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-ufs");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-vinum");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-zfs");
+	gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo_types), 0, 3, 1, 1);
+	
+	gtk_widget_show(window);
+	
+	gtk_widget_hide(GTK_WIDGET (combo_disks));
+	gtk_widget_hide(GTK_WIDGET (combo_types));
+	gtk_widget_hide(GTK_WIDGET (entry4));
+	gtk_widget_hide(GTK_WIDGET (entry5));
+	gtk_widget_hide(GTK_WIDGET (entry6));
+	
+	
+	on_gpart_refresh_clicked(GTK_BUTTON (window));
+	gtk_main();
+	
+	
+	return EXIT_SUCCESS;
+}
