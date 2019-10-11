@@ -147,6 +147,7 @@
                           <item translatable="yes">set</item>
                           <item translatable="yes">unset</item>
                           <item translatable="yes">resize</item>
+                          <item translatable="yes">bootcode</item>
                         </items>
                         <signal name="changed" handler="on_gpart_combo_changed" swapped="no"/>
                         <child internal-child="entry">
@@ -208,7 +209,7 @@
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
-                        <property name="top_attach">9</property>
+                        <property name="top_attach">10</property>
                       </packing>
                     </child>
                     <child>
@@ -231,6 +232,18 @@
                       <packing>
                         <property name="left_attach">0</property>
                         <property name="top_attach">8</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkEntry" id="entry9">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="tooltip_text" translatable="yes">chose a file with bootcode</property>
+                        <property name="placeholder_text" translatable="yes">path to a file</property>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">9</property>
                       </packing>
                     </child>
                     <child>
