@@ -1,6 +1,6 @@
 # secret-tool
 This is an early version of a GUI partition editor for FreeBSD.
-It uses gtk.
+It uses gtk3.
 
 It currently includes:
 - partition manager (wrapper around gpart)
