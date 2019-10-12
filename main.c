@@ -8,7 +8,7 @@ GtkWidget	*fixed3;
 GtkWidget	*fixed4;
 
 GtkWidget	*scrolled3;
-
+ 
 GtkWidget	*grid1;
 int row1=0;
 GtkWidget	*grid2;
@@ -606,7 +606,7 @@ void on_fwrite1_clicked(GtkButton *b) {
 			strcat(buf, " bs=1M conv=sync");	
 			exe(buf);		
 			}
-
+ 
 	}
 	g_free(disk);
 	g_free(fname);
@@ -618,7 +618,6 @@ void on_fwrite1_clicked(GtkButton *b) {
 	
 	fchose_combo();
 }
-
 
 void add_missing() {
 	
