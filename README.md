@@ -12,6 +12,8 @@ As it has a GUI, its use is self-explanatory.
 Todo:
 - include create file systems (newfs and others)
 - make second tab prettier
+- turn printfs into debug statements, or remove them
+- remove empty lines, meaningless comments..
 
 Bugs:
 None 
