@@ -7,20 +7,21 @@ GtkWidget	*fixed2;
 GtkWidget	*fixed3;
 GtkWidget	*fixed4;
 
-//GtkWidget	*button1;
-//GtkWidget	*button2;
-
 GtkWidget	*scrolled3;
+
 GtkWidget	*grid1;
 int row1=0;
 GtkWidget	*grid2;
+GtkWidget	*grid3;
+
 GtkWidget *label1;
-//GtkWidget *label9;
-//GtkWidget *label8;
+
 GtkWidget *combo1;
 GtkWidget *combo4;
 GtkWidget *combo5;
 GtkWidget *combo6;
+GtkWidget *combo7;
+
 GtkWidget	*combo_disks;
 GtkWidget	*combo_types;
 
@@ -35,6 +36,8 @@ GtkWidget	*textview1;
 GtkTextView	*textview2;
 GtkTextBuffer *buffer1;
 
+GtkWidget	*file1;
+GtkWidget	*file2;
 
 GtkBuilder	*builder;
 
@@ -65,6 +68,68 @@ void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
 gtk_widget_destroy(GTK_WIDGET (dialog));	
 }
+
+
+
+void fchose_combo() {
+	
+	//create a combo box
+	//for our filechoser
+	// img writer
+
+	
+	combo7 = gtk_combo_box_text_new();
+
+	
+	int row=0;
+	int len=0;
+	GtkWidget *child1;
+	GtkWidget *child2;
+	const char *string1;
+	const char *string2;
+		
+	char buf[25];
+
+	while(1) {
+
+		child1 = gtk_grid_get_child_at(GTK_GRID (grid1),1 ,row );
+		if (child1 != NULL) { // we found a disk!
+ 	
+			string1 = gtk_entry_get_text(GTK_ENTRY (child1) );
+			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo7), NULL, (const gchar *)string1);
+			}
+			
+		else {
+			child2 = gtk_grid_get_child_at(GTK_GRID (grid1),2 ,row );
+			
+			if (child2 != NULL) { // we found a partition!
+				
+				// build a string that looks like ada0s1p4
+				strcpy(buf, string1);
+				len = strlen(buf);
+				
+				buf[len] = 'p';// append p - append string 2 - append 0
+				buf[len+1] = '\0';
+				
+
+				string2 = gtk_entry_get_text(GTK_ENTRY (child2) );
+				strcpy(&buf[len+1], string2);
+				gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo7), NULL, buf);
+
+				len=0;
+				}
+			}
+			
+	row++;
+	if(row > row1)
+		break;
+	}
+gtk_grid_attach(GTK_GRID (grid3), GTK_WIDGET (combo7), 1, 4, 1, 1);
+gtk_widget_show(GTK_WIDGET(combo7));
+
+}
+
+
 void disk_combo() {
 	
 	//create three combo boxes
@@ -127,6 +192,7 @@ gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo6), 0, 2, 1, 1);
 
 printf("disk_combo good!\n");
 }
+
 
 char * parse_gpart() {
 	
@@ -341,17 +407,6 @@ while (ptr1[pa] != 0x0A) {
 		//	pa++;
 			}
 			
-
-/*		else { // write the rest of the line 
-			while (ptr1[pa] != 0x0A) {
-						
-			printf("rest of the line\n");
-			ptr2[pb] = ptr1[pa];
-			pa++;
-			pb++;
-			}
-			}
-*/
 			pa++;
 }		
 		
@@ -378,15 +433,10 @@ while (ptr1[pa] != 0x0A) {
 	
 	}
 
-	
 	// now zero terminate, and print the parsed string
 	ptr2[pb-1] ='\0';
 	printf("end reached. size: %i\n-Start-\n%s\n-End-\n", fs, ptr2);
 	
-	// print parsed gpart show
-	gtk_text_buffer_set_text(buffer1, (const gchar *)ptr2, (gint) -1);
-
-
 	free(ptr1);
 	return(ptr2);
 	}
@@ -465,7 +515,7 @@ void msg(char * blah) {
 	
 	}
 	
-void gpart(char * cmd) {
+int exe(char * cmd) {
 
 	char buf[200];
 	
@@ -474,13 +524,99 @@ void gpart(char * cmd) {
 	
 	FILE * fp = popen(buf, "r");
 	if (fp == NULL)
-		msg("couldnt popen(gpart)\n");
+		msg("couldnt popen");
 	
 	while( fgets(buf, sizeof buf, fp)) {
-		msg(buf);
+		//msg(buf);
 		}
+	msg(buf);
+		int suc = pclose(fp)/256;
+		printf("%i == exit status of piped process\n\n", suc);
+		
+	return suc;
+}
 
-	fclose(fp);
+void on_fwrite1_clicked(GtkButton *b) {
+	
+	char *fname;
+	char *sha;
+	char *disk;
+	
+	int len=0;
+	int img=0;
+	int error=0;
+	
+	char buf[300];
+	char buf2[10];
+	
+	
+	fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (file1));
+	if(file1 == NULL) {
+		msg("Choose a file first!");
+		return;
+		}
+	
+	disk = 	gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo7) );
+	if(disk==NULL) {
+		msg("Choose a disk/partition!");
+		return;
+		}
+	
+	sha = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER (file2));	
+		if(sha!=NULL) {
+		// do a checksum ckeck
+		
+			FILE * fp=fopen( sha, "r");
+			if (fp== NULL)
+				msg("pf = 0");
+				
+			// build the shasum ... command
+			fgets(buf2 ,7, fp);
+
+			strcpy(buf, "shasum -s -c ");
+
+			strcat(buf, sha);
+			strcat(buf, " ");
+			strcat(buf, fname);
+			error=exe(buf);
+			
+			fclose(fp);
+
+		}
+		
+	if(error == 0) {
+	
+
+	len = strlen(fname);
+	//check for img
+		if( (fname[len-4] == '.') && (fname[len-3] == 'i') && (fname[len-2] == 'm') && (fname[len-1] == 'g') ) {
+			img=1;
+			}
+
+		else
+			msg("File does not end with .img!");
+	
+	
+	// for img files
+		if(img == 1) {
+			strcpy(buf, "dd if=");
+			strcat(buf, fname);
+			strcat(buf, " of=/dev/");
+			strcat(buf, disk);
+			strcat(buf, " bs=1M conv=sync");	
+			exe(buf);		
+			}
+
+	}
+	g_free(disk);
+	g_free(fname);
+	g_free(sha);
+		
+
+	gtk_widget_destroy(combo7);
+	gtk_file_chooser_unselect_all(GTK_FILE_CHOOSER (file2));
+	
+	fchose_combo();
 }
 
 
@@ -575,8 +711,8 @@ void on_gpart_refresh_clicked(GtkButton *b) {
 	// go
 	char *ptr;
 	ptr = parse_gpart();
-	if (ptr != NULL)
-		gtk_text_buffer_set_text(buffer1, (const gchar *)ptr, (gint) -1);
+	if (ptr == NULL)
+		msg("couldnt parse gpart output!");
 		
 
 	// count the lines
@@ -736,7 +872,6 @@ void on_gpart_refresh_clicked(GtkButton *b) {
 			//}
 		}
 		
-end:
 	row1 = row;
 	gtk_widget_show_all(scrolled3);
 	free(ptr);
@@ -847,7 +982,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		g_free((void *)action);		
 		
 		msg(cmd);
-		gpart(cmd);
+		exe(cmd);
 		}
 
 	else if(strcmp(action, "create") == 0) {
@@ -899,7 +1034,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		strcat(cmd, part);
 		g_free((void *)action);	
 		
-		gpart(cmd);
+		exe(cmd);
 		}
 	
 	else if(strcmp(action, "add") == 0) {
@@ -954,7 +1089,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		g_free((void *)action);	
 
 
-		gpart(cmd);
+		exe(cmd);
 		}
 		
 	else if(strcmp(action, "modify") == 0) {
@@ -1012,7 +1147,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		strcat(cmd, part);
 
 
-		gpart(cmd);
+		exe(cmd);
 		}
 	
 	
@@ -1050,7 +1185,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		strcat(cmd, " ");
 		strcat(cmd, part);
 	
-			gpart(cmd);
+			exe(cmd);
 		}	
 		
 	else if( (strcmp(action, "set") == 0) || (strcmp(action, "unset") == 0) ) {
@@ -1096,7 +1231,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		strcat(cmd, " ");
 		strcat(cmd, part);
 		
-		gpart(cmd);
+		exe(cmd);
 		}	
 		
 		
@@ -1153,7 +1288,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		strcat(cmd, part);
 
 				printf(" resizing2:%s\n", cmd);
-		gpart(cmd);
+		exe(cmd);
 		}	
 	
 	else if(strcmp(action, "bootcode") == 0) {
@@ -1218,7 +1353,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		strcat(cmd, " ");
 		strcat(cmd, part);
 
-		gpart(cmd);
+		exe(cmd);
 		
 			}
 			
@@ -1237,7 +1372,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 			
 
 		
-		gpart(cmd);
+		exe(cmd);
 	}
 	
 	on_gpart_refresh_clicked(GTK_BUTTON (window));
@@ -1263,6 +1398,8 @@ int main(int argc, char *argv[]) {
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 	gtk_builder_connect_signals(builder, NULL);
 	
+	
+	/* fill our pointers */
 	fixed1 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed1"));
 	fixed2 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed2"));
 	fixed3 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed3"));	
@@ -1272,6 +1409,7 @@ int main(int argc, char *argv[]) {
 
 	grid1 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid1"));
 	grid2 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid2"));
+	grid3 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid3"));
 	combo1 =	GTK_WIDGET(gtk_builder_get_object(builder, "combo5"));
 	entry4 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry4"));
 	entry5 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry5"));
@@ -1280,6 +1418,9 @@ int main(int argc, char *argv[]) {
 	entry8 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry8"));
 	entry9 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry9"));
 	scrolled3 = GTK_WIDGET(gtk_builder_get_object(builder, "scrolled3"));
+	
+	file1 =	GTK_WIDGET(gtk_builder_get_object(builder, "fchose1"));
+	file2 =	GTK_WIDGET(gtk_builder_get_object(builder, "fchose2"));
 	
 	combo_disks = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, "APM");
@@ -1359,6 +1500,7 @@ int main(int argc, char *argv[]) {
 	
 	
 	on_gpart_refresh_clicked(GTK_BUTTON (window));
+	fchose_combo();
 	gtk_main();
 	
 	
