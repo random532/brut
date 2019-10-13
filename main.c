@@ -14,6 +14,27 @@ int row1=0;
 GtkWidget	*grid2;
 GtkWidget	*grid3;
 
+
+GtkTreeView *tree1;
+GtkTreeStore *treestore1;
+GtkTreeViewColumn *c1;
+GtkTreeViewColumn *c2;
+
+GtkCellRenderer	*cr1;
+GtkCellRenderer	*cr2;
+
+GtkTreeView *tree2;
+GtkTreeStore *treestore2;
+GtkTreeViewColumn *c3;
+GtkTreeViewColumn *c4;
+
+GtkCellRenderer	*cr3;
+GtkCellRenderer	*cr4;
+
+
+GtkTreeIter iter;
+GtkTreeIter iter2;
+
 GtkWidget *label1;
 
 GtkWidget *combo1;
@@ -128,7 +149,6 @@ gtk_grid_attach(GTK_GRID (grid3), GTK_WIDGET (combo7), 1, 4, 1, 1);
 gtk_widget_show(GTK_WIDGET(combo7));
 
 }
-
 
 void disk_combo() {
 	
@@ -512,6 +532,125 @@ void msg(char * blah) {
 	GtkWidget * message = gtk_message_dialog_new(GTK_WINDOW (window), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, blah);
 	gtk_widget_show(message);
 	g_signal_connect(message, "response", G_CALLBACK(on_response), NULL);
+	
+	}
+	
+	
+int camcontrol() {
+	
+							printf("camcontrol start\n");
+							
+		// first destroy any previous widgets, cleanup
+	gtk_tree_store_clear(treestore1);
+	
+	
+	char buf[250];
+	int i=0;
+	int error=0;
+	
+	FILE * fp = popen("camcontrol devlist", "r");
+	if (fp == NULL) {
+		msg("couldnt popen");
+		return error;
+		}
+		
+	while( fgets(buf, sizeof buf, fp)) {
+		
+		i=0;	
+		while(buf[i] !='>')
+			i++;
+
+		buf[i]='\0';
+		//and write it to textview colum 2
+		gtk_tree_store_append(treestore1 ,&iter, NULL);
+		gtk_tree_store_set(treestore1, &iter, 0, buf, -1);
+		
+		while(buf[i] != ',' )
+			i++;
+
+		buf[i]='\0';
+		
+		while(buf[i] != '(') {
+
+			i--;
+			if(i==0)  {
+				printf("error\n");	
+				break;
+				}
+}
+		i++;
+		// and write it to textview colum 1
+		gtk_tree_store_set(treestore1, &iter, 1, &buf[i], -1);
+	
+		}
+
+		
+	error = pclose(fp);
+						printf("camcontrol done\n");	
+	return 1;
+	}
+	
+int glabel() {
+	
+	// first destroy any previous widgets, cleanup
+
+	gtk_tree_store_clear(treestore2);
+	
+							printf("glabel start\n");
+	char buf[250];
+	int i=0;
+	int error=0;
+	
+	FILE * fp = popen("glabel status", "r");
+	if (fp == NULL) {
+		msg("couldnt popen");
+		return error;
+		}
+
+fgets(buf, sizeof buf, fp); // ignore first line
+
+	while( fgets(buf, sizeof buf, fp)) {
+		
+		i=0;
+		if(buf[i] == ' ') {
+			while(buf[i] == ' ')
+				i++;
+}
+		while(buf[i] != ' ')
+			i++;
+
+		buf[i]='\0';
+		//and write it to textview colum 2
+
+		gtk_tree_store_append(treestore2 ,&iter2, NULL);
+		gtk_tree_store_set(treestore2, &iter2, 0, buf, -1);
+		
+		i++;
+		
+		while(buf[i] == ' ')
+			i++;
+		while(buf[i] != ' ')
+			i++;
+		while(buf[i] == ' ')
+			i++;
+		
+		printf("glabel test2\n");
+		// and write it to textview colum 1
+		gtk_tree_store_set(treestore2, &iter2, 1, &buf[i], -1);
+	
+		}
+
+		
+	error = pclose(fp);
+
+	return 1;
+							printf("glabel done\n");
+	}
+	
+void	on_buttonview1_clicked(GtkButton *b)
+{
+	glabel();
+	camcontrol();
 	
 	}
 	
@@ -948,6 +1087,11 @@ void on_gpart_combo_changed(GtkWidget *b)  {
 		gtk_widget_show(GTK_WIDGET (entry9));
 		}
 		
+		
+	else if(strcmp(string, "file system") == 0) {
+		gtk_widget_show(GTK_WIDGET(combo6));
+	}
+	
 	g_free(string);
 }
 
@@ -1374,6 +1518,11 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		exe(cmd);
 	}
 	
+	
+	else if(strcmp(action, "file system") == 0) {
+		msg("file system");
+	
+	}
 	on_gpart_refresh_clicked(GTK_BUTTON (window));
 			
 	//hide_all();
@@ -1403,12 +1552,33 @@ int main(int argc, char *argv[]) {
 	fixed2 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed2"));
 	fixed3 = 	GTK_WIDGET(gtk_builder_get_object(builder, "fixed3"));	
 
-	textview1 =	GTK_WIDGET(gtk_builder_get_object(builder, "text1"));
-	buffer1 =	gtk_text_view_get_buffer((GtkTextView *) textview1);
+//	textview1 =	GTK_WIDGET(gtk_builder_get_object(builder, "text1"));
+//	buffer1 =	gtk_text_view_get_buffer((GtkTextView *) textview1);
 
 	grid1 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid1"));
 	grid2 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid2"));
 	grid3 =	GTK_WIDGET(gtk_builder_get_object(builder, "grid3"));
+	
+	tree1 =	GTK_TREE_VIEW(gtk_builder_get_object(builder, "tree1"));
+	treestore1 = GTK_TREE_STORE(gtk_builder_get_object(builder, "treestore1"));
+	c1 = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "c1"));
+	c2 = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "c2"));
+	cr1 = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cr1"));
+	cr2 = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cr2"));
+	
+	gtk_tree_view_column_add_attribute(c1, cr1, "text", 0);
+	gtk_tree_view_column_add_attribute(c2, cr2, "text", 1);
+	
+	tree2 =	GTK_TREE_VIEW(gtk_builder_get_object(builder, "tree2"));
+	treestore2 = GTK_TREE_STORE(gtk_builder_get_object(builder, "treestore2"));
+	c3 = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "c3"));
+	c4 = GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "c4"));
+	cr3 = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cr3"));
+	cr4 = GTK_CELL_RENDERER(gtk_builder_get_object(builder, "cr4"));
+	
+	gtk_tree_view_column_add_attribute(c3, cr3, "text", 0);
+	gtk_tree_view_column_add_attribute(c4, cr4, "text", 1);	
+							printf("failed\n");
 	combo1 =	GTK_WIDGET(gtk_builder_get_object(builder, "combo5"));
 	entry4 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry4"));
 	entry5 =	GTK_WIDGET(gtk_builder_get_object(builder, "entry5"));
@@ -1488,6 +1658,11 @@ int main(int argc, char *argv[]) {
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-reserved");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-vsanhdr");
 	gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo_types), 0, 3, 1, 1);
+	
+	
+		camcontrol();
+	glabel();
+
 	
 	gtk_widget_show(window);
 	

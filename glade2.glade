@@ -51,11 +51,26 @@ gptid/cf9e95f9-ec29-11e9-b956-543530a693af     N/A  ada1s2
 </property>
   </object>
   <object class="GtkEntryCompletion" id="entrycompletion1"/>
-  <object class="GtkTextBuffer" id="textbuffer1">
-    <property name="text" translatable="yes">&lt;ST500LT012-1DG142 0001SDM1&gt;       at scbus0 target 0 lun 0 (ada0,pass0)
-&lt;LITEONIT LMS-32L6M mSATA 32GB DM5110E&gt;  at scbus1 target 0 lun 0 (ada1,pass1)
-&lt;AHCI SGPIO Enclosure 1.00 0001&gt;   at scbus2 target 0 lun 0 (ses0,pass2)
-&lt;SanDisk Cruzer Blade 1.00&gt;        at scbus3 target 0 lun 0 (da0,pass3)</property>
+  <object class="GtkTextBuffer" id="textbuffer2">
+    <property name="text" translatable="yes">/dev/ada0p2 on / (ufs, local, journaled soft-updates)
+devfs on /dev (devfs, local, multilabel)
+</property>
+  </object>
+  <object class="GtkTreeStore" id="treestore1">
+    <columns>
+      <!-- column-name c1 -->
+      <column type="gchararray"/>
+      <!-- column-name c2 -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
+  <object class="GtkTreeStore" id="treestore2">
+    <columns>
+      <!-- column-name c3 -->
+      <column type="gchararray"/>
+      <!-- column-name c4 -->
+      <column type="gchararray"/>
+    </columns>
   </object>
   <object class="GtkWindow" id="window">
     <property name="can_focus">False</property>
@@ -169,6 +184,7 @@ gptid/cf9e95f9-ec29-11e9-b956-543530a693af     N/A  ada1s2
                           <item translatable="yes">unset</item>
                           <item translatable="yes">resize</item>
                           <item translatable="yes">bootcode</item>
+                          <item translatable="yes">file system</item>
                         </items>
                         <signal name="changed" handler="on_gpart_combo_changed" swapped="no"/>
                         <child internal-child="entry">
@@ -339,15 +355,30 @@ gptid/cf9e95f9-ec29-11e9-b956-543530a693af     N/A  ada1s2
                     <property name="vadjustment">adjustment2</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkTextView" id="text1">
+                      <object class="GtkTreeView" id="tree2">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tooltip_text" translatable="yes">glabel status</property>
-                        <property name="editable">False</property>
-                        <property name="cursor_visible">False</property>
-                        <property name="buffer">buffer1</property>
-                        <property name="overwrite">True</property>
-                        <property name="accepts_tab">False</property>
+                        <property name="can_focus">True</property>
+                        <property name="model">treestore2</property>
+                        <property name="enable_grid_lines">both</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection" id="select2"/>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn" id="c3">
+                            <property name="title" translatable="yes">Label</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="cr3"/>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn" id="c4">
+                            <property name="title" translatable="yes">Disk</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="cr4"/>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -364,11 +395,32 @@ gptid/cf9e95f9-ec29-11e9-b956-543530a693af     N/A  ada1s2
                     <property name="can_focus">True</property>
                     <property name="shadow_type">in</property>
                     <child>
-                      <object class="GtkTextView" id="text2">
+                      <object class="GtkTreeView" id="tree1">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
-                        <property name="tooltip_text" translatable="yes">camcontrol devlist</property>
-                        <property name="buffer">textbuffer1</property>
+                        <property name="model">treestore1</property>
+                        <property name="reorderable">True</property>
+                        <property name="enable_grid_lines">both</property>
+                        <property name="enable_tree_lines">True</property>
+                        <child internal-child="selection">
+                          <object class="GtkTreeSelection" id="select"/>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn" id="c1">
+                            <property name="title" translatable="yes">Vendor Info</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="cr1"/>
+                            </child>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkTreeViewColumn" id="c2">
+                            <property name="title" translatable="yes">Disk</property>
+                            <child>
+                              <object class="GtkCellRendererText" id="cr2"/>
+                            </child>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
@@ -378,29 +430,17 @@ gptid/cf9e95f9-ec29-11e9-b956-543530a693af     N/A  ada1s2
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel">
+                  <object class="GtkButton" id="buttonview1">
+                    <property name="label" translatable="yes">refresh</property>
+                    <property name="width_request">100</property>
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Under construction</property>
-                    <attributes>
-                      <attribute name="weight" value="bold"/>
-                      <attribute name="underline" value="True"/>
-                    </attributes>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <signal name="clicked" handler="on_buttonview1_clicked" swapped="no"/>
                   </object>
                   <packing>
-                    <property name="x">20</property>
-                    <property name="y">23</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Disk vendor description</property>
-                  </object>
-                  <packing>
-                    <property name="x">20</property>
-                    <property name="y">260</property>
+                    <property name="x">480</property>
+                    <property name="y">300</property>
                   </packing>
                 </child>
               </object>
@@ -628,10 +668,5 @@ gptid/cf9e95f9-ec29-11e9-b956-543530a693af     N/A  ada1s2
         </child>
       </object>
     </child>
-  </object>
-  <object class="GtkTextBuffer" id="textbuffer2">
-    <property name="text" translatable="yes">/dev/ada0p2 on / (ufs, local, journaled soft-updates)
-devfs on /dev (devfs, local, multilabel)
-</property>
   </object>
 </interface>
