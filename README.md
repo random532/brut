@@ -26,3 +26,10 @@ Please report them
 
 Wishlist:
 -maybe: replace grid view with a tree view
+
+How to use this:
+- Download the files into a folder
+- cd into that folder
+- type "make"
+- type "./my" 
+- enjoy the GUI :-)
