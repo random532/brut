@@ -20,8 +20,7 @@ As it has a GUI, its use is self-explanatory.
 
 Todo:
 - improve creating file systems
-- remove printfs, error checking 
-- add screenshots
+- remove printfs, error checking
 
 Bugs:
 Please report them
