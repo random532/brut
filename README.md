@@ -1,4 +1,4 @@
-![](/screenshots/20191013_150244_compress41.jpg)
+
 
 # partition editor
 This is an early version of a GUI partition editor for FreeBSD.
