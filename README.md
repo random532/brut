@@ -8,7 +8,7 @@ It uses gtk3, so you need pkg install gtk3.
 It currently includes:
 
 - view disks, partitions, slices, disk labels, and device names
-- create, destroy disks or slices, add, remove, modify, resize partitions
+- create/destroy disks or slices, add, remove, modify, resize partitions
 - set labels or attributes
 - write .img files to disk (with optional sha checksum checking)
 
