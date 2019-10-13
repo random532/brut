@@ -11,12 +11,13 @@ It currently includes:
 - create/destroy disks or slices, add, remove, modify, resize partitions
 - set labels or attributes
 - write .img files to disk (with optional sha checksum checking)
+- add file systems (ufs, ntfs)
 
 As it has a GUI, its use is self-explanatory.
 
 
 Todo:
-- include creating file systems (newfs and others)
+- improve creating file systems
 - remove printfs, .. 
 - add screenshots
 
