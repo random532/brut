@@ -35,4 +35,6 @@ How to use this:
 - type "make"
 - type "./my" 
 - enjoy the GUI :-)
-[](screenshot/20191013_150244_compress41_crop_62.jpg)
+
+
+![](screenshot/20191013_150244_compress41_crop_62.jpg)
