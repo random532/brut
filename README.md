@@ -7,7 +7,7 @@ It runs in a window manager of your choice (gnome, lxde, ...).
 It uses gtk3, so you need pkg install gtk3.
 
 
-It currently includes:
+1.It currently includes:
 
 - view disks, partitions, slices, disk labels, and device names
 - create/destroy disks or slices, add, remove, modify, resize partitions
@@ -18,22 +18,22 @@ It currently includes:
 As it has a GUI, its use is self-explanatory.
 
 
-Todo:
+2. Todo:
 - improve creating file systems
 - remove printfs, error checking
 
-Bugs:
+3. Bugs:
 Please report them
 
-Wishlist:
+4. Wishlist:
 -maybe: replace grid view with a tree view
 
-How to use this:
+5. How to use this:
 - Download the files into a folder
 - cd into that folder
 - type "make"
 - type "./my" 
 - enjoy the GUI :-)
 
-
+6. Screenshot
 ![](screenshot/20191013_150244_compress41_crop_62.jpg)
