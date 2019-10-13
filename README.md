@@ -1,22 +1,27 @@
-# secret-tool
+# partition editor
 This is an early version of a GUI partition editor for FreeBSD.
-It uses gtk3.
+
+It runs in a window manager of your choice (gnome, lxde, ...).
+It uses gtk3, so you need pkg install gtk3.
+
 
 It currently includes:
-- partition manager (wrapper around gpart)
+
+- view disks, partitions, slices, disk labels, and device names
+- create, destroy disks or slices, add, remove, modify, resize partitions
+- set labels or attributes
 - write .img files to disk
 
 As it has a GUI, its use is self-explanatory.
 
 
 Todo:
-- include create file systems (newfs and others)
-- make second tab prettier
-- turn printfs into debug statements, or remove them
-- remove empty lines, meaningless comments..
+- include creating file systems (newfs and others)
+- remove printfs, .. 
+- add screenshots
 
 Bugs:
-None 
+Please report them
 
 Wishlist:
--maybe: replace grid view with tree view
+-maybe: replace grid view with a tree view
