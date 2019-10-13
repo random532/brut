@@ -18,7 +18,7 @@ As it has a GUI, its use is self-explanatory.
 
 Todo:
 - improve creating file systems
-- remove printfs, .. 
+- remove printfs, error checking 
 - add screenshots
 
 Bugs:
