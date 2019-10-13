@@ -27,7 +27,7 @@
 
 //D prrintf(...);
 
-
+#define TT printf("test statement\n\n\n");
 
 //dbus-uuidgen --ensure
 

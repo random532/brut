@@ -212,7 +212,7 @@ gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo4), 0, 2, 1, 1);
 gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo5), 0, 2, 1, 1);
 gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo6), 0, 2, 1, 1);
 
-printf("disk_combo good!\n");
+D printf("disk_combo good!\n");
 }
 
 
@@ -306,7 +306,7 @@ char * parse_gpart() {
 
 	// diskid
 	if( (ptr1[pa] == 'd' ) && (ptr1[pa+1] == 'i') && (ptr1[pa+2] == 's') && (ptr1[pa+3] == 'k') && (ptr1[pa+4] == 'i') && (ptr1[pa+5] == 'd')) {
-		printf("diskid found!\n");
+		D printf("diskid found!\n");
 		while(1) {
 			if ((ptr1[pa] == 0x0A)  &&  (ptr1[pa+1] == 0x0A)  ) {
 				// end of diskid enry, so leave
@@ -451,20 +451,20 @@ while (ptr1[pa] != 0x0A) {
 
 	// debugging output
 	i++;
-	printf("line number: %i\n", i);
+	D printf("line number: %i\n", i);
 
 
 	if (ptr1[pa] == 0x0A) { 	//new entry or eof
 
 		ai++;
-		printf("entry: %i, pa=%i, buflen=%i\n", ai, pa, buflen);
+		D printf("entry: %i, pa=%i, buflen=%i\n", ai, pa, buflen);
 		}
 	
 	}
 
 	// now zero terminate, and print the parsed string
 	ptr2[pb-1] ='\0';
-	printf("end reached. size: %i\n-Start-\n%s\n-End-\n", fs, ptr2);
+	D printf("end reached. size: %i\n-Start-\n%s\n-End-\n", fs, ptr2);
 	
 	free(ptr1);
 	return(ptr2);
@@ -547,7 +547,7 @@ void msg(char * blah) {
 	
 int camcontrol() {
 	
-							printf("camcontrol start\n");
+	D printf("camcontrol start\n");
 							
 		// first destroy any previous widgets, cleanup
 	gtk_tree_store_clear(treestore1);
@@ -566,6 +566,11 @@ int camcontrol() {
 	while( fgets(buf, sizeof buf, fp)) {
 		
 		i=0;	
+		while(buf[i] !='<')
+			i++;
+		
+		buf[i]=' ';
+				
 		while(buf[i] !='>')
 			i++;
 
@@ -580,7 +585,7 @@ int camcontrol() {
 		buf[i]='\0';
 		
 		while(buf[i] != '(') {
-
+ 
 			i--;
 			if(i==0)  {
 				printf("error\n");	
@@ -595,7 +600,7 @@ int camcontrol() {
 
 		
 	error = pclose(fp);
-						printf("camcontrol done\n");	
+	D	printf("camcontrol done\n");	
 	return 1;
 	}
 	
@@ -605,7 +610,7 @@ int glabel() {
 
 	gtk_tree_store_clear(treestore2);
 	
-							printf("glabel start\n");
+	D printf("glabel start\n");
 	char buf[250];
 	int i=0;
 	int error=0;
@@ -643,7 +648,6 @@ fgets(buf, sizeof buf, fp); // ignore first line
 		while(buf[i] == ' ')
 			i++;
 		
-		printf("glabel test2\n");
 		// and write it to textview colum 1
 		gtk_tree_store_set(treestore2, &iter2, 1, &buf[i], -1);
 	
@@ -652,8 +656,9 @@ fgets(buf, sizeof buf, fp); // ignore first line
 		
 	error = pclose(fp);
 
+	D printf("glabel done\n");
 	return 1;
-							printf("glabel done\n");
+
 	}
 	
 void	on_buttonview1_clicked(GtkButton *b)
@@ -778,12 +783,12 @@ void add_missing() {
 		size_t syslen;
 		int error = sysctlbyname("kern.disks", NULL, &syslen, NULL, 0);
 			if (error != 0) 
-				printf("sysctl failed");
+				D printf("sysctl failed");
 				
 		sysdisk = malloc(syslen);
 		error = sysctlbyname("kern.disks", sysdisk, &syslen, NULL, 0);
 			if (error != 0) 
-				printf("sysctl failed");
+				D printf("sysctl failed");
 		
 	
 	char *token;
@@ -799,7 +804,7 @@ void add_missing() {
 	// loop through disks
 	while (token != NULL ) {
 			
-		printf("token: %s\n", token);
+		D printf("token: %s\n", token);
 		
 		// loop through grid entries
 		while(1) {
@@ -809,14 +814,14 @@ void add_missing() {
 				p = gtk_entry_get_text(GTK_ENTRY (child));
 				printf("disk: %s\n", p);
 				if( strcmp(p, token) == 0) {
-					printf("%s already in grid\n", token);
+					D printf("%s already in grid\n", token);
 					break; // no need to add a grid entry
 				}
 
 			}
 			if(row == row1) {
 				//we found nothing, so add this to the grid
-				printf("add %s to grid\n", token);
+				D printf("add %s to grid\n", token);
 				
 				row1++;
 				gtk_grid_insert_row(GTK_GRID (grid1), row1);
@@ -842,7 +847,7 @@ void add_missing() {
 	
 void on_gpart_refresh_clicked(GtkButton *b) {
 
-
+	printf("gpart_refresh_clicked()\n");
 	// first destroy any previous widgets, cleanup
 	GList *children, *iter;
 	
@@ -852,9 +857,11 @@ void on_gpart_refresh_clicked(GtkButton *b) {
   
 	g_list_free(children);
 	
+	
 	//reset combo
 	hide_all();	
 	
+
 	// go
 	char *ptr;
 	ptr = parse_gpart();
@@ -872,7 +879,7 @@ void on_gpart_refresh_clicked(GtkButton *b) {
 	
 		i++;	
 	}
-	printf("lines: %i\n", lines);
+	D printf("lines: %i\n", lines);
 	
 	
 	i=0;
@@ -901,16 +908,7 @@ void on_gpart_refresh_clicked(GtkButton *b) {
 	*/
  
 	while(1) {
-		/*
-		if (ptr[i] ==  0x0A) {
-			row++;
-			i++;
-			printf("row increased:\n", row);
-			// skip if multi newlines
-			if (ptr[i+1] ==  0x0A) 
-				i++;
-		}
-		*/
+
 		// disk ada
 		if (ptr[i] ==  '$') {
 			colum=1;
@@ -969,7 +967,7 @@ void on_gpart_refresh_clicked(GtkButton *b) {
 		while(1) {
 			
 			if (ptr[len+i] == '\0' ) {
-				printf("ups\n");
+				D printf("ups\n");
 				end = 1;
 				break;
 				}
@@ -993,7 +991,7 @@ void on_gpart_refresh_clicked(GtkButton *b) {
 		else
 			buf[len] = '\0';
 		
-		printf("Grid entry: %s!len:%i\n", buf, len);
+		D printf("Grid entry: %s!len:%i\n", buf, len);
 
 		// write in the grid
 
@@ -1020,6 +1018,7 @@ void on_gpart_refresh_clicked(GtkButton *b) {
 		}
 		
 	row1 = row;
+
 	gtk_widget_show_all(scrolled3);
 	free(ptr);
 	
@@ -1032,6 +1031,7 @@ void on_gpart_refresh_clicked(GtkButton *b) {
 
 void on_gpart_combo_changed(GtkWidget *b)  {
 	
+	printf("gpart_combo_changed()\n");
 	//
 	// grid2 first combo box
 	//
@@ -1045,7 +1045,7 @@ void on_gpart_combo_changed(GtkWidget *b)  {
 	hide_all();
 		
 	if(strcmp(string, "destroy ") == 0) {
-		printf("Destroy\n");
+		D printf("Destroy\n");
 		gtk_widget_show(GTK_WIDGET (combo4));		
 		}
 
@@ -1109,6 +1109,8 @@ void on_gpart_combo_changed(GtkWidget *b)  {
 	
 void on_gpart_submit_clicked(GtkButton *b) {
 	
+	
+	printf("gpart_submit()\n");
 	// submit changes by means of:
 	// consruct a gpart command
 	// execute it
@@ -1179,7 +1181,7 @@ void on_gpart_submit_clicked(GtkButton *b) {
 		
 		if (part[i] == 'p') // we have a partition
 			{
-			printf("creating on partition, %c, i=%c\n", part[i-1], part[i]);
+			D printf("creating on partition, %c, i=%c\n", part[i-1], part[i]);
 			if ( (part[i-1] >= 0x30 ) &&  (part[i-1] <= 0x39 ) ) {
 				part[i]='s';
 			}
@@ -1696,6 +1698,7 @@ int main(int argc, char *argv[]) {
 	camcontrol();
 	glabel();
 	fs_combo();
+
 	
 	gtk_widget_show(window);
 	
@@ -1705,12 +1708,15 @@ int main(int argc, char *argv[]) {
 	gtk_widget_hide(GTK_WIDGET (entry4));
 	gtk_widget_hide(GTK_WIDGET (entry5));
 	gtk_widget_hide(GTK_WIDGET (entry6));
-	
-	
-	on_gpart_refresh_clicked(GTK_BUTTON (window));
+
+
+	on_gpart_refresh_clicked(GTK_BUTTON (combo5));
+
 	fchose_combo();
-	gtk_main();
 	
+
+	gtk_main();
+	 
 	
 	return EXIT_SUCCESS;
 }

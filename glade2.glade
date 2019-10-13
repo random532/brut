@@ -169,39 +169,6 @@ devfs on /dev (devfs, local, multilabel)
                     <property name="tooltip_text" translatable="yes">Edit your disks here</property>
                     <property name="border_width">1</property>
                     <child>
-                      <object class="GtkComboBoxText" id="combo5">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="tearoff_title" translatable="yes">edit</property>
-                        <property name="has_entry">True</property>
-                        <items>
-                          <item translatable="yes">create</item>
-                          <item translatable="yes">destroy </item>
-                          <item translatable="yes">add</item>
-                          <item translatable="yes">delete</item>
-                          <item translatable="yes">modify</item>
-                          <item translatable="yes">set</item>
-                          <item translatable="yes">unset</item>
-                          <item translatable="yes">resize</item>
-                          <item translatable="yes">bootcode</item>
-                          <item translatable="yes">file system</item>
-                        </items>
-                        <signal name="changed" handler="on_gpart_combo_changed" swapped="no"/>
-                        <child internal-child="entry">
-                          <object class="GtkEntry">
-                            <property name="can_focus">False</property>
-                            <property name="editable">False</property>
-                            <property name="text" translatable="yes">resize</property>
-                            <property name="primary_icon_stock">gtk-edit</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="left_attach">0</property>
-                        <property name="top_attach">1</property>
-                      </packing>
-                    </child>
-                    <child>
                       <object class="GtkEntry" id="entry5">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -284,6 +251,37 @@ devfs on /dev (devfs, local, multilabel)
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkComboBoxText" id="combo5">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tearoff_title" translatable="yes">edit</property>
+                        <property name="has_entry">True</property>
+                        <property name="active_id">0</property>
+                        <items>
+                          <item translatable="yes">create</item>
+                          <item translatable="yes">destroy </item>
+                          <item translatable="yes">add</item>
+                          <item translatable="yes">delete</item>
+                          <item translatable="yes">modify</item>
+                          <item translatable="yes">set</item>
+                          <item translatable="yes">unset</item>
+                          <item translatable="yes">resize</item>
+                          <item translatable="yes">bootcode</item>
+                          <item translatable="yes">file system</item>
+                        </items>
+                        <signal name="changed" handler="on_gpart_combo_changed" swapped="no"/>
+                        <child internal-child="entry">
+                          <object class="GtkEntry">
+                            <property name="can_focus">False</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="left_attach">0</property>
+                        <property name="top_attach">1</property>
+                      </packing>
+                    </child>
+                    <child>
                       <placeholder/>
                     </child>
                     <child>
@@ -295,19 +293,19 @@ devfs on /dev (devfs, local, multilabel)
                   </object>
                   <packing>
                     <property name="x">390</property>
-                    <property name="y">60</property>
+                    <property name="y">80</property>
                   </packing>
                 </child>
                 <child>
                   <object class="GtkSeparator">
                     <property name="width_request">3</property>
-                    <property name="height_request">350</property>
+                    <property name="height_request">330</property>
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                   </object>
                   <packing>
                     <property name="x">380</property>
-                    <property name="y">40</property>
+                    <property name="y">60</property>
                   </packing>
                 </child>
                 <child>
@@ -333,6 +331,18 @@ devfs on /dev (devfs, local, multilabel)
                   <packing>
                     <property name="x">382</property>
                     <property name="y">388</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparator">
+                    <property name="width_request">210</property>
+                    <property name="height_request">3</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="x">382</property>
+                    <property name="y">60</property>
                   </packing>
                 </child>
               </object>
@@ -640,7 +650,7 @@ devfs on /dev (devfs, local, multilabel)
                   <object class="GtkLabel">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Version 0.9 (alpha) Hello World!</property>
+                    <property name="label" translatable="yes">Version 1.0  Hello World!</property>
                   </object>
                   <packing>
                     <property name="x">202</property>
