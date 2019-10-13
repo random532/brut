@@ -10,7 +10,7 @@ It currently includes:
 - view disks, partitions, slices, disk labels, and device names
 - create, destroy disks or slices, add, remove, modify, resize partitions
 - set labels or attributes
-- write .img files to disk
+- write .img files to disk (with optional sha checksum checking)
 
 As it has a GUI, its use is self-explanatory.
 
