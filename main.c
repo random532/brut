@@ -45,6 +45,7 @@ GtkWidget *combo7;
 
 GtkWidget	*combo_disks;
 GtkWidget	*combo_types;
+GtkWidget	*combo_fs;
 
 GtkWidget *entry4;
 GtkWidget *entry5;
@@ -73,6 +74,7 @@ void hide_all() {
 
 gtk_widget_hide(GTK_WIDGET (combo_disks) );
 gtk_widget_hide(GTK_WIDGET (combo_types) );
+gtk_widget_hide(GTK_WIDGET (combo_fs) );
 gtk_widget_hide(GTK_WIDGET (combo4) );
 gtk_widget_hide(GTK_WIDGET (combo5) );
 gtk_widget_hide(GTK_WIDGET (combo6) );
@@ -213,6 +215,13 @@ gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo6), 0, 2, 1, 1);
 printf("disk_combo good!\n");
 }
 
+
+void fs_combo() {
+	combo_fs = gtk_combo_box_text_new();
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_fs), NULL, "ufs");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_fs), NULL, "ntfs");
+	gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo_fs), 0, 8, 1, 1);
+}
 
 char * parse_gpart() {
 	
@@ -1090,6 +1099,7 @@ void on_gpart_combo_changed(GtkWidget *b)  {
 		
 	else if(strcmp(string, "file system") == 0) {
 		gtk_widget_show(GTK_WIDGET(combo6));
+		gtk_widget_show(GTK_WIDGET(combo_fs));
 	}
 	
 	g_free(string);
@@ -1520,7 +1530,30 @@ void on_gpart_submit_clicked(GtkButton *b) {
 	
 	
 	else if(strcmp(action, "file system") == 0) {
-		msg("file system");
+		
+		action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_fs) );
+		if(action == NULL)
+			msg("chose a file system type!");
+			
+		else if(strcmp(action, "ufs") == 0) {
+			
+			g_free((void *)action);
+			strcpy(cmd, "newfs -U ");
+			action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo6) );
+			strcat(cmd, action);
+			exe(cmd);
+			g_free((void *)action);
+		}
+		else if(strcmp(action, "ntfs") == 0) {
+			
+			g_free((void *)action);
+			strcpy(cmd, "mkntfs ");
+			action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo6) );
+			strcat(cmd, action);
+			exe(cmd);
+			g_free((void *)action);
+		}
+
 	
 	}
 	on_gpart_refresh_clicked(GTK_BUTTON (window));
@@ -1660,14 +1693,15 @@ int main(int argc, char *argv[]) {
 	gtk_grid_attach(GTK_GRID (grid2), GTK_WIDGET (combo_types), 0, 3, 1, 1);
 	
 	
-		camcontrol();
+	camcontrol();
 	glabel();
-
+	fs_combo();
 	
 	gtk_widget_show(window);
 	
 	gtk_widget_hide(GTK_WIDGET (combo_disks));
 	gtk_widget_hide(GTK_WIDGET (combo_types));
+	gtk_widget_hide(GTK_WIDGET (combo_fs));
 	gtk_widget_hide(GTK_WIDGET (entry4));
 	gtk_widget_hide(GTK_WIDGET (entry5));
 	gtk_widget_hide(GTK_WIDGET (entry6));
