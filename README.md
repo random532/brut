@@ -2,10 +2,7 @@
 
 # partition editor
 
-This is a GUI partition editor for FreeBSD.
-
-It runs in a window manager of your choice (gnome, lxde, ...).
-It uses gtk3, so you need pkg install gtk3.
+This is a GUI partition editor for FreeBSD (X11, gtk3).
 
 
 It currently includes:
@@ -17,11 +14,5 @@ It currently includes:
 - add file systems (ufs, ntfs)
 
 
-How to use this:
-- Download the files into a folder
-- cd into that folder
-- type "make"
-- type "./my" 
-- enjoy the GUI :-)
 
 ![](screenshot/20191013_150244_compress41_crop_62.jpg)
