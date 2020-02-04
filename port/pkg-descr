@@ -1,7 +1,7 @@
 - A GUI (X11, gtk3) for:
-- disk/partition editing ( wrapper around /sbin/gpart)
+- create, delete, edit disks/slices/partitions
 - create file systems
 - write .img files to disk.
 
-Start it with xdisk.
-If it complains about missing machine-id, run "dbus-uuidgen --ensure".
+To start it, run "xdisk".
+If it complains about a missing machine-id, run "dbus-uuidgen --ensure".
