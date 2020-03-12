@@ -7,7 +7,7 @@
 int main(int argc, char *argv[]) {
 
 	
-	de_lang();
+	en_lang();
 
 	gtk_init(&argc, &argv);
 

@@ -80,7 +80,7 @@ GtkWidget *text_entries;
 
 
 /* lang.c */
-void english_lang();
+void en_lang();
 void de_lang();
 void update_column_lang(int );
 void update_menubar_lang(int);

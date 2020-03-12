@@ -250,6 +250,9 @@ char *next = strtok_r(buffer, sep, &ptr);
 		else if ( (strcmp(next, "last:") )== 0) {
 			plast = strtok_r(NULL, sep, &ptr);
 			}
+		else if ( (strcmp(next, "attrib:") )== 0) {
+			pattribute = strtok_r(NULL, sep, &ptr);
+			}
 		else if ( (strcmp(next, "Name:") )== 0) {
 			pname_capital = strtok_r(NULL, sep, &ptr); 
 			}
@@ -310,6 +313,7 @@ char *next = strtok_r(buffer, sep, &ptr);
 		gtk_tree_store_set(treestore, &child, 7, plabel, -1);
 	if(pattribute!= NULL)
 		gtk_tree_store_set(treestore, &child, 8, pattribute, -1);
+	pattribute= NULL;
 
 		gtk_tree_store_set(treestore, &child, 12, poffset, 13, pstripesize, 14, psectorsize, 15, pstripeoffset, 16, pefimedia, 17, prawuuid, 18, prawtype, -1);
 
