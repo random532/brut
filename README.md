@@ -1,9 +1,8 @@
 
 
 
-This is a GUI for editing hard drives on FreeBSD (partition editor, disk editor). It uses gtk3. You probably want "pkg install gtk3", and "dbus-uuidgen --ensure"). Screenshots below.
-
-Files are in the folder /sourcecode.
+This is a GUI for editing hard drives on FreeBSD (partition editor, disk editor). It uses gtk3. 
+You probably want "pkg install gtk3", and "dbus-uuidgen --ensure"). Screenshots below.
 
 
 ![](screenshot/xdisk-1.png)
