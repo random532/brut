@@ -3,7 +3,7 @@
 PORTNAME=	xdisk
 DISTVERSION=	1.0
 CATEGORIES=	sysutils
-MASTER_SITES=	https://raw.githubusercontent.com/random532/partition-editor-FreeBSD/master/port/
+MASTER_SITES=	https://raw.githubusercontent.com/random532/xdisk---FreeBSD-Partition-Editor/master/port/
 MAINTAINER=	georg.lastname@web.de
 COMMENT=	a GUI for editing hard drives (partition editor, disk editor). Uses X11, gtk3.
 
