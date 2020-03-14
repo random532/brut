@@ -1,7 +1,5 @@
-- A GUI (X11, gtk3) for:
-- create, delete, edit disks/slices/partitions
-- create file systems
-- write .img files to disk.
+This is a GUI for editing hard drives on FreeBSD (partition editor, disk editor).
+It uses gtk3.
 
-To start it, run "xdisk".
-If it complains about a missing machine-id, run "dbus-uuidgen --ensure".
+Start it with xdisk. 
+If it complains about missing machine-id, run "dbus-uuidgen --ensure".
