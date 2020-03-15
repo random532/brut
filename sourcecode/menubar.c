@@ -17,8 +17,10 @@ void change_lang_en (GtkMenuItem *item, gpointer user_data) {
 
 void redraw_cb (GtkMenuItem *item, gpointer user_data) {    
 	redraw_treeview();
-	gtk_widget_destroy(window_editor);
-	editor();
+	if(window_editor != NULL) {
+		gtk_widget_destroy(window_editor);
+		editor();
+		}
 }
 
 void font_inc (GtkMenuItem *item, gpointer user_data) {    
@@ -32,7 +34,9 @@ void font_dec (GtkMenuItem *item, gpointer user_data) {
 }
 
 void edit_clicked (GtkMenuItem *item, gpointer user_data) {  
-	editor();
+	/* are we open already? */
+	if(window_editor == NULL )
+		editor();
 }
 void add_menubar() {
 	

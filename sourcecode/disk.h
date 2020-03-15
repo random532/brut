@@ -2,18 +2,13 @@
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
-#include <gtk/gtkx.h>
 #include <math.h>
 #include <ctype.h>
 
-
-#include <X11/Xlib.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
 
-#include <sys/types.h>
-#include <sys/sysctl.h>
 
 
 	/* columns */

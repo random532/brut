@@ -1,11 +1,7 @@
 /* includes and definitions */
 #include "disk.h"
 
-
-
-
 int main(int argc, char *argv[]) {
-
 	
 	en_lang();
 

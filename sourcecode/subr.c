@@ -213,14 +213,15 @@ char *what_file_system(char *partition) {
 		return NULL;
 		}
 	else if (strncmp(fs_type,"fstyp:", 6) == 0 ) {
-		free(fs_type);
-		return NULL;
+		/* that's either fs type not recognized, or permission denied */
+		strcpy(fs_type, "n/a");
+		return fs_type;
 		}
 
 	else {
 	/* we actually have a file system */
 		int len = strlen(fs_type);
-		fs_type[len-1] = '\0';
+		fs_type[len-1] = '\0'; /* replace 0x0A */
 		return fs_type;
 		}
 
@@ -249,7 +250,7 @@ int execute_cmd(char * cmd) {
 
 	/* popup a message box */
 void msg(char * blah) {
-	GtkWidget * message = gtk_message_dialog_new(GTK_WINDOW (window_editor), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, blah);
+	GtkWidget * message = gtk_message_dialog_new(GTK_WINDOW (window_editor), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "%s", blah);
 	gtk_widget_show(message);
 	g_signal_connect(message, "response", G_CALLBACK(on_response), NULL);
 	}

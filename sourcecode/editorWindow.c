@@ -1,5 +1,9 @@
 #include "disk.h"
 
+void destroy_editor (GtkMenuItem *item, gpointer user_data) {    
+	window_editor=NULL;
+	}
+
 void editor() {
 
 /* window -> box -> grid */
@@ -7,6 +11,7 @@ void editor() {
 
 	window_editor = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (window_editor), "Editor");
+	g_signal_connect(window_editor, "destroy", G_CALLBACK(destroy_editor), NULL);
 
 	gtk_container_set_border_width (GTK_CONTAINER (window_editor), 30);
 
