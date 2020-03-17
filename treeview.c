@@ -2,6 +2,8 @@
 #include "disk.h"
 
 GtkWidget *make_treeview() {
+
+	/* create a treeview, add columns, don't add rows yet */
 	
 	GtkWidget *view = gtk_tree_view_new();
 	
@@ -12,9 +14,6 @@ GtkWidget *make_treeview() {
 	
 	g_object_set(cell, "font", fontsize, NULL);
 	//g_object_set(cell,"editable", TRUE, NULL);
-	//g_object_set(cell, "background", "gray", "background-set", TRUE, NULL);
-
-	//g_object_set(cell, "mode", GTK_SELECTION_BROWSE, NULL);
 	//gtk_tree_view_set_enable_search(view, TRUE);
 	g_object_set(view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
@@ -40,7 +39,7 @@ GtkWidget *make_treeview() {
 		cnt++;
 		}
 
-	/* the treestore holds the rows */
+	/* we always use strings */
 	treestore = gtk_tree_store_new(MAX_COLUMN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(treestore));
