@@ -195,8 +195,8 @@ char *what_file_system(char *partition) {
 	if (partition == NULL)
 		return NULL;
 
-	char cmd[30];
-	strcpy(cmd, "fstyp /dev/");
+	char cmd[35];
+	strcpy(cmd, "fstyp -u /dev/");
 	strcat(cmd, partition);
 	strcat(cmd ," 2>&1"); // also capture stderr
 
