@@ -200,7 +200,8 @@ char *what_file_system(char *partition) {
 	strcat(cmd, partition);
 	strcat(cmd ," 2>&1"); // also capture stderr
 
-	char *fs_type = malloc(30);
+	int len= 40;
+	char *fs_type = malloc(len);
 
 	FILE * fp = popen(cmd, "r");
 	if ( fp == NULL ) {
@@ -208,20 +209,31 @@ char *what_file_system(char *partition) {
 	return NULL;
 	}
 
-	if ( fgets(fs_type, 25, fp) == NULL) {
+	if ( fgets(fs_type, len, fp) == NULL) {
 		free(fs_type);
 		return NULL;
 		}
 	else if (strncmp(fs_type,"fstyp:", 6) == 0 ) {
 		/* that's either fs type not recognized, or permission denied */
-		strcpy(fs_type, "n/a");
-		return fs_type;
+
+		char *brk;
+		strtok_r( &fs_type[8], ":", &brk);
+
+		if(strncmp(brk, " Permission", 11) == 0) {
+			strcpy(fs_type, "n/a");
+			gtk_window_set_title (GTK_WINDOW (window), "Xdisk - no root!");
+			return fs_type;
+			}
+
+		return NULL;
 		}
 
 	else {
 	/* we actually have a file system */
 		int len = strlen(fs_type);
 		fs_type[len-1] = '\0'; /* replace 0x0A */
+
+		gtk_window_set_title (GTK_WINDOW (window), "Xdisk - as root");
 		return fs_type;
 		}
 
