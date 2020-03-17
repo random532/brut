@@ -1,3 +1,0 @@
-blue yellow
-green
-black
