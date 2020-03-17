@@ -255,7 +255,6 @@ int execute_cmd(char * cmd) {
 		}
 	msg(buf);
 		int suc = pclose(fp)/256;
-		printf("%i == exit status of piped process\n\n", suc);
 		
 	return suc;
 }

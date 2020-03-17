@@ -65,6 +65,7 @@ else {
 	}
 
 strcat (cmd, gdisk);
+msg(cmd);
 execute_cmd(cmd);
 return 1;
 }
@@ -80,10 +81,12 @@ const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (com
 /* "gpart destroy gdisks */
 char cmd[100] ="/sbin/gpart destroy -F ";
 strcat (cmd, gdisk);
+msg(cmd);
 execute_cmd(cmd);
 return 1;
 }
 
+/* modify */
 int gpart_modify() {
 
 char buffer[20];
@@ -100,11 +103,19 @@ const gchar *gtype = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (com
 		return 0;
 		}
 
-/* gpart modify -t gtype - i index geom */
+/* gpart modify -t gtype -l glabel - i index geom */
 int sep = find_p(gpartition);
 char cmd[100] ="/sbin/gpart modify -t ";
 
 strcat(cmd, gtype);
+
+const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));
+	if(strlen(glabel) != 0) {
+	strcat(cmd, " -l ");
+	strcat(cmd, glabel);
+	strcat(cmd, " ");
+		}
+
 strcat(cmd, " -i ");
 
 strcpy(buffer, gpartition);
@@ -113,11 +124,14 @@ strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
 
+msg(cmd);
 execute_cmd(cmd);
 
 return 1;
 }
 
+
+/* add */
 int gpart_add() {
 const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
 	if(gdisk == NULL) {
@@ -160,7 +174,7 @@ const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));
 		}
 
 strcat(cmd, gdisk);
-
+msg(cmd);
 execute_cmd(cmd);
 return 1;
 }
@@ -184,11 +198,13 @@ buffer[sep] = (char) 0;
 strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
-
+msg(cmd);
 execute_cmd(cmd);
 return 1;
 }
 
+
+/* resize */
 int gpart_resize() {
 char buffer[20];
 
@@ -222,7 +238,7 @@ buffer[sep] = (char) 0;
 strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
-
+msg(cmd);
 execute_cmd(cmd);
 
 return 1;
@@ -256,7 +272,7 @@ buffer[sep] = (char) 0;
 strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
-
+msg(cmd);
 execute_cmd(cmd);
 
 return 1;
@@ -288,7 +304,7 @@ buffer[sep] = (char) 0;
 strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
-
+msg(cmd);
 execute_cmd(cmd);
 
 return 1;
