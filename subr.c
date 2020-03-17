@@ -224,7 +224,7 @@ char *what_file_system(char *partition) {
 			gtk_window_set_title (GTK_WINDOW (window), "Xdisk - no root!");
 			return fs_type;
 			}
-
+		free(fs_type);
 		return NULL;
 		}
 
