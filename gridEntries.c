@@ -148,7 +148,6 @@ void create_combo_geom() {
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "create");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "destroy");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "add");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "remove");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "delete");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "modify");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "resize");

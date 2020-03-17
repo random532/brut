@@ -41,33 +41,32 @@ if(action == NULL)
 
 int gpart_create() {
 
-const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
-	if(gdisk == NULL) {
-		msg("chose a disk!\n");
-		return 0;
+	const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
+		if(gdisk == NULL) {
+			msg("chose a disk!\n");
+			return 0;
+			}
+
+	const gchar *scheme = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_schemes) );
+		if(scheme == NULL) {
+			msg("chose a scheme!\n");
+			return 0;
+			}
+
+
+	/* "gpart create -s scheme gdisks" */
+	char cmd[100] ="/sbin/gpart create -s ";
+	
+	if( (strncmp(scheme, "GPT", 3)) == 0 )
+		strcat( cmd, "GPT ");
+	else {
+		strcat (cmd, scheme);	
+		strcat (cmd, " ");
 		}
 
-const gchar *scheme = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_schemes) );
-	if(scheme == NULL) {
-		msg("chose a scheme!\n");
-		return 0;
-		}
-
-
-/* "gpart create -s scheme gdisks" */
-char cmd[100] ="/sbin/gpart create -s ";
-
-if( (strncmp(scheme, "GPT", 3)) == 0 )
-	strcat( cmd, "GPT ");
-else {
-	strcat (cmd, scheme);
-	strcat (cmd, " ");
-	}
-
-strcat (cmd, gdisk);
-msg(cmd);
-execute_cmd(cmd);
-return 1;
+	strcat (cmd, gdisk);
+	execute_cmd(cmd);
+	return 1;
 }
 
 int gpart_destroy() {
@@ -81,7 +80,6 @@ const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (com
 /* "gpart destroy gdisks */
 char cmd[100] ="/sbin/gpart destroy -F ";
 strcat (cmd, gdisk);
-msg(cmd);
 execute_cmd(cmd);
 return 1;
 }
@@ -124,7 +122,6 @@ strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
 
-msg(cmd);
 execute_cmd(cmd);
 
 return 1;
@@ -174,7 +171,6 @@ const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));
 		}
 
 strcat(cmd, gdisk);
-msg(cmd);
 execute_cmd(cmd);
 return 1;
 }
@@ -198,7 +194,6 @@ buffer[sep] = (char) 0;
 strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
-msg(cmd);
 execute_cmd(cmd);
 return 1;
 }
@@ -219,7 +214,7 @@ const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
 		return 0;
 		}
 
-/* gpart modify -t gtype - i index geom */
+/* gpart resize -s gsize - i index geom */
 int sep = find_p(gpartition);
 char cmd[100] ="/sbin/gpart resize ";
 
@@ -229,7 +224,7 @@ const gchar *galignment = gtk_entry_get_text(GTK_ENTRY (text_alignment));
 	strcat(cmd, galignment);
 		}
 
-strcat(cmd," -t ");
+strcat(cmd," -s ");
 strcat(cmd, gsize);
 strcat(cmd, " -i ");
 
@@ -238,7 +233,7 @@ buffer[sep] = (char) 0;
 strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
-msg(cmd);
+
 execute_cmd(cmd);
 
 return 1;
@@ -272,7 +267,6 @@ buffer[sep] = (char) 0;
 strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
-msg(cmd);
 execute_cmd(cmd);
 
 return 1;
@@ -304,7 +298,6 @@ buffer[sep] = (char) 0;
 strcat(cmd, &buffer[sep+1] );
 strcat(cmd, " ");
 strcat(cmd, buffer);
-msg(cmd);
 execute_cmd(cmd);
 
 return 1;
