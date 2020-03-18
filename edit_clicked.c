@@ -43,13 +43,13 @@ int gpart_create() {
 
 	const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
 		if(gdisk == NULL) {
-			msg("chose a disk!\n");
+			msg(chose_disk);
 			return 0;
 			}
 
 	const gchar *scheme = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_schemes) );
 		if(scheme == NULL) {
-			msg("chose a scheme!\n");
+			msg("Chose a scheme!\n");
 			return 0;
 			}
 
@@ -68,7 +68,7 @@ int gpart_create() {
 	max = strlen(gdisk);
 	if( (max != 0) && (max <= 20) ) 
 		strncat (cmd, gdisk, max);
-	msg(cmd);
+
 	execute_cmd(cmd);
 	return 1;
 }
@@ -77,7 +77,7 @@ int gpart_destroy() {
 
 	const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
 	if(gdisk == NULL) {
-		msg("chose a disk!\n");
+		msg(chose_disk);
 		return 0;
 		}
 
@@ -87,7 +87,7 @@ int gpart_destroy() {
 	if( (max != 0) && (max <= 20 ) )
 		strncat (cmd, gdisk, max);
 	execute_cmd(cmd);
-msg(cmd);
+
 	return 1;
 }
 
@@ -127,7 +127,7 @@ int gpart_modify() {
 	strncat(cmd, &buffer[sep+1], 2); /* index */
 	strncat(cmd, " ", 1);
 	strncat(cmd, buffer, max); /* geom */
-msg(cmd);
+
 	execute_cmd(cmd);
 	return 1;
 }
@@ -181,7 +181,7 @@ int gpart_add() {
 
 	if(strlen(gdisk) <= max )	/* geom */
 		strncat(cmd, gdisk, max);
-msg(cmd);
+
 	execute_cmd(cmd);
 	return 1;
 }
@@ -207,7 +207,7 @@ int gpart_delete() {
 	strncat(cmd, &buffer[sep+1] , max);	/* index */
 	strncat(cmd, " ", 1);
 	strncat(cmd, buffer, max);	/* geom */
-msg(cmd);
+
 	execute_cmd(cmd);
 
 	return 1;
@@ -249,7 +249,7 @@ int gpart_resize() {
 	strncat(cmd, &buffer[sep+1] , max);	/* index */
 	strncat(cmd, " ", 1);
 	strncat(cmd, buffer, max);		/* geom */
-msg(cmd);
+
 	execute_cmd(cmd);
 	return 1;
 }
@@ -281,7 +281,7 @@ int gpart_set() {
 	strncat(cmd, &buffer[sep+1], max );	/* index */
 	strncat(cmd, " ", 1);
 	strncat(cmd, buffer, max);		/* geom */
-msg(cmd);
+
 	execute_cmd(cmd);
 
 	return 1;
@@ -315,7 +315,7 @@ const gchar *gbootoptions = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TE
 	strncat(cmd, &buffer[sep+1], max );
 	strncat(cmd, " ", 1);			/* geom */
 	strncat(cmd, buffer, max);
-msg(cmd);
+
 	execute_cmd(cmd);
 
 	return 1;
