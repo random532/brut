@@ -23,6 +23,7 @@ char *list_of_slices;
 char *list_of_partitions;
 char *slices_on_a_disk;
 
+
 	/* menu bar items */
 char mapplication[20];
 char moptions[20];
@@ -109,7 +110,7 @@ int execute_cmd(char *);
 void msg(char *);
 void on_response(GtkDialog *, gint, gpointer);
 char *check_free_space(char *, char *, char *);
-int find_p(const char *);
+int find_p(char *);
 void format_string(char *);
 
 /* editorWindow.c */

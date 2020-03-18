@@ -164,22 +164,26 @@ void create_combo_geom() {
 void create_text_label() {
 
 	GtkEntryBuffer *buf_label = gtk_entry_buffer_new (NULL, 0);
+	gtk_entry_buffer_set_max_length (buf_label, 8);
 	text_label = gtk_entry_new_with_buffer (buf_label);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_label), "label (optional)");
 
 }
 void create_text_entries() {
 	GtkEntryBuffer *buf_entries = gtk_entry_buffer_new (NULL, 0);
+	gtk_entry_buffer_set_max_length (buf_entries, 8);
 	text_entries = gtk_entry_new_with_buffer (buf_entries);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_entries), "entries (optional)");
 }
 void create_text_size() {
 	GtkEntryBuffer *buf_size = gtk_entry_buffer_new (NULL, 0);
+	gtk_entry_buffer_set_max_length (buf_size, 8);
 	text_size = gtk_entry_new_with_buffer (buf_size);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_size), "size, e.g. 100M");
 }
 void create_text_alignment() {
 	GtkEntryBuffer *buf_alignment = gtk_entry_buffer_new (NULL, 0);
+	gtk_entry_buffer_set_max_length (buf_alignment, 8);
 	text_alignment = gtk_entry_new_with_buffer (buf_alignment);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_alignment), "alignment (optional)");
 }

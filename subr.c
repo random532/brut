@@ -87,6 +87,8 @@ char *read_disk(char *diskname) {
 	return diskinfo;
 }
 
+
+/* remove brackets, i.e. () from a string */
 void format_string(char* mystring) {
 
 	int len = strlen(mystring);
@@ -135,7 +137,7 @@ else {
 return free_megabytes;
 }
 
-
+/* increase or decrease fontsize */
 void change_fontsize(int what) {
 
 	long fsize = strtol(fontsize, NULL, 0);
@@ -175,6 +177,8 @@ char * add_to_list(char *pname, char *mylist) {
 return(mylist);
 }
 
+
+/* set back the list of disks, list of partitions, list of slices */
 void clean_up_pointers() {
 	if(list_of_disks != NULL) {
 		free(list_of_disks);
@@ -189,6 +193,9 @@ void clean_up_pointers() {
 		list_of_slices = NULL;
 		}
 }
+
+/* determine the file system on a partition */
+/* uses fstyp(), which only suceeds as root */
 
 char *what_file_system(char *partition) {
 
@@ -239,6 +246,9 @@ char *what_file_system(char *partition) {
 
 }
 
+/* execute a shell command */
+/* return with a message box */
+
 int execute_cmd(char * cmd) {
 
 	char buf[200];
@@ -272,16 +282,39 @@ void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 	gtk_widget_destroy(GTK_WIDGET (dialog));	
 }
 
-int find_p(const char *partition) {
 
+/* find the partition index in a string like ada1p1 */
+int find_p(char *partition) {
+
+/* search backwards */
 int len = strlen(partition);
 while( (partition[len] !='p') && (partition[len] != 's') )
 	{
+	/* handle slices */
+	if( (partition[len] == 'a') || (partition[len] == 'b')  || (partition[len] == 'c')  || (partition[len] == 'd')  || (partition[len] == 'e')  || (partition[len] == 'f')  || (partition[len] == 'g') ) {
+	/* an index should be a number, not a char */
+		if(partition[len] == 'a')
+			partition[len+1] = '1';
+		else if(partition[len] == 'b')
+			partition[len+1] = '2';
+		else if(partition[len] == 'c')
+			partition[len+1] = '3';
+		else if(partition[len] == 'd')
+			partition[len+1] = '4';
+		else if(partition[len] == 'e')
+			partition[len+1] = '5';
+		else if(partition[len] == 'f')
+			partition[len+1] = '6';
+		else if(partition[len] == 'g')
+			partition[len+1] = '7';
+		break;
+		}
 	len--;
 	if (len == 0)
 		break;
 	}
 
-return len;
+	partition[len] = (char) 0;
+	return len;
 }
 
