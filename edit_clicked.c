@@ -26,7 +26,7 @@ if(action == NULL)
 	else if(strncmp(action, "set", 3) == 0)
 		gpart_success = gpart_set();
 	else if(strncmp(action, "unset", 5) == 0)
-		gpart_success = gpart_unset();
+		gpart_success = gpart_set();
 	else if(strncmp(action, "bootcode", 8) == 0)
 		gpart_success = gpart_bootcode();
 	else if(strncmp(action, "file system", 11) == 0)
@@ -39,96 +39,166 @@ if(action == NULL)
 		}
 }
 
-int gpart_create() {
+
+const char *get_combo_box_disk() {
+/* retrieve the combo box entry */
 
 	const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
 		if(gdisk == NULL) {
 			msg(chose_disk);
-			return 0;
+			return NULL;
 			}
 
-	const gchar *scheme = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_schemes) );
-		if(scheme == NULL) {
-			msg("Chose a scheme!\n");
-			return 0;
-			}
+	if( (strlen(gdisk) == 0) || (strlen(gdisk) >= 20 ) )
+		return NULL; /* this should never happen though */	
+	return gdisk;
+}
 
+const char *get_combo_box_scheme() {
+/* retrieve the combo box entry */
+
+	const gchar *gscheme = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_schemes) );
+		if(gscheme == NULL) {
+			msg(chose_scheme);
+			return NULL;
+			}
+	if( (strlen(gscheme) == 0)  || (strlen(gscheme) >= 20 ) )
+		return NULL; /* should never be that long */
+
+	return gscheme;
+}
+
+char *get_combo_box_partition() {
+
+/* while we are here: */
+/* make it char instead of const char */
+/* also format it */
+
+	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
+	if(gpartition == NULL) {
+		msg(chose_partition);
+		return NULL;
+		}
+
+	int len = strlen(gpartition);
+	if( (len == 0) || (len > 20) ) {
+		free((void *)gpartition);
+		return NULL;
+		}
+
+	char * buffer = malloc(len+10);
+	memset(buffer, 0, (len+10));
+	strncpy(buffer, gpartition, len);
+	free((void *)gpartition);
+	int sep = find_p(buffer);
+	return buffer;
+}
+
+const char *get_combo_box_type() {
+
+	const gchar *gtype = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_types) );
+	if(gtype == NULL) {
+		msg(chose_partition);
+		return NULL;
+		}
+
+	int len = strlen(gtype);
+	if( (len == 0) || (len > 20) ) {
+		free((void *)gtype);
+		return NULL;
+		}
+	return gtype;
+}
+
+int gpart_create() {
 
 	/* "gpart create -s scheme gdisks" */
 	char cmd[100] ="/sbin/gpart create -s ";
-	int max = 20;
+
+	const gchar *gscheme = get_combo_box_scheme();
+	if (gscheme == NULL)
+		return 0;
 	
-	if( (strncmp(scheme, "GPT", 3)) == 0 )
+	if( (strncmp(gscheme, "GPT", 3)) == 0 ) /* the entry is "GPT (recommended)", skip last part */
 		strncat( cmd, "GPT ", 4);
 	else {
-		strncat (cmd, scheme, max);	
-		strncat (cmd, " ", 1);
+		strcat (cmd, gscheme);	/* scheme */	
+		strcat (cmd, " ");
+		} 
+
+	const gchar *gentry = gtk_entry_get_text(GTK_ENTRY (text_entries));	/* alignment */
+	if( (strlen(gentry) != 0) && (strlen(gentry) <= 20 ) ) {
+		strncat(cmd, "-n ", 3);
+		strcat(cmd, gentry);
+		strncat(cmd, " ", 1);
 		}
 
-	max = strlen(gdisk);
-	if( (max != 0) && (max <= 20) ) 
-		strncat (cmd, gdisk, max);
+	const gchar *gdisk = get_combo_box_disk();
+	if( gdisk == NULL)
+		return 0;
+	strcat (cmd, gdisk);		/* gdisk */
 
 	execute_cmd(cmd);
+	if(display_cmd == 1)
+		msg(cmd);
 	return 1;
 }
 
 int gpart_destroy() {
 
-	const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
-	if(gdisk == NULL) {
-		msg(chose_disk);
-		return 0;
-		}
-
 	/* "gpart destroy gdisks */
 	char cmd[100] ="/sbin/gpart destroy -F ";
-	int max =strlen(gdisk);
-	if( (max != 0) && (max <= 20 ) )
-		strncat (cmd, gdisk, max);
-	execute_cmd(cmd);
 
+	const gchar *gdisk = get_combo_box_disk();
+	if( gdisk == NULL)
+		return 0;
+	strcat (cmd, gdisk);
+
+	execute_cmd(cmd);
+	if(display_cmd == 1)
+		msg(cmd);
 	return 1;
 }
 
 /* modify */
 int gpart_modify() {
 
-	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
+	char *gpartition = get_combo_box_partition();
 	if(gpartition == NULL) {
-		msg(chose_partition);
 		return 0;
 		}
 
-	const gchar *gtype = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_types) );
+	const char *gtype = get_combo_box_type();
 	if(gtype == NULL) {
-		msg(chose_type);
 		return 0;
 		}
 
 	/* gpart modify -t gtype -l glabel - i index geom */
 	char cmd[100] ="/sbin/gpart modify -t ";
-	int max=20;
-	char buffer[max+2];
-	strncpy(buffer, gpartition, max);
-	int sep = find_p(buffer);
-
-	if(strlen(gtype) <= max ) /* type */
-		strncat(cmd, gtype, max);
+	strcat(cmd, gtype); /* gtype */
 
 	const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));
-	if( (strlen(glabel) != 0) && (strlen(glabel) <= max) ) {
-	strncat(cmd, " -l ", 4);
-	strncat(cmd, glabel, max); /* label */
-	strncat(cmd, " ", 1);
+	if( (strlen(glabel) > 0) && (strlen(glabel) <= 20) ) {
+		strncat(cmd, " -l ", 4);
+		strcat(cmd, glabel); /* label */
+		strncat(cmd, " ", 1);
 		}
 
 	strncat(cmd, " -i ", 4);
-	strncat(cmd, &buffer[sep+1], 2); /* index */
+	int i=0;
+	for(i=0; i<=20; i++) {
+		if( gpartition[i] == (char) 0 )
+			break;
+		if(i == 20)
+			return 0;
+		}
+	strncat(cmd, &gpartition[i+1], 2); /* index */
 	strncat(cmd, " ", 1);
-	strncat(cmd, buffer, max); /* geom */
-
+	strncat(cmd, gpartition, 20); /* geom */
+	free(gpartition);
 	execute_cmd(cmd);
+	if(display_cmd == 1)
+		msg(cmd);
 	return 1;
 }
 
@@ -136,90 +206,86 @@ int gpart_modify() {
 /* add */
 int gpart_add() {
 
-	const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
+	const char *gdisk = get_combo_box_disk();
 	if(gdisk == NULL) {
-		msg(chose_disk);
 		return 0;
 		}
 
-	const gchar *gtype = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_types) );
+	const char *gtype = get_combo_box_type();
 	if(gtype == NULL) {
-		msg(chose_type);
 		return 0;
 		}
 
 	const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
-	if (strlen(gsize) == 0) {
+	if ( (strlen(gsize) == 0) || (strlen(gsize) > 20) ) {
 		msg(chose_size);
 		return 0;
 		}
 
 	/* "gpart add -t gtype -s gsize -a galignment -l glabel geom */
 	char cmd[130] ="/sbin/gpart add -t ";
-	int max=20;
-
-	if (strlen(gtype) <= max )	/* type */
-		strncat(cmd, gtype, max); 
+	strcat(cmd, gtype);
 	strncat(cmd, " -s ", 4);
-	if ( strlen(gsize) <= max)	/* size */
-		strncat(cmd, gsize, max);	
+	strcat(cmd, gsize);	
 	strncat(cmd, " ", 1);
 
 	const gchar *galignment = gtk_entry_get_text(GTK_ENTRY (text_alignment)); /* alignment */
-	if( (strlen(galignment) != 0) && (strlen(galignment) <= max ) ){
+	if( (strlen(galignment) != 0) && (strlen(galignment) <= 20 ) ){
 		strncat(cmd, " -a ", 4);
-		strncat(cmd, galignment, max); 
+		strcat(cmd, galignment); 
 		strncat(cmd, " ", 1);
 		}
 
 	const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
-	if( (strlen(glabel) != 0) && (strlen(glabel) <= max ) ) {
+	if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
 		strncat(cmd, " -l ", 4);
-		strncat(cmd, glabel, max);
+		strcat(cmd, glabel);
 		strncat(cmd, " ", 1);
 		}
 
-	if(strlen(gdisk) <= max )	/* geom */
-		strncat(cmd, gdisk, max);
-
+	strcat(cmd, gdisk);
 	execute_cmd(cmd);
+	if(display_cmd == 1)
+		msg(cmd);
+	free((void *)gdisk);
+	free((void *)gtype);
 	return 1;
 }
 
-
 int gpart_delete() {
 
-	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
+	char *gpartition = get_combo_box_partition();
 	if(gpartition == NULL) {
-	msg(chose_partition);
 		return 0;
 		}
 
 	/* "gpart delete -i index geom */
 
 	char cmd[100] ="/sbin/gpart delete -i ";
-	int max =20;
-	char buffer[max+2];
-	strncpy(buffer, gpartition, max);
-	int sep = find_p(buffer);
 
-
-	strncat(cmd, &buffer[sep+1] , max);	/* index */
+	int i=0;
+	for(i=0; i<=20; i++) {
+		if( gpartition[i] == (char) 0 )
+			break;
+		if(i == 20)
+			return 0;
+		}
+	strncat(cmd, &gpartition[i+1], 2); /* index */
 	strncat(cmd, " ", 1);
-	strncat(cmd, buffer, max);	/* geom */
-
+	strncat(cmd, gpartition, 20);	/* geom */
+	free(gpartition);
 	execute_cmd(cmd);
+	if(display_cmd == 1)
+		msg(cmd);
 
 	return 1;
 }
 
-
 	/* resize */
 int gpart_resize() {
 
-	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
+	char *gpartition = get_combo_box_partition();
 	if(gpartition == NULL) {
-		msg(chose_partition);
 		return 0;
 		}
 	const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
@@ -231,34 +297,50 @@ int gpart_resize() {
 	/* gpart resize -s gsize - i index geom */
 
 	char cmd[100] ="/sbin/gpart resize ";
-	int max= 20;
-	char buffer[max+2];
-	strncpy(buffer, gpartition, max);
-	int sep = find_p(buffer);
 
 	const gchar *galignment = gtk_entry_get_text(GTK_ENTRY (text_alignment));	/* alignment */
-	if( (strlen(galignment) != 0) && (strlen(galignment) <= max ) ) {
+	if( (strlen(galignment) != 0) && (strlen(galignment) <= 20 ) ) {
 		strncat(cmd, "-a ", 3);
-		strncat(cmd, galignment, max);
+		strcat(cmd, galignment);
 		}
 
 	strncat(cmd," -s ", 4);		/* size */
-	if( (strlen(gsize) != 0) && (strlen(gsize) <= max ) )
-		strncat(cmd, gsize, max);
+	if( (strlen(gsize) != 0) && (strlen(gsize) <= 20 ) )
+		strcat(cmd, gsize);
 	strncat(cmd, " -i ", 4);
-	strncat(cmd, &buffer[sep+1] , max);	/* index */
-	strncat(cmd, " ", 1);
-	strncat(cmd, buffer, max);		/* geom */
 
+	int i=0;
+	for(i=0; i<=20; i++) {
+		if( gpartition[i] == (char) 0 )
+			break;
+		if(i == 20)
+			return 0;
+		}
+	strncat(cmd, &gpartition[i+1], 2); /* index */
+	strncat(cmd, " ", 1);
+	strncat(cmd, gpartition, 20);		/* geom */
+	free(gpartition);
 	execute_cmd(cmd);
+	if(display_cmd == 1)
+		msg(cmd);
 	return 1;
 }
 
 int gpart_set() {
 
-	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
+	char cmd[100];
+	const gchar *gcmd = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom) );
+	if (gcmd == NULL) {	/* is never true */
+		msg("Error.Don't know if set or unset.\n");
+		return 0;
+		}
+	if(strncmp(gcmd, "set", 3) == 0)
+		strcpy(cmd, "/sbin/gpart set -a ");
+	else if((strncmp(gcmd, "unset", 5)) == 0 )
+		strcpy(cmd, "/sbin/gpart unset -a ");
+
+	char *gpartition = get_combo_box_partition();
 	if(gpartition == NULL) {
-		msg(chose_partition);
 		return 0;
 		}
 
@@ -270,62 +352,30 @@ int gpart_set() {
 
 	/* "gpart set -a attribute - i index geom" */
 
-	char cmd[100] ="/sbin/gpart set -a ";
-	int max=20;
-	char buffer[max+2];
-	strncpy(buffer, gpartition, max);
-	int sep = find_p(buffer);
-	
-	strncat(cmd, gbootoptions, max); /* attribute */
+	if( (strlen(gbootoptions) > 0) && (strlen(gbootoptions) <= 20) )
+		strcat(cmd, gbootoptions); /* attribute */
 	strncat(cmd, " -i ", 4);	
-	strncat(cmd, &buffer[sep+1], max );	/* index */
+	int i=0;
+	for(i=0; i<=20; i++) {
+		if( gpartition[i] == (char) 0 )
+			break;
+		if(i == 20)
+			return 0;
+		}
+	strncat(cmd, &gpartition[i+1], 2); /* index */
 	strncat(cmd, " ", 1);
-	strncat(cmd, buffer, max);		/* geom */
+	strncat(cmd, gpartition, 20);		/* geom */
 
+	free(gpartition);
 	execute_cmd(cmd);
-
+	if(display_cmd == 1)
+		msg(cmd);
 	return 1;
 }
-int gpart_unset() {
 
-
-	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
-	if(gpartition == NULL) {
-		msg(chose_partition);
-		return 0;
-		}
-
-const gchar *gbootoptions = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_bootoptions) );
-	if(gbootoptions == NULL) {
-		msg(chose_bootoptions);
-		return 0;
-		}
-
-	/* "gpart set -a attribute - i index geom" */
-
-	char cmd[100] ="/sbin/gpart unset -a ";
-	
-	int max = 20;	
-	char buffer[max+2];
-	strncpy(buffer, gpartition, max);
-	int sep = find_p(buffer);
-	
-	strncat(cmd, gbootoptions, max);	/* attribute */
-	strncat(cmd, " -i ", 4);		/* index */
-	strncat(cmd, &buffer[sep+1], max );
-	strncat(cmd, " ", 1);			/* geom */
-	strncat(cmd, buffer, max);
-
-	execute_cmd(cmd);
-
-	return 1;
-}
 int gpart_filesystem() {
 return 0;
 }
 int gpart_bootcode() {
 return 0;
 }
-
-
-

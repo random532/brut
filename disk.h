@@ -23,6 +23,7 @@ char *list_of_slices;
 char *list_of_partitions;
 char *slices_on_a_disk;
 
+int display_cmd;
 
 	/* menu bar items */
 char mapplication[20];
@@ -31,15 +32,19 @@ char mview[20];
 char mquit[20];
 char mrefresh[20];
 char mlanguage[20];
-char mall[20];
-char mless[20];
+char mmsg[20];
+char mshow[20];
+char mhide[20];
 char mfontinc[20];
 char mfontdec[20];
+char mall[20];
+char mless[20];
 char medit[25];
 
 
 char chose_disk[30];
 char chose_partition[30];
+char chose_scheme[30];
 char chose_type[30];
 char chose_size[30];
 char chose_bootoptions[30];
@@ -55,6 +60,8 @@ GtkCellRenderer     *cell;
 GtkWidget *menu;
 GtkWidget *window_editor;
 GtkWidget *thegrid;
+GtkWidget * item_msg_hide;
+GtkWidget * item_msg_show;
 
 /* all items in the grid/editor window */
 GtkWidget *combo_schemes;
@@ -119,6 +126,8 @@ void hide_widgets();
 
 /* menubar.c */
 void add_menubar();
+//void msg_hide (GtkMenuItem *, gpointer);
+//void msg_show (GtkMenuItem *, gpointer);
 
 /* edit_clicked.c */
 void on_edit_clicked (GtkMenuItem *, gpointer);

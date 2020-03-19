@@ -33,6 +33,27 @@ void font_dec (GtkMenuItem *item, gpointer user_data) {
 	change_fontsize(what);
 }
 
+void msg_show (GtkMenuItem *item, gpointer user_data) {    
+
+	display_cmd = 1;
+	char buf[35];
+	strcpy(buf, mshow);
+	strcat(buf, "  (x)");
+	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_show), buf);
+	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_hide), mhide);
+
+}
+
+void msg_hide (GtkMenuItem *item, gpointer user_data) {    
+
+	display_cmd = 0;
+	char buf[35];
+	strcpy(buf, mhide);
+	strcat(buf, "  (x)");
+	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_hide), buf);
+	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_show), mshow);
+}
+
 void edit_clicked (GtkMenuItem *item, gpointer user_data) {  
 	/* are we open already? */
 	if(window_editor == NULL )
@@ -41,35 +62,31 @@ void edit_clicked (GtkMenuItem *item, gpointer user_data) {
 void add_menubar() {
 	
 
-	GtkWidget * menuBar;
-	GtkWidget *menuItem1;
-	GtkWidget *menuItem2;
-
-	menuBar = gtk_menu_bar_new();	
+	GtkWidget * menuBar = gtk_menu_bar_new();	
 	menu = menuBar;	/* it is global now */
 
 	
 	/* "Application" */
-	GtkWidget * submenu1 = gtk_menu_new();
-	menuItem1 = gtk_menu_item_new_with_mnemonic (mapplication);
-    	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem1), submenu1);
+	GtkWidget * menu_app = gtk_menu_new();
+	GtkWidget *menuItem1 = gtk_menu_item_new_with_mnemonic (mapplication);
+    	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem1), menu_app);
     	gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
 
 	/* App - Refresh */
 	GtkWidget * app_refresh = gtk_menu_item_new_with_label (mrefresh);
-	gtk_menu_shell_append (GTK_MENU_SHELL (submenu1), app_refresh);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_refresh);
 
 	/* App - Edit */
 	GtkWidget * app_edit = gtk_menu_item_new_with_label (medit);
-	gtk_menu_shell_append (GTK_MENU_SHELL (submenu1), app_edit);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_edit);
 
 	/* App - Quit */
 	GtkWidget *app_quit = gtk_menu_item_new_with_label (mquit);
-    	gtk_menu_shell_append (GTK_MENU_SHELL (submenu1), app_quit);
+    	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_quit);
 
 	/* "Options" */
 	GtkWidget *menu_options = gtk_menu_new();
-	menuItem2 = gtk_menu_item_new_with_mnemonic (moptions);
+	GtkWidget *menuItem2 = gtk_menu_item_new_with_mnemonic (moptions);
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem2), menu_options);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem2);
 
@@ -97,6 +114,28 @@ void add_menubar() {
 	GtkWidget * item_fontdec = gtk_menu_item_new_with_label (mfontdec);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_fontdec);
 
+	/* show messages */
+	GtkWidget * item_msg = gtk_menu_item_new_with_label (mmsg);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_msg);
+
+	/* message submenu */
+	GtkWidget *menu_msg_sub = gtk_menu_new();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_msg), menu_msg_sub);
+
+	/* message - show */
+	item_msg_show = gtk_menu_item_new_with_label (mshow);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_show);
+
+	/* message - hide */
+	item_msg_hide = gtk_menu_item_new_with_label (mhide);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_hide);
+
+
+	if(display_cmd == 1)
+		msg_show (GTK_MENU_ITEM(item_msg_show), NULL);
+	else
+		msg_hide (GTK_MENU_ITEM(item_msg_hide), NULL);
+
 	/* "view" */
 	GtkWidget *menu_view = gtk_menu_new();
 	GtkWidget *menuItem3 = gtk_menu_item_new_with_mnemonic (mview);
@@ -121,9 +160,12 @@ void add_menubar() {
 	g_signal_connect (item_fontinc, "activate", G_CALLBACK (font_inc), NULL);
 	g_signal_connect (item_fontdec, "activate", G_CALLBACK (font_dec), NULL);
 	g_signal_connect (app_edit, "activate", G_CALLBACK (edit_clicked), NULL);
+	g_signal_connect (item_msg_show, "activate", G_CALLBACK (msg_show), NULL);
+	g_signal_connect (item_msg_hide, "activate", G_CALLBACK (msg_hide), NULL);
 
 	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
 
 	gtk_widget_show (menuBar);
 	gtk_widget_show_all(window);
 }
+

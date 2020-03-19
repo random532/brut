@@ -46,10 +46,14 @@ void en_lang() {
 	strcpy(mless, "View less");
 	strcpy(mfontinc, "Increase font size");
 	strcpy(mfontdec, "Decrease font size");
+	strcpy(mmsg, "Gpart commands");
+	strcpy(mshow, "show");
+	strcpy(mhide, "hide");
 	strcpy(medit, "Edit Disk");
 
 	strcpy(chose_disk, "Choose a disk!");
 	strcpy(chose_partition, "Choose a partition!");
+	strcpy(chose_scheme, "Chose a scheme!");
 	strcpy(chose_type, "Choose partition type!");
 	strcpy(chose_size, "How big? Which size?");
 	strcpy(chose_bootoptions, "Choose an attribute!");
@@ -95,10 +99,14 @@ void de_lang() {
 	strcpy(mless, "Weniger anzeigen");
 	strcpy(mfontinc, "Schrift vergrößern");
 	strcpy(mfontdec, "Schrift verkleinern");
+	strcpy(mmsg, "Gpart Befehl");
+	strcpy(mshow, "anzeigen");
+	strcpy(mhide, "verstecken");
 	strcpy(medit, "Festplatte editieren");
 
 	strcpy(chose_disk, "Welche Disk?");
 	strcpy(chose_partition, "Welche Partition?");
+	strcpy(chose_scheme, "Welches Schema? Im Zweifel GPT!");
 	strcpy(chose_type, "Welcher Partitionstyp?");
 	strcpy(chose_size, "Wie groß?");
 	strcpy(chose_bootoptions, "Welches Attribut?");

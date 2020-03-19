@@ -3,7 +3,8 @@
 
 int main(int argc, char *argv[]) {
 	
-	en_lang();
+	en_lang();	/* default language */
+	display_cmd=0;	/* dont show gpart commands */
 
 	gtk_init(&argc, &argv);
 

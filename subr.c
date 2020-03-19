@@ -1,8 +1,7 @@
 #include "disk.h"
 
 
-/* returns a buffer with disk names, space separated */
-
+/* return a buffer with disk names, space separated */
 char *get_disks() {
 
 /* buffer to read input stream */
@@ -48,6 +47,7 @@ pclose(fp);
 return disk_buf;
 }
 
+/* return a buffer with all the geom information */
 char *read_disk(char *diskname) {
 
 	char buf[30]= "geom part list ";		
@@ -102,14 +102,17 @@ while(i < len) {
 	}
 }
 
+/* do we have empty space on the disk? */
+/* pstart = starting sector */
+/* pend = ending sector */
+/* psectorsize = sectorsize */
+char *check_free_space( char *pstart, char *pend, char *psectorsize) {
 
-char *check_free_space( char *pstart, char *pend_old, char *psectorsize) {
-
-if( (pstart == NULL) || (pend_old == NULL) )
+if( (pstart == NULL) || (pend == NULL) )
 	return NULL;
 
 
-long p_end = strtol(pend_old, NULL, 0);
+long p_end = strtol(pend, NULL, 0);	/* convert to integer */
 long p_start = strtol(pstart, NULL, 0);
 long result = p_start - p_end;
 
@@ -120,15 +123,15 @@ char* free_megabytes = malloc(20);
 
 long sectorsize = strtol(psectorsize, NULL, 0);
 result = result * sectorsize;
-result = result / 1024;
-result = result / 1024;
+result = result / 1024;	/* kilobytes */
+result = result / 1024;	/* megabytes */
 
 if( result <= 1024 ) {
 	sprintf(free_megabytes, " %ld", result);
 	strcat(free_megabytes, "M");
 }
 else {
-	result = result / 1024;
+	result = result / 1024; /* gigabytes */
 	sprintf(free_megabytes, " %ld", result);
 	strcat(free_megabytes, "G");
 }
@@ -154,7 +157,8 @@ void change_fontsize(int what) {
 	
 }
 
-
+/* add a string to an existing string */
+/* also adjust the buffer size */
 char * add_to_list(char *pname, char *mylist) {
 
 	int len, buflen;
@@ -264,7 +268,7 @@ int execute_cmd(char * cmd) {
 		
 		}
 	msg(buf);
-		int suc = pclose(fp)/256;
+	int suc = pclose(fp)/256;
 		
 	return suc;
 }
@@ -284,6 +288,8 @@ void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 
 
 /* find the partition index in a string like ada1p1 */
+/* modify it to look like "ada1 1" */
+
 int find_p(char *partition) {
 
 /* search backwards */
@@ -307,6 +313,7 @@ while( (partition[len] !='p') && (partition[len] != 's') )
 			partition[len+1] = '6';
 		else if(partition[len] == 'g')
 			partition[len+1] = '7';
+		partition[len+2] = (char) 0;
 		break;
 		}
 	len--;
