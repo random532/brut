@@ -1,8 +1,7 @@
 
 
 
-This is a GUI for editing hard drives on FreeBSD (partition editor, disk editor).
-
+This is a GUI for editing hard drives on FreeBSD (partition editor, disk editor). 
 It uses gtk3. Screenshots below.
 
 Install as a port:
