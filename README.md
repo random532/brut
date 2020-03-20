@@ -7,7 +7,7 @@ It uses gtk3. Screenshots below.
 Install as a port:
 1. Download ports/Makefile and ports/pkg-descr
 2. Run "make makesum" and "make install clean"
-3. (recommended: Run "dbus-uuigen --ensure")
+3. (recommended: Run "dbus-uuidgen --ensure")
 4. Start it with xdisk :)
 
 ![](screenshot/xdisk-1.png)
