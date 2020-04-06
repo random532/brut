@@ -1,6 +1,5 @@
 #include "disk.h"
 
-
 	/*combo box with disks and slices */
 void create_combo_disks() {
 
@@ -21,17 +20,16 @@ void create_combo_disks() {
 		one_disk = strtok_r( NULL, " ", &brk);
 		}
 
-	/* add slices to the combo box */
+	/* add slices as well */
 	if(list_of_slices != NULL) {
 
 		brk=NULL;
 		char *one_slice = strtok_r( list_of_slices, " ", &brk);
-
 		while( one_slice != NULL ) {
 			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, one_slice);
 			one_slice = strtok_r( NULL, " ", &brk);
 			}	
-	}
+		}
 }
 
 	/* combo box with partitions */
@@ -47,9 +45,7 @@ void create_combo_partitions() {
 			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_partitions), NULL, one_partition);
 			one_partition = strtok_r( NULL, " ", &brk);
 			}
-	}	
-	
-
+		}
 }
 
 
@@ -72,8 +68,7 @@ void create_combo_schemes() {
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "MBR");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "VTOC8");
 }
-
-
+	/* combo box with boot options */
 void create_combo_bootoptions() {
 	combo_bootoptions = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_bootoptions), NULL, "active");
@@ -81,9 +76,8 @@ void create_combo_bootoptions() {
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_bootoptions), NULL, "bootonce");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_bootoptions), NULL, "bootfailed");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_bootoptions), NULL, "lenovofix");
-
 }
-
+	/* combo box with partition types */
 void create_combo_types() {
 combo_types = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-boot");
@@ -102,7 +96,6 @@ combo_types = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-hfs");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-label");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-raid");	
-	
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-raid-offline");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-tv-recovery");	
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-ufs");
@@ -140,9 +133,8 @@ combo_types = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-vmkdiag");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-reserved");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-vsanhdr");
-
 }
-
+	/* combo box with gpart commands */
 void create_combo_geom() {
 	combo_geom = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "create");
@@ -157,17 +149,15 @@ void create_combo_geom() {
 /* todo: */
 //gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "bootcode");
 //gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "file system");
-
 }
 
-
+	/* several text entries */
 void create_text_label() {
 
 	GtkEntryBuffer *buf_label = gtk_entry_buffer_new (NULL, 0);
 	gtk_entry_buffer_set_max_length (buf_label, 8);
 	text_label = gtk_entry_new_with_buffer (buf_label);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_label), "label (optional)");
-
 }
 void create_text_entries() {
 	GtkEntryBuffer *buf_entries = gtk_entry_buffer_new (NULL, 0);

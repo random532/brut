@@ -1,9 +1,7 @@
 /* language related info */
 #include "disk.h"
 
-
 void en_lang() {
-
 
 	strcpy(myarray[0], "Disk");
 	strcpy(myarray[1], "Index");
@@ -32,9 +30,6 @@ void en_lang() {
 	strcpy(myarray[23], "Entries");
 	strcpy(myarray[24], "Modified");
 	strcpy(myarray[25], "Mode");
-
-
-
 
 	strcpy(mapplication, "_Application");
 	strcpy(moptions, "_Options");
@@ -119,8 +114,9 @@ void update_column_lang(int lang) {
 	else if (lang == 1)
 		en_lang();
 
+	/* reset the column titles */
 	int n =0;
-	while(n <MAX_COLUMN) {
+	while(n < MAX_COLUMN) {
 	GtkTreeViewColumn   *col = gtk_tree_view_get_column( GTK_TREE_VIEW(tree), n);
 	gtk_tree_view_column_set_title(col, myarray[n]);
 	n++;	

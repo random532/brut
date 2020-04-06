@@ -26,23 +26,19 @@ while( fgets(line, sizeof line, fp) ) {
 
 	if (strncmp (line, "Name", 4) != 0 )
 		{
-
 		strtok(line, " ");
 		strcat( disk_buf, line );
 		strcat( disk_buf, " " );	
 	
-		disk_buf_size = disk_buf_size + 7;	
+		disk_buf_size = disk_buf_size + 10;	
 		disk_buf = realloc(disk_buf, disk_buf_size);
 		if(disk_buf == NULL ) {
 			printf("realloc(): failed\n");			
 			return NULL;
 			}
-
 		} 
 	 memset(line, 0, 150);
-
 	}
-
 pclose(fp);
 return disk_buf;
 }
@@ -50,13 +46,14 @@ return disk_buf;
 /* return a buffer with all the geom information */
 char *read_disk(char *diskname) {
 
-	char buf[30]= "geom part list ";		
-	char buffer[150];
-	int size=150;	
+	char buf[35]= "geom part list "; /* ... "ada1p3" */
+	int size=150;	/* geom returns info in lines, size is max line length */	
+	char buffer[size+2];
+	
 	char* diskinfo = malloc(size);
 	if ( diskinfo == NULL ) {
 		return NULL;	
-	}
+		}
 	memset(diskinfo, 0, size);
 
 	strcat(buf, diskname);
@@ -64,8 +61,8 @@ char *read_disk(char *diskname) {
 	FILE * fp = popen(buf, "r");
 	if ( fp == NULL ) {
 		printf("could not execute geom part list %s\n", diskname);	
-	return NULL;
-	}
+		return NULL;
+		}
 
 	while( fgets(buffer, sizeof buffer, fp) ) {
 		
@@ -82,11 +79,9 @@ char *read_disk(char *diskname) {
 		strcat(diskinfo, buffer);
 		memset(buffer, 0, 150);
 		}
-	
 	pclose(fp);
 	return diskinfo;
 }
-
 
 /* remove brackets, i.e. () from a string */
 void format_string(char* mystring) {
@@ -94,9 +89,9 @@ void format_string(char* mystring) {
 	int len = strlen(mystring);
 	int i=0;
 
-while(i < len) {
-	if( (mystring[i] == '(') || (mystring[i] == ')') ){	
-		mystring[i] = ' ';
+	while(i < len) {
+		if( (mystring[i] == '(') || (mystring[i] == ')') ){	
+			mystring[i] = ' ';
 		}
 	i++;
 	}
@@ -108,35 +103,31 @@ while(i < len) {
 /* psectorsize = sectorsize */
 char *check_free_space( char *pstart, char *pend, char *psectorsize) {
 
-if( (pstart == NULL) || (pend == NULL) )
-	return NULL;
+	if( (pstart == NULL) || (pend == NULL) )
+		return NULL;
 
 
-long p_end = strtol(pend, NULL, 0);	/* convert to integer */
-long p_start = strtol(pstart, NULL, 0);
-long result = p_start - p_end;
+	long p_end = strtol(pend, NULL, 0);	/* convert to integer */
+	long p_start = strtol(pstart, NULL, 0);
+	long result = p_start - p_end;
+	if(result <=100 ) 		/* too little to bother */
+		return NULL;
 
-if(result <=100 ) 
-	return NULL;
+	long sectorsize = strtol(psectorsize, NULL, 0);
+	result = result * sectorsize;
+	result = result / 1024;	/* kilobytes */
+	result = result / 1024;	/* megabytes */
 
-char* free_megabytes = malloc(20);
-
-long sectorsize = strtol(psectorsize, NULL, 0);
-result = result * sectorsize;
-result = result / 1024;	/* kilobytes */
-result = result / 1024;	/* megabytes */
-
-if( result <= 1024 ) {
-	sprintf(free_megabytes, " %ld", result);
-	strcat(free_megabytes, "M");
-}
-else {
-	result = result / 1024; /* gigabytes */
-	sprintf(free_megabytes, " %ld", result);
-	strcat(free_megabytes, "G");
-}
-
-
+	char* free_megabytes = malloc(30);
+	if( result <= 1024 ) {
+		sprintf(free_megabytes, " %ld", result);
+		strcat(free_megabytes, "M");
+	}
+	else {
+		result = result / 1024; /* gigabytes */
+		sprintf(free_megabytes, " %ld", result);
+		strcat(free_megabytes, "G");
+	}
 return free_megabytes;
 }
 
@@ -153,8 +144,6 @@ void change_fontsize(int what) {
 	sprintf(fontsize,"%ld", fsize);	
 	g_object_set(cell, "font", fontsize, NULL);
 	redraw_treeview();
-	
-	
 }
 
 /* add a string to an existing string */

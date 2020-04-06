@@ -51,7 +51,7 @@ create_text_size();
 
 /* edit button */
 edit_button = gtk_button_new_with_label("Apply");
-GtkWidget *image = gtk_image_new_from_file("icon.png");
+GtkWidget *image = gtk_image_new_from_resource("/icon.png");
 gtk_button_set_image(GTK_BUTTON(edit_button), image);
 gtk_button_set_image_position (GTK_BUTTON(edit_button), GTK_POS_LEFT);
 gtk_button_set_always_show_image (GTK_BUTTON(edit_button), TRUE);
