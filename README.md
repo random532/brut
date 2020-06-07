@@ -1,26 +1,26 @@
 ------------------------
-xdisk
+xdisk - disk editor
 ------------------------
 
 Q: What is xdisk?<br>
-A: xdisk is a GUI for editing hard drives on FreeBSD (partition editor, disk editor).
+A: A GUI for editing hard drives on FreeBSD (partition editor, disk editor).<br>
 
-Q: What are the dependencies?
+Q: What are the dependencies?<br>
 A: It uses gtk3 ("pkg install gtk3" is recommended). Other than that, it only uses
-system tools (e.g. geom, gpart).
+system tools (e.g. geom, gpart).<br>
 
-Q: How do I install it?
-A: Install it as a port:
+Q: How do I install it?<br>
+A: Install it as a port:<br>
 1. Download ports/Makefile and ports/pkg-descr
 2. Run "make makesum" and "make install clean"
 3. (recommended: Run "dbus-uuidgen --ensure")
-4. Start it with xdisk :)
+4. Start it with xdisk :)<br>
 
-Q: How to uninstall?
-A: run "pkg remove xdisk"
+Q: How to uninstall?<br>
+A: run "pkg remove xdisk"<br>
 
-Q: Is it safe? 
-A: Yes. It carefully translates mouse clicks into gpart commands.
+Q: Is it safe? <br>
+A: Yes. It carefully translates mouse clicks into gpart commands.<br>
 
 ![](screenshot/xdisk-1.png)
 ![](screenshot/xdisk-2.png)
