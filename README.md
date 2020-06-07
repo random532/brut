@@ -9,8 +9,8 @@ Q: What are the dependencies?<br>
 A: It uses gtk3 ("pkg install gtk3" is recommended). Other than that, it only uses
 system tools (e.g. geom, gpart).<br>
 
-Q: How do I install it?<br>
-A: Install it as a port:<br>
+Q: How do you install xdisk?<br>
+A: Install as a port:<br>
 1. Download ports/Makefile and ports/pkg-descr
 2. Run "make makesum" and "make install clean"
 3. (recommended: Run "dbus-uuidgen --ensure")
