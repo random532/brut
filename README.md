@@ -22,6 +22,9 @@ A: run "pkg remove xdisk"<br>
 Q: Is it safe? <br>
 A: Yes. It carefully translates mouse clicks into gpart commands.<br>
 
+Q: Why is this not an official port yet?<br>
+A: It needs more testing.
+
 ![](screenshot/xdisk-1.png)
 ![](screenshot/xdisk-2.png)
 ![](screenshot/xdisk-3.png)
