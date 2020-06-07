@@ -1,8 +1,9 @@
 
 
 
-This is a GUI for editing hard drives on FreeBSD (partition editor, disk editor). 
-It uses gtk3 (so running "pkg install gtk3" is recommended). Screenshots below.
+GUI for editing hard drives on FreeBSD (partition editor, disk editor). 
+
+It uses gtk3 ("pkg install gtk3" is recommended). Screenshots below.
 
 Install as a port:
 1. Download ports/Makefile and ports/pkg-descr
