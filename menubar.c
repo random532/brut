@@ -6,6 +6,10 @@ void change_lang_de (GtkMenuItem *item, gpointer user_data) {
 	int lang=0;
 	update_column_lang(lang);
 	update_menubar_lang(lang);
+	if(window_editor != NULL) {
+		gtk_widget_destroy(window_editor);
+		editor();
+	}	
 }
 
 void change_lang_en (GtkMenuItem *item, gpointer user_data) {
@@ -13,10 +17,15 @@ void change_lang_en (GtkMenuItem *item, gpointer user_data) {
 	int lang=1;
 	update_column_lang(lang);
 	update_menubar_lang(lang);
+	if(window_editor != NULL) {
+		gtk_widget_destroy(window_editor);
+		editor();
+	}
 }
 
 void redraw_cb (GtkMenuItem *item, gpointer user_data) {    
-	redraw_treeview();
+	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);
+	on_toplevel_changed();
 	if(window_editor != NULL) {
 		gtk_widget_destroy(window_editor);
 		editor();
@@ -35,7 +44,7 @@ void font_dec (GtkMenuItem *item, gpointer user_data) {
 
 void msg_show (GtkMenuItem *item, gpointer user_data) {    
 
-	display_cmd = 1;
+	confirm_yn = 1;
 	char buf[35];
 	strcpy(buf, mshow);
 	strcat(buf, "  (x)");
@@ -46,7 +55,7 @@ void msg_show (GtkMenuItem *item, gpointer user_data) {
 
 void msg_hide (GtkMenuItem *item, gpointer user_data) {    
 
-	display_cmd = 0;
+	confirm_yn = 0;
 	char buf[35];
 	strcpy(buf, mhide);
 	strcat(buf, "  (x)");
@@ -61,16 +70,14 @@ void edit_clicked (GtkMenuItem *item, gpointer user_data) {
 }
 void add_menubar() {
 	
-
 	GtkWidget * menuBar = gtk_menu_bar_new();	
 	menu = menuBar;	/* it is global now */
 
-	
 	/* "Application" */
 	GtkWidget * menu_app = gtk_menu_new();
 	GtkWidget *menuItem1 = gtk_menu_item_new_with_mnemonic (mapplication);
-    	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem1), menu_app);
-    	gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
+   	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem1), menu_app);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
 
 	/* App - Refresh */
 	GtkWidget * app_refresh = gtk_menu_item_new_with_label (mrefresh);
@@ -118,11 +125,12 @@ void add_menubar() {
 	GtkWidget * item_msg = gtk_menu_item_new_with_label (mmsg);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_msg);
 
+
 	/* message submenu */
 	GtkWidget *menu_msg_sub = gtk_menu_new();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_msg), menu_msg_sub);
 
-	/* message - show */
+	/* message -show */
 	item_msg_show = gtk_menu_item_new_with_label (mshow);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_show);
 
@@ -131,32 +139,16 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_hide);
 
 
-	if(display_cmd == 1)
+	if(confirm_yn == 1)
 		msg_show (GTK_MENU_ITEM(item_msg_show), NULL);
 	else
 		msg_hide (GTK_MENU_ITEM(item_msg_hide), NULL);
 
-	/* "view" */
-	GtkWidget *menu_view = gtk_menu_new();
-	GtkWidget *menuItem3 = gtk_menu_item_new_with_mnemonic (mview);
-	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem3), menu_view);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem3);
-
-	/* view - all */
-	GtkWidget * item_view_all = gtk_menu_item_new_with_label (mall);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_view), item_view_all);	
-
-	/* view - less */
-	GtkWidget * item_view_less = gtk_menu_item_new_with_label (mless);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_view), item_view_less);
-
 	/* if a menu item is clicked */
 	g_signal_connect_swapped (app_quit, "activate", G_CALLBACK(gtk_main_quit), NULL);
-    	g_signal_connect (app_refresh, "activate", G_CALLBACK (redraw_cb), NULL);
+   	g_signal_connect (app_refresh, "activate", G_CALLBACK (redraw_cb), NULL);
 	g_signal_connect (item_lang_de, "activate", G_CALLBACK (change_lang_de), NULL);
 	g_signal_connect (item_lang_en, "activate", G_CALLBACK (change_lang_en), NULL);
-	g_signal_connect (item_view_all, "activate", G_CALLBACK (view_all), NULL);
-	g_signal_connect (item_view_less, "activate", G_CALLBACK (view_less), NULL);
 	g_signal_connect (item_fontinc, "activate", G_CALLBACK (font_inc), NULL);
 	g_signal_connect (item_fontdec, "activate", G_CALLBACK (font_dec), NULL);
 	g_signal_connect (app_edit, "activate", G_CALLBACK (edit_clicked), NULL);

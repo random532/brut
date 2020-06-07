@@ -6,8 +6,11 @@ void destroy_editor (GtkMenuItem *item, gpointer user_data) {
 
 void editor() {
 
-/* window -> box -> grid */
-
+/* 
+ * create a window with a box,
+ * the box contains a grid,
+ * the grid has one column, and 10 or so rows
+ */
 
 	window_editor = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (window_editor), "Editor");
@@ -37,6 +40,7 @@ int rows = 0;
 	rows++;
 	}
 
+/* grid row entries */
 create_combo_schemes();
 create_combo_types();
 create_combo_disks();
@@ -50,10 +54,10 @@ create_text_alignment();
 create_text_size();
 
 /* edit button */
-edit_button = gtk_button_new_with_label("Apply");
-GtkWidget *image = gtk_image_new_from_resource("/icon.png");
-gtk_button_set_image(GTK_BUTTON(edit_button), image);
-gtk_button_set_image_position (GTK_BUTTON(edit_button), GTK_POS_LEFT);
+edit_button = gtk_button_new_with_label(apply);
+//GtkWidget *image = gtk_image_new_from_file("icon.png");
+//gtk_button_set_image(GTK_BUTTON(edit_button), image);
+//gtk_button_set_image_position (GTK_BUTTON(edit_button), GTK_POS_LEFT);
 gtk_button_set_always_show_image (GTK_BUTTON(edit_button), TRUE);
 
 grid_attach_all();
@@ -65,7 +69,6 @@ gtk_widget_show_all(window_editor);
 gtk_window_resize(GTK_WINDOW(window_editor), 230, 300);
 hide_widgets();
 }
-
 
 void hide_widgets() {
 gtk_widget_hide(GTK_WIDGET (combo_schemes) );
@@ -80,3 +83,4 @@ gtk_widget_hide(GTK_WIDGET (text_size) );
 gtk_widget_hide(GTK_WIDGET (text_alignment) );
 
 }
+

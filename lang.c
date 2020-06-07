@@ -1,8 +1,10 @@
 /* language related info */
 #include "disk.h"
 
+
 void en_lang() {
 
+	strncpy(overview, "Overview - All Disks", 25);
 	strcpy(myarray[0], "Disk");
 	strcpy(myarray[1], "Index");
 	strcpy(myarray[2], "Partition");
@@ -22,28 +24,39 @@ void en_lang() {
 	strcpy(myarray[16], "Efimedia");
 	strcpy(myarray[17], "Rawuuid");
 	strcpy(myarray[18], "Rawtype");
+	strcpy(myarray[19], "first");
+	strcpy(myarray[20], "Last");
+	strcpy(myarray[21], "Entries");
+	strcpy(myarray[22], "Modified");
+	strcpy(myarray[23], "Mode");
 
-	strcpy(myarray[19], "fwheads");
-	strcpy(myarray[20], "fwsectors");
-	strcpy(myarray[21], "first");
-	strcpy(myarray[22], "Last");
-	strcpy(myarray[23], "Entries");
-	strcpy(myarray[24], "Modified");
-	strcpy(myarray[25], "Mode");
+	strncpy(tree_array[0], "Name", 10);
+	strncpy(tree_array[1], "Description", 15);
+	strncpy(tree_array[2], "Ident", 10);
+	strncpy(tree_array[3], "Mediasize", 15);
+	strncpy(tree_array[4], "Sectorsize", 15);
+	strncpy(tree_array[5], "Mode", 10);
+	strncpy(tree_array[6], "Rotationrate", 15);
+	strncpy(tree_array[7], "fwsectors", 10);
+	strncpy(tree_array[8], "fwheads", 10);
+	
+	/* optional fields */
+	strncpy(tree_array[9], "Stripesize", 15);
+	strncpy(tree_array[10], "Stripeoffset", 15);
+	/*  lunid lun ... */
 
+	strncpy(apply, "Apply!", 10);
+	
 	strcpy(mapplication, "_Application");
 	strcpy(moptions, "_Options");
-	strcpy(mview, "_View");
 	strcpy(mrefresh, "Refresh");
 	strcpy(mquit, "Quit");
 	strcpy(mlanguage, "Language");
-	strcpy(mall, "View all");
-	strcpy(mless, "View less");
 	strcpy(mfontinc, "Increase font size");
 	strcpy(mfontdec, "Decrease font size");
-	strcpy(mmsg, "Gpart commands");
-	strcpy(mshow, "show");
-	strcpy(mhide, "hide");
+	strcpy(mmsg, "Ask for Confirmation");
+	strcpy(mshow, "yes");
+	strcpy(mhide, "no");
 	strcpy(medit, "Edit Disk");
 
 	strcpy(chose_disk, "Choose a disk!");
@@ -75,29 +88,40 @@ void de_lang() {
 	strcpy(myarray[16], "Efimedia");
 	strcpy(myarray[17], "Rawuuid");
 	strcpy(myarray[18], "Rawtype");
+	strcpy(myarray[19], "Erster");
+	strcpy(myarray[20], "Letzter");
+	strcpy(myarray[21], "Einträge");
+	strcpy(myarray[22], "Modifiziert");
+	strcpy(myarray[23], "Modus");
 
-	strcpy(myarray[19], "fwheads");
-	strcpy(myarray[20], "fwsectors");
-	strcpy(myarray[21], "Erster");
-	strcpy(myarray[22], "Letzter");
-	strcpy(myarray[23], "Einträge");
-	strcpy(myarray[24], "Modifiziert");
-	strcpy(myarray[25], "Modus");
-
+	strncpy(tree_array[0], "Name", 10);
+	strncpy(tree_array[1], "Beschreibung", 15);
+	strncpy(tree_array[2], "Ident", 10);
+	strncpy(tree_array[3], "Größe", 15);
+	strncpy(tree_array[4], "Sectorgröße", 15);
+	strncpy(tree_array[5], "Modus", 10);
+	strncpy(tree_array[6], "Rotation", 15);
+	strncpy(tree_array[7], "fwsectors", 10);
+	strncpy(tree_array[8], "fwheads", 10);
+	
+	/* optional fields */
+	strncpy(tree_array[9], "Plattengröße", 15);
+	strncpy(tree_array[10], "Stripeoffset", 15);
+	/*  lunid lun ... */
+	
+	strncpy(apply, "Los jetzt!", 10);
+	
 	strcpy(mapplication, "_Datei");
 	strcpy(moptions, "_Optionen");
-	strcpy(mview, "_Ansicht");
-	strcpy(mrefresh, "Ansicht aktualisieren");
+	strcpy(mrefresh, "Aktualisieren");
 	strcpy(mquit, "Beenden");
 	strcpy(mlanguage, "Sprache");
-	strcpy(mall, "Alle anzeigen");
-	strcpy(mless, "Weniger anzeigen");
 	strcpy(mfontinc, "Schrift vergrößern");
 	strcpy(mfontdec, "Schrift verkleinern");
-	strcpy(mmsg, "Gpart Befehl");
-	strcpy(mshow, "anzeigen");
-	strcpy(mhide, "verstecken");
-	strcpy(medit, "Festplatte editieren");
+	strcpy(mmsg, "Bestätigung");
+	strcpy(mshow, "ja");
+	strcpy(mhide, "nein");
+	strcpy(medit, "Editieren");
 
 	strcpy(chose_disk, "Welche Disk?");
 	strcpy(chose_partition, "Welche Partition?");
@@ -109,17 +133,27 @@ void de_lang() {
 
 void update_column_lang(int lang) {
 
+	/* first update arrays */
 	if (lang == 0)
 		de_lang();
 	else if (lang == 1)
 		en_lang();
 
-	/* reset the column titles */
+	/* second update columns */
 	int n =0;
-	while(n < MAX_COLUMN) {
-	GtkTreeViewColumn   *col = gtk_tree_view_get_column( GTK_TREE_VIEW(tree), n);
-	gtk_tree_view_column_set_title(col, myarray[n]);
-	n++;	
+	if(tree != NULL) {
+		while(n < MAX_D) {
+			GtkTreeViewColumn   *col = gtk_tree_view_get_column( GTK_TREE_VIEW(tree), n);
+			gtk_tree_view_column_set_title(col, tree_array[n]);
+			n++;	
+		}
+	}
+	else if(tree1 != NULL) {
+		while(n <MAX_COLUMN) {
+				GtkTreeViewColumn *col  = gtk_tree_view_get_column( GTK_TREE_VIEW(tree1), n);
+				gtk_tree_view_column_set_title(col, myarray[n]);
+				n++;	
+		}
 	}
 }
 

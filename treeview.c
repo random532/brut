@@ -1,9 +1,49 @@
 /* treeview functions */
 #include "disk.h"
 
+GtkWidget *disk_treeview() {
+		/* create a treeview with columns */
+	
+	GtkWidget *disk_view = gtk_tree_view_new();
+	
+	gtk_container_add(GTK_CONTAINER(scrolled_window), disk_view);	
+	cellr = gtk_cell_renderer_text_new();
+
+	g_object_set(cellr, "font", fontsize, NULL);
+	g_object_set(disk_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
+
+	/* create columns based on tree_array[] */
+	int cnt = 0;
+	while( (cnt <= MAX_D) && (strlen(tree_array[cnt]) >0 ) ) {
+	
+		char *col_title = tree_array[cnt];
+
+		GtkTreeViewColumn *col = gtk_tree_view_column_new();
+		gtk_tree_view_column_set_title(col, col_title);
+		gtk_tree_view_column_set_clickable(col, TRUE);
+		gtk_tree_view_column_set_reorderable(col, TRUE);
+		gtk_tree_view_column_set_resizable(col, TRUE);
+  		gtk_tree_view_append_column(GTK_TREE_VIEW(disk_view), col);
+		gtk_tree_view_column_pack_start(col, cellr, TRUE);
+		gtk_tree_view_column_add_attribute(col, cellr, "text", (cnt));
+
+		cnt++;
+	}	
+	/* treestore */
+	treestore = gtk_tree_store_new(MAX_D, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
+									G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
+									G_TYPE_STRING, G_TYPE_STRING);
+	gtk_tree_view_set_model(GTK_TREE_VIEW(disk_view), GTK_TREE_MODEL(treestore));
+	g_object_unref(treestore); //destroy model automatically with view 
+  	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(disk_view)),
+                             GTK_SELECTION_SINGLE);
+
+return disk_view;	
+}
+
 GtkWidget *make_treeview() {
 
-	/* create a treeview, add columns, don't add rows yet */
+	/* create a treeview with colums for a disk */
 	
 	GtkWidget *view = gtk_tree_view_new();
 	
@@ -16,7 +56,6 @@ GtkWidget *make_treeview() {
 	//g_object_set(cell,"editable", TRUE, NULL);
 	//gtk_tree_view_set_enable_search(view, TRUE);
 	g_object_set(view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
-
 
 	
 	int cnt = 0;
@@ -32,7 +71,6 @@ GtkWidget *make_treeview() {
 		gtk_tree_view_column_set_resizable(col, TRUE);
   		gtk_tree_view_append_column(GTK_TREE_VIEW(view), col);
 
-
 		gtk_tree_view_column_pack_start(col, cell, TRUE);
 		gtk_tree_view_column_add_attribute(col, cell, "text", (cnt));
 
@@ -40,10 +78,10 @@ GtkWidget *make_treeview() {
 		}
 
 	/* we always use strings */
-	treestore = gtk_tree_store_new(MAX_COLUMN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	treestore1 = gtk_tree_store_new(MAX_COLUMN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
-	gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(treestore));
-	g_object_unref(treestore); //destroy model automatically with view 
+	gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(treestore1));
+	g_object_unref(treestore1); //destroy model automatically with view 
   	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
                              GTK_SELECTION_SINGLE);
 
@@ -51,69 +89,88 @@ return view;
 }
 
 int fill_treeview() {
+	char buf[30]= "geom disk list";		
+	char line[150];
+	int size=150;	
+	int i = 0;
 	
-	/* clean up */
-	clean_up_pointers();
-
-	/* gather all disks */
-	list_of_disks = get_disks();
-	if( list_of_disks == NULL )	{
-		printf("get_disks(): failed! No disks were found.\n");
-		return 0;
-		}
-
-	/* extract one disk from the string of disks */
-	char *one_disk, *one_slice, *brk, *brk1;
-	char *buffer_geom_disk;
-	char *buffer_geom_slice;
-
+	FILE * fp = popen(buf, "r");
+	if ( fp == NULL ) {
+		printf("could not execute geom disk list\n");	
+	return (0);
+	}
 	
-	one_disk = strtok_r( list_of_disks, " ", &brk);
-
-	while( one_disk != NULL ) {
-
-		/* call geom with diskname */
-		buffer_geom_disk = read_disk(one_disk);
-		if (buffer_geom_disk == NULL ) {
-			printf("read_disk() failed. This is critical.\n");
-			return 0;	
-			}
+	GtkTreeIter	parent;	/* geom */
+	GtkTreeIter	child;	/* provider */
+	
+	/* get a line */
+	while( fgets(line, sizeof line, fp) ) {
 		
-		/* fill in the tree	*/
-		fill_tree(buffer_geom_disk, one_disk);
-	
-		/* we may have detected some slices */
-		if(slices_on_a_disk != NULL) {
-			one_slice = strtok_r ( slices_on_a_disk, " ", &brk1);
-			while( one_slice != NULL ) {
-	
-				/* call geom with diskname */
-				buffer_geom_slice = read_disk(one_slice);
-				if (buffer_geom_slice == NULL ) {
-					printf("no slice found\n");
-					return 0;	
-					}
-		
-				/* fill in the tree	*/
-				fill_tree(buffer_geom_slice, one_slice);
-				free(buffer_geom_slice);
-
-				/* scan for next slice */
-				one_slice = strtok_r( NULL, " ", &brk1);
-			}			
-	
-		free(slices_on_a_disk);
-		slices_on_a_disk= NULL;
+		/* remove leading space characters */
+		i = 0;
+		while(line[i] == ' ')
+			i++;
+			
+		/* Evaluate the entries */
+		if (strncmp(&line[i], "Geom name:", 10) == 0){
+			i = vari(line, size);	/* where the variable starts */
+			gtk_tree_store_append(treestore, &parent, NULL);
+			gtk_tree_store_set(treestore, &parent, 0, &line[i], -1);
+			child = parent; /* dirty, but usually there is only one provider */
 		}
-
-
-		/* disk/slice done, so.. */
-		free(buffer_geom_disk);
-
-		/* scan for next disk */
-		one_disk = strtok_r( NULL, " ", &brk);	
+		else if (strncmp(&line[i], "Providers", 9) == 0) {
+			/* skip*/
 		}
-
+		else if (strncmp(&line[i], "Mediasize", 9) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 3, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "Sectorsize", 10) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 4, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "descr", 5) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 1, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "ident", 5) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 2, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "rotationrate", 12) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 6, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "Mode", 4) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 5, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "fwheads", 7) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 8, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "fwsectors", 9) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 7, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "Stripesize", 10) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 9, &line[i], -1);
+		}
+		else if(strncmp(&line[i], "Stripeoffset", 12) == 0) {
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 10, &line[i], -1);
+		}	
+		else if(line[i] == '2') {
+			/* additional providers get a new row */
+			gtk_tree_store_append(treestore, &child, &parent);
+			i = vari(line, size);
+			gtk_tree_store_set(treestore, &child, 0, &line[i], -1);
+		}
+		memset(line, 0, size);
+	}
+	
+	pclose(fp);
 	/* be nice to Users */
 	gtk_tree_view_expand_all(GTK_TREE_VIEW(tree));
 	gtk_tree_view_set_enable_search (GTK_TREE_VIEW(tree), TRUE);	
@@ -121,32 +178,85 @@ int fill_treeview() {
 	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(tree), GTK_TREE_VIEW_GRID_LINES_BOTH);
 	
 
+	return (1);
+}
+
+int fill_treeview1( char * one_disk) {
+	
+	/* clean up */
+	clean_up_pointers();
+
+	/*  */
+	char *geom_info;
+	char *geom_slice;
+
+	/* call geom with diskname */
+	geom_info = read_disk(one_disk);
+	if (geom_info == NULL ) {
+		printf("read_disk() failed. This is critical.\n");
+		return 0;	
+		}
+		
+	/* fill in the tree	*/
+	fill_tree(geom_info, one_disk);
+	free(geom_info);
+	
+	/* we may have detected some slices */
+	char *slice, *brk, *brk1;
+
+	if(slices_on_a_disk != NULL) {
+		slice = strtok_r ( slices_on_a_disk, " ", &brk1);
+		while( slice != NULL ) {
+	
+			/* call geom with diskname */
+			geom_slice = read_disk(slice);
+			if (geom_slice == NULL ) {
+				printf("no slice found\n");
+				return 0;	
+				}
+
+			/* fill in the tree	*/
+			fill_tree(geom_slice, slice);
+			free(geom_slice);
+
+			/* scan for next slice */
+			slice = strtok_r( NULL, " ", &brk1);
+		}			
+
+		free(slices_on_a_disk);
+		slices_on_a_disk= NULL;
+	}
+
+	/* be nice to Users */
+	gtk_tree_view_expand_all(GTK_TREE_VIEW(tree1));
+	gtk_tree_view_set_enable_search (GTK_TREE_VIEW(tree1), TRUE);	
+	gtk_tree_view_set_enable_tree_lines (GTK_TREE_VIEW(tree1), TRUE);
+	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(tree1), GTK_TREE_VIEW_GRID_LINES_BOTH);
+
 	return 1;
 }
 
-void fill_tree(char *buffer, char * one_disk) {
+void fill_tree(char *geombuf, char *disk) {
 
 char *ptr;
 
-/* 28 pointer */
+/* 26 pointer */
 char *pname=	NULL;
 char *pname_capital=NULL;
 char *pmediasize=NULL;
-char *psectorsize=NULL;
+char *psectorsize=NULL; //??!
 char *ptype=	NULL;
 char *pstart=	NULL;
 char *pend=	NULL;
 char *pend_old= NULL;
 char *pstate=	NULL;
-char *pfwheads=	NULL;
-char *pfwsectors=NULL;
 char *pentries=	NULL;
 char *pscheme=	NULL;
 char *pfirst=	NULL;
 char *plast=	NULL;
-char *pmodified= NULL;
-char *pstripesize=NULL;
-char *pstripeoffset=NULL;
+char *pmodified= NULL;//??-
+char *pstripesize=NULL; //??!
+char *pstripeoffset=NULL; //??!
 char *pmode=	NULL;
 char *pefimedia=NULL;
 char *prawuuid=	NULL;
@@ -159,32 +269,35 @@ char *pfilesystem=NULL;
 char *pattribute=NULL;
 
 
-int len = strlen(buffer);
+int len = strlen(geombuf);
 char *free_space;
 
 	/* strtok cannot handle 0x0A */
 int i=0;
-
 	while(i < len) {
-		if (buffer[i] == '\n') {	
-			buffer[i] = ' ';
-			}
-		i++;
+		if (geombuf[i] == '\n') {	
+			geombuf[i] = ' ';
 		}
+		i++;
+	}
 
- 	/* parent - disks and slices */
-	/* child - partitions		*/
-	GtkTreeIter    parent, child, row_freespace;
+	GtkTreeIter		parent; /* disk or slice */
+	GtkTreeIter		child;	/* partition */
+	GtkTreeIter		row_freespace;
 
-	gtk_tree_store_append(treestore, &parent, NULL);
-	gtk_tree_store_set(treestore, &parent, 0, one_disk, -1);
+	/* first column is disk name */
+	gtk_tree_store_append(treestore1, &parent, NULL);
+	gtk_tree_store_set(treestore1, &parent, 0, disk, -1);
 
-	if(buffer[0] == '\0')	/* no geom information available */
+	if(geombuf[0] == '\0')	/* no geom information available */
 		return;
 
 	/* parse the geom buffer */
-char *sep = " !";
-char *next = strtok_r(buffer, sep, &ptr);
+	/* if we have a match */
+	/* write it to matching char * variable */
+	
+char *sep = " !"; //XXX: why !
+char *next = strtok_r(geombuf, sep, &ptr);
 
 	next = strtok_r(NULL, sep, &ptr);
 	while (next != NULL) {
@@ -196,11 +309,11 @@ char *next = strtok_r(buffer, sep, &ptr);
 			pstate = strtok_r(NULL, sep, &ptr);
 			}
 		else if ( (strcmp(next, "fwheads:") )== 0) {
-			pfwheads = strtok_r(NULL, sep, &ptr);
+		/* skip */
 			}
 		else if ( (strcmp(next, "fwsectors:") )== 0) {
-			pfwsectors = strtok_r(NULL, sep, &ptr);
-			}
+		/* skip */
+		}
 		else if ( (strcmp(next, "entries:") )== 0) {
 			pentries = strtok_r(NULL, sep, &ptr);
 			}
@@ -282,44 +395,44 @@ char *next = strtok_r(buffer, sep, &ptr);
 			/* start is the last entry of a provider(partition) */
 			/* so it is a good place to do some work */
 
-
 			/* tell user about free space in between partitions */
 			free_space = check_free_space(pstart, pend_old, psectorsize);
 			if (free_space != NULL) {
-				gtk_tree_store_append(treestore, &row_freespace, &parent);
-				gtk_tree_store_set(treestore, &row_freespace, 3, "-free-", 4, free_space, -1);
+				gtk_tree_store_append(treestore1, &row_freespace, &parent);
+				gtk_tree_store_set(treestore1, &row_freespace, 3, "-free-", 4, free_space, -1);
 				free(free_space);
 				}
-				
-
-			/* add partition to list_of_partitions */
-			list_of_partitions = add_to_list(pname_capital, list_of_partitions);
-			gtk_tree_store_append(treestore, &child, &parent);
+			
+			/* XXX: do we still need this?*/
+			/* add partition to all_partitions */
+			all_partitions = add_to_list(pname_capital, all_partitions);
+			gtk_tree_store_append(treestore1, &child, &parent);
 	
 			/* what file system? */
-			 pfilesystem = what_file_system(pname_capital);
+			pfilesystem = what_file_system(pname_capital);
 			if (pfilesystem != NULL) {
-				gtk_tree_store_set(treestore, &child, 6, pfilesystem, -1);
+				gtk_tree_store_set(treestore1, &child, 6, pfilesystem, -1);
 				free(pfilesystem);
 			}
 			
-	/* basic info */
-	gtk_tree_store_set(treestore, &child, 2, pname_capital, 3, ptype, 4, pmediasize, 9, pstart, 10, pend, 11, plength, -1);
+			/* put the p.. variables in the tree */
+			gtk_tree_store_set(treestore1, &child, 2, pname_capital, 3, ptype, \
+								4, pmediasize, 9, pstart, 10, pend, 11, plength, \
+								12, poffset, 13, pstripesize, 14, psectorsize, \
+								15, pstripeoffset, 16, pefimedia, 17, prawuuid, \
+								18, prawtype, -1);
 
-	if(pindex != NULL) /* be safe */
-		gtk_tree_store_set(treestore, &child, 1, pindex, -1);
-	if(plabel != NULL) /* be safe */
-		gtk_tree_store_set(treestore, &child, 7, plabel, -1);
-	if(pattribute!= NULL)
-		gtk_tree_store_set(treestore, &child, 8, pattribute, -1);
-	pattribute= NULL;
 
-		gtk_tree_store_set(treestore, &child, 12, poffset, 13, pstripesize, 14, psectorsize, 15, pstripeoffset, 16, pefimedia, 17, prawuuid, 18, prawtype, -1);
-
-		if( pmode != NULL)
-		gtk_tree_store_set(treestore, &child, 25, pmode, -1);
-
-			}
+			if(pindex != NULL) /* be safe with these */
+				gtk_tree_store_set(treestore1, &child, 1, pindex, -1);
+			if(plabel != NULL)
+				gtk_tree_store_set(treestore1, &child, 7, plabel, -1);
+			if(pattribute!= NULL)
+				gtk_tree_store_set(treestore1, &child, 8, pattribute, -1);
+			pattribute= NULL;
+			if( pmode != NULL)
+				gtk_tree_store_set(treestore1, &child, 23, pmode, -1);
+		}
 
 		next = strtok_r(NULL, sep, &ptr);
 	}
@@ -327,56 +440,22 @@ char *next = strtok_r(buffer, sep, &ptr);
 	/* inform user about free space after last partition */
 	free_space = check_free_space(plast, pend, psectorsize);
 		if (free_space != NULL) {
-			gtk_tree_store_append(treestore, &row_freespace, &parent);
-			gtk_tree_store_set(treestore, &row_freespace, 3, "-free-", 4, free_space, -1);
+			gtk_tree_store_append(treestore1, &row_freespace, &parent);
+			gtk_tree_store_set(treestore1, &row_freespace, 3, "-free-", 4, free_space, -1);
 			free(free_space);
 			}
 
-	/* parent entries */
-	gtk_tree_store_set(treestore, &parent, 0, one_disk, 3, pscheme, 4, pmediasize, 5, pstate, 14, psectorsize, 15, pstripeoffset, 19, pfwheads, 20, pfwsectors, -1);
+	/* parent or disk entries */
+	gtk_tree_store_set(treestore1, &parent, 0, disk, 3, pscheme, 4, pmediasize, 5, pstate, \
+						14, psectorsize, 15, pstripeoffset, -1);
 	if( (pfirst != NULL) && (plast != NULL) )
-		gtk_tree_store_set(treestore, &parent, 21, pfirst, 22, plast, -1);
+		gtk_tree_store_set(treestore1, &parent, 19, pfirst, 20, plast, -1);
 	if( pentries != NULL)
-		gtk_tree_store_set(treestore, &parent, 23, pentries, -1);
+		gtk_tree_store_set(treestore1, &parent, 21, pentries, -1);
 	if( pmodified != NULL)
-		gtk_tree_store_set(treestore, &parent, 24, pmodified, -1);
+		gtk_tree_store_set(treestore1, &parent, 22, pmodified, -1);
 	if( pmode != NULL)
-		gtk_tree_store_set(treestore, &parent, 25, pmode, -1);
+		gtk_tree_store_set(treestore1, &parent, 23, pmode, -1);
 	if( pstripesize != NULL)
-		gtk_tree_store_set(treestore, &parent, 13, pstripesize, -1);
-		
-
+		gtk_tree_store_set(treestore1, &parent, 13, pstripesize, -1);
 }
-
-void redraw_treeview() {
-
-	gtk_tree_store_clear(treestore);
-
-	 int tree_test = fill_treeview();
-	if(tree_test == 0)
-		printf("error filling tree\n");
-	
-	gtk_widget_show(tree);
-}
-
-void view_all() {
-
-	int n =0;
-	while(n <MAX_COLUMN) {
-	GtkTreeViewColumn   * col = gtk_tree_view_get_column(GTK_TREE_VIEW(tree), n);
-	gtk_tree_view_column_set_visible (col, TRUE);
-	n++;	
-	}
-
-}
-void view_less() {
-
-	int n =0;
-	while(n <MAX_COLUMN) {
-	GtkTreeViewColumn   * col = gtk_tree_view_get_column(GTK_TREE_VIEW(tree), n);
-	if( n >=7 )
-		gtk_tree_view_column_set_visible (col, FALSE);
-	n++;	
-	}
-}
-

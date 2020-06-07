@@ -1,4 +1,9 @@
-
+/*TODO:
+ * - "ask for confirmation"
+ * - remove unneeded functions
+ * - bugfixes?
+ * */
+ 
 #include <unistd.h>
 #include <string.h>
 #include <gtk/gtk.h>
@@ -10,25 +15,28 @@
 #include <inttypes.h>
 
 
+#define LANG_EN 0
+#define LANG_DE 1
 
 	/* columns */
-#define MAX_COLUMN  26
-char myarray[MAX_COLUMN][25];
+#define MAX_COLUMN  24
+char myarray[MAX_COLUMN][23];
 
+#define MAX_D 11
+char tree_array[MAX_D][25];
 
 char fontsize[10];	/* font size */
+int confirm_yn;
 
-char *list_of_disks;
+/* for scanning disks */
+char * all_disks;
 char *list_of_slices;
-char *list_of_partitions;
+char *all_partitions;
 char *slices_on_a_disk;
-
-int display_cmd;
 
 	/* menu bar items */
 char mapplication[20];
 char moptions[20];
-char mview[20];
 char mquit[20];
 char mrefresh[20];
 char mlanguage[20];
@@ -37,26 +45,31 @@ char mshow[20];
 char mhide[20];
 char mfontinc[20];
 char mfontdec[20];
-char mall[20];
-char mless[20];
 char medit[25];
 
+	/* toplevel */
+char overview[30]; 
 
+	/* editor hints */
 char chose_disk[30];
 char chose_partition[30];
 char chose_scheme[30];
 char chose_type[30];
 char chose_size[30];
 char chose_bootoptions[30];
+char apply[15];	/* editor apply button */
 
-
-	/* useful to have these global  */
+	/* global gtk pointer  */
 GtkWidget	*window; 	/* main window */
 GtkWidget	*fixed;
 GtkWidget *scrolled_window;
-GtkWidget	*tree;		/* disk information is displayed here */
-GtkTreeStore	*treestore;	
+GtkWidget *combo_toplevel;
+GtkWidget	*tree;		/* all disks are displayed here */
+GtkWidget	*tree1;		/* only one disk is displayed here */
+GtkTreeStore	*treestore;
+GtkTreeStore	*treestore1;	
 GtkCellRenderer     *cell;
+GtkCellRenderer		*cellr;
 GtkWidget *menu;
 GtkWidget *window_editor;
 GtkWidget *thegrid;
@@ -77,7 +90,7 @@ GtkWidget *text_alignment;
 GtkWidget *text_size;
 GtkWidget *text_entries;
 
-	/* all functions */
+	/* (most) functions */
 #ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED
 
@@ -87,7 +100,6 @@ void en_lang();
 void de_lang();
 void update_column_lang(int );
 void update_menubar_lang(int);
-
 
 /* gridEntries.c */
 void create_combo_schemes();
@@ -105,20 +117,29 @@ void grid_attach_all();
 
 /* on_combos_changed.c */
 void on_geom_changed();
+void on_toplevel_changed();
+void toplevel_entries();
 
 /* subr.c */
 char *get_disks();
 char *read_disk(char *);
+int add_slices();
+int add_geoms();
+int add_partitions();
 void change_fontsize(int);
 char *add_to_list(char *, char *);
 void clean_up_pointers();
 char *what_file_system(char *);
 int execute_cmd(char *);
+char* command(char *);
 void msg(char *);
 void on_response(GtkDialog *, gint, gpointer);
+void confirm( char *);
+void confirm_cb(GtkDialog *, gint, gpointer);
 char *check_free_space(char *, char *, char *);
 int find_p(char *);
 void format_string(char *);
+int vari(char *, int);
 
 /* editorWindow.c */
 void editor();
@@ -126,8 +147,6 @@ void hide_widgets();
 
 /* menubar.c */
 void add_menubar();
-//void msg_hide (GtkMenuItem *, gpointer);
-//void msg_show (GtkMenuItem *, gpointer);
 
 /* edit_clicked.c */
 void on_edit_clicked (GtkMenuItem *, gpointer);
@@ -143,15 +162,13 @@ int gpart_filesystem();
 int gpart_bootcode();
 
 /* treeview.c */
+GtkWidget *disk_treeview();
 GtkWidget *make_treeview();
 int fill_treeview();
+int fill_treeview1(char *);
 void fill_tree(char *, char *);
-void redraw_treeview();
-void view_all();
-void view_less();
 
 /* ?? */
 void show_message_cb(GtkMenuItem *item, gpointer);
-
 
 #endif

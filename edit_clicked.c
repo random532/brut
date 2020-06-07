@@ -2,15 +2,15 @@
 
 void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 
+
 	int gpart_success=0;
+
 	/* what did our user choose? */
 	const gchar *action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom) );
-
-
-if(action == NULL)
-		return;
 	
-	/* big loop  */		
+	/* big loop */
+	if(action == NULL)
+		return;		
 	if(strncmp(action, "create", 6) == 0)
 		gpart_success = gpart_create();	
 	else if(strncmp(action, "destroy", 7) == 0)
@@ -33,12 +33,11 @@ if(action == NULL)
 		gpart_success = gpart_filesystem();
 
 	 if(gpart_success == 1) {
-		redraw_treeview();
+		on_toplevel_changed();
 		gtk_widget_destroy(window_editor);
 		editor();
 		}
 }
-
 
 const char *get_combo_box_disk() {
 /* retrieve the combo box entry */
@@ -126,10 +125,11 @@ int gpart_create() {
 		strcat (cmd, " ");
 		} 
 
-	const gchar *gentry = gtk_entry_get_text(GTK_ENTRY (text_entries));	/* alignment */
-	if( (strlen(gentry) != 0) && (strlen(gentry) <= 20 ) ) {
+	const gchar *gentry = gtk_entry_get_text(GTK_ENTRY (text_entries));	/* optional entries */
+	int i=strlen(gentry);
+	if( (i != 0) && (i <= 15)) { /* XXX: maybe tell user that he entered bogus */
 		strncat(cmd, "-n ", 3);
-		strcat(cmd, gentry);
+		strncat(cmd, gentry, i); 
 		strncat(cmd, " ", 1);
 		}
 
@@ -138,9 +138,11 @@ int gpart_create() {
 		return 0;
 	strcat (cmd, gdisk);		/* gdisk */
 
-	execute_cmd(cmd);
-	if(display_cmd == 1)
-		msg(cmd);
+	if(confirm_yn==1)
+		confirm(cmd);
+	else
+		execute_cmd(cmd);
+		
 	return 1;
 }
 
@@ -155,7 +157,7 @@ int gpart_destroy() {
 	strcat (cmd, gdisk);
 
 	execute_cmd(cmd);
-	if(display_cmd == 1)
+	if(confirm_yn == 1)
 		msg(cmd);
 	return 1;
 }
@@ -174,11 +176,11 @@ int gpart_modify() {
 		}
 
 	/* gpart modify -t gtype -l glabel - i index geom */
-	char cmd[100] ="/sbin/gpart modify -t ";
+	char cmd[150] ="/sbin/gpart modify -t ";
 	strcat(cmd, gtype); /* gtype */
 
 	const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));
-	if( (strlen(glabel) > 0) && (strlen(glabel) <= 20) ) {
+	if( (strlen(glabel) > 0) && (strlen(glabel) <= 20) ) { //XXX: maybe interact with user if >20
 		strncat(cmd, " -l ", 4);
 		strcat(cmd, glabel); /* label */
 		strncat(cmd, " ", 1);
@@ -196,14 +198,15 @@ int gpart_modify() {
 	strncat(cmd, " ", 1);
 	strncat(cmd, gpartition, 20); /* geom */
 	free(gpartition);
-	execute_cmd(cmd);
-	if(display_cmd == 1)
-		msg(cmd);
+	
+	if(confirm_yn==1)
+		confirm(cmd);
+	else
+		execute_cmd(cmd);
 	return 1;
 }
 
-
-/* add */
+	/* add */
 int gpart_add() {
 
 	const char *gdisk = get_combo_box_disk();
@@ -223,7 +226,7 @@ int gpart_add() {
 		}
 
 	/* "gpart add -t gtype -s gsize -a galignment -l glabel geom */
-	char cmd[130] ="/sbin/gpart add -t ";
+	char cmd[150] ="/sbin/gpart add -t ";
 	strcat(cmd, gtype);
 	strncat(cmd, " -s ", 4);
 	strcat(cmd, gsize);	
@@ -244,11 +247,13 @@ int gpart_add() {
 		}
 
 	strcat(cmd, gdisk);
-	execute_cmd(cmd);
-	if(display_cmd == 1)
-		msg(cmd);
 	free((void *)gdisk);
 	free((void *)gtype);
+
+	if(confirm_yn==1)
+		confirm(cmd);
+	else
+		execute_cmd(cmd);
 	return 1;
 }
 
@@ -260,9 +265,9 @@ int gpart_delete() {
 		}
 
 	/* "gpart delete -i index geom */
-
+	
 	char cmd[100] ="/sbin/gpart delete -i ";
-
+	
 	int i=0;
 	for(i=0; i<=20; i++) {
 		if( gpartition[i] == (char) 0 )
@@ -274,9 +279,10 @@ int gpart_delete() {
 	strncat(cmd, " ", 1);
 	strncat(cmd, gpartition, 20);	/* geom */
 	free(gpartition);
-	execute_cmd(cmd);
-	if(display_cmd == 1)
-		msg(cmd);
+	if(confirm_yn==1)
+		confirm(cmd);
+	else
+		execute_cmd(cmd);
 
 	return 1;
 }
@@ -320,9 +326,10 @@ int gpart_resize() {
 	strncat(cmd, " ", 1);
 	strncat(cmd, gpartition, 20);		/* geom */
 	free(gpartition);
-	execute_cmd(cmd);
-	if(display_cmd == 1)
-		msg(cmd);
+	if(confirm_yn==1)
+		confirm(cmd);
+	else
+		execute_cmd(cmd);
 	return 1;
 }
 
@@ -367,9 +374,10 @@ int gpart_set() {
 	strncat(cmd, gpartition, 20);		/* geom */
 
 	free(gpartition);
-	execute_cmd(cmd);
-	if(display_cmd == 1)
-		msg(cmd);
+	if(confirm_yn==1)
+		confirm(cmd);
+	else
+		execute_cmd(cmd);
 	return 1;
 }
 

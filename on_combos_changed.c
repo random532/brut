@@ -1,12 +1,77 @@
 #include "disk.h"
 
+void on_toplevel_changed() {
+	char *string;
+	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_toplevel));
+	if(string == NULL) {
+		msg("Error! gtk_combo_box_text_get_active_text is empty!");
+		return;
+	}
+	/* we don't need these any more */
+	if(tree != NULL) {
+		gtk_widget_destroy(tree);
+		tree = NULL;
+	}
+	if(tree1 != NULL) {
+		gtk_widget_destroy(tree1);
+		tree1 = NULL;
+	}
+	
+	/* what did user select? */
+	if(strncmp(string, overview, 25) == 0) {
+		/* display an overview of all disks */
+		free(string);
+		tree = disk_treeview();
+		fill_treeview();
+		gtk_widget_show(tree);
+	}
+	else {
+		/* display a particular disk */
+		tree1 = make_treeview();
+		fill_treeview1(string);
+		gtk_widget_show(tree1);
+		free(string);
+	}
+}
+
+void toplevel_entries() {
+
+	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_toplevel));
+	
+		/* we always want this option */
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_toplevel), NULL, overview);
+	
+	/* refresh the list of disks */
+	if(all_disks != NULL)
+		free(all_disks);
+	all_disks = get_disks();
+	if(all_disks == NULL) {
+		msg("no disks found!");		
+		return;
+	}
+
+	/* add each disk to the combo box */
+	char *brk;
+	char *one_disk = strtok_r( all_disks, " ", &brk);
+
+	while( one_disk != NULL ) {
+		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_toplevel), NULL, one_disk);
+		one_disk = strtok_r( NULL, " ", &brk);
+	}
+}
+
 void on_geom_changed() {
 
 	char *string;
 	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom));
 	if(string == NULL)
 		return;
-		
+	
+	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_disks));
+	add_geoms();
+	add_slices();
+	add_partitions();
+	
 	hide_widgets();
 		
 	if(strcmp(string, "create") == 0) {
