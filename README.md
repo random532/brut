@@ -2,7 +2,9 @@
 ------------------------
 xdisk
 ------------------------
+
 Q: What is xdisk?
+
 A: xdisk is a GUI for editing hard drives on FreeBSD (partition editor, disk editor). 
 
 Q: What are the dependencies?
