@@ -445,7 +445,6 @@ char* command(char *cmd) {
 	return ret;
 }
 
-
 /* find the partition index in a string like ada1p1 */
 /* modify it to look like "ada1 1" */
 

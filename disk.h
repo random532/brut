@@ -1,7 +1,7 @@
 /*TODO:
- * - "ask for confirmation"
- * - remove unneeded functions
- * - bugfixes?
+ * - we dont use images, so remove pango etc
+ * - increase code readability
+ * - find bugs
  * */
  
 #include <unistd.h>
@@ -9,11 +9,9 @@
 #include <gtk/gtk.h>
 #include <math.h>
 #include <ctype.h>
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <inttypes.h>
-
 
 #define LANG_EN 0
 #define LANG_DE 1
@@ -21,7 +19,6 @@
 	/* columns */
 #define MAX_COLUMN  24
 char myarray[MAX_COLUMN][23];
-
 #define MAX_D 11
 char tree_array[MAX_D][25];
 
@@ -48,15 +45,15 @@ char mfontdec[20];
 char medit[25];
 
 	/* toplevel */
-char overview[30]; 
+char overview[80]; 
 
 	/* editor hints */
-char chose_disk[30];
-char chose_partition[30];
-char chose_scheme[30];
-char chose_type[30];
-char chose_size[30];
-char chose_bootoptions[30];
+char chose_disk[35];
+char chose_partition[35];
+char chose_scheme[35];
+char chose_type[35];
+char chose_size[35];
+char chose_bootoptions[35];
 char apply[15];	/* editor apply button */
 
 	/* global gtk pointer  */
@@ -73,8 +70,10 @@ GtkCellRenderer		*cellr;
 GtkWidget *menu;
 GtkWidget *window_editor;
 GtkWidget *thegrid;
+GtkWidget *grid;
 GtkWidget * item_msg_hide;
 GtkWidget * item_msg_show;
+GtkWidget *b;
 
 /* all items in the grid/editor window */
 GtkWidget *combo_schemes;
@@ -147,6 +146,8 @@ void hide_widgets();
 
 /* menubar.c */
 void add_menubar();
+void editor_cb (GtkMenuItem *, gpointer);
+void redraw_cb (GtkMenuItem *, gpointer);
 
 /* edit_clicked.c */
 void on_edit_clicked (GtkMenuItem *, gpointer);

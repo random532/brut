@@ -1,35 +1,37 @@
 #include "disk.h"
 
 	/* callback fuctions */
-void change_lang_de (GtkMenuItem *item, gpointer user_data) {
-	
-	int lang=0;
-	update_column_lang(lang);
-	update_menubar_lang(lang);
-	if(window_editor != NULL) {
-		gtk_widget_destroy(window_editor);
+void editor_cb (GtkMenuItem *item, gpointer user_data) { 
+	if( window_editor == NULL)
 		editor();
-	}	
-}
-
-void change_lang_en (GtkMenuItem *item, gpointer user_data) {
-	
-	int lang=1;
-	update_column_lang(lang);
-	update_menubar_lang(lang);
-	if(window_editor != NULL) {
+	else
 		gtk_widget_destroy(window_editor);
-		editor();
-	}
 }
-
-void redraw_cb (GtkMenuItem *item, gpointer user_data) {    
+void redraw_cb (GtkMenuItem *item, gpointer user_data) {  
+	toplevel_entries();
 	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);
-	on_toplevel_changed();
 	if(window_editor != NULL) {
 		gtk_widget_destroy(window_editor);
 		editor();
 		}
+}
+
+void change_lang_de (GtkMenuItem *item, gpointer user_data) {
+
+	int lang=LANG_DE;
+	update_column_lang(lang);
+	update_menubar_lang(lang);
+	redraw_cb(item, user_data);
+	gtk_button_set_label(b ,mrefresh);
+}
+
+void change_lang_en (GtkMenuItem *item, gpointer user_data) {
+
+	int lang=LANG_EN;	
+	update_column_lang(lang);
+	update_menubar_lang(lang);
+	redraw_cb(item, user_data);
+	gtk_button_set_label(b ,mrefresh);
 }
 
 void font_inc (GtkMenuItem *item, gpointer user_data) {    
@@ -50,7 +52,6 @@ void msg_show (GtkMenuItem *item, gpointer user_data) {
 	strcat(buf, "  (x)");
 	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_show), buf);
 	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_hide), mhide);
-
 }
 
 void msg_hide (GtkMenuItem *item, gpointer user_data) {    
@@ -68,6 +69,7 @@ void edit_clicked (GtkMenuItem *item, gpointer user_data) {
 	if(window_editor == NULL )
 		editor();
 }
+
 void add_menubar() {
 	
 	GtkWidget * menuBar = gtk_menu_bar_new();	

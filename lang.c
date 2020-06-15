@@ -4,15 +4,15 @@
 
 void en_lang() {
 
-	strncpy(overview, "Overview - All Disks", 25);
+	strncpy(overview, "Overview - All Disks                                                  ", 65);
 	strcpy(myarray[0], "Disk");
-	strcpy(myarray[1], "Index");
-	strcpy(myarray[2], "Partition");
-	strcpy(myarray[3], "Type");
-	strcpy(myarray[4], "Size");
-	strcpy(myarray[5], "State");
-	strcpy(myarray[6], "File System");
-	strcpy(myarray[7], "Label");
+	strcpy(myarray[1], "Partition");
+	strcpy(myarray[2], "Type");
+	strcpy(myarray[3], "Size");
+	strcpy(myarray[4], "File System");
+	strcpy(myarray[5], "Label");
+	strcpy(myarray[6], "Index");
+	strcpy(myarray[7], "State");
 	strcpy(myarray[8], "Attribute");
 	strcpy(myarray[9], "Start");
 	strcpy(myarray[10], "End");
@@ -69,14 +69,16 @@ void en_lang() {
 
 void de_lang() {
 
+	strncpy(overview, "Übersicht - Alle Disks                                        ", 65);
+	
 	strcpy(myarray[0], "Disk");
-	strcpy(myarray[1], "Index");
-	strcpy(myarray[2], "Partition");
-	strcpy(myarray[3], "Typ");
-	strcpy(myarray[4], "Größe");
-	strcpy(myarray[5], "Status");
-	strcpy(myarray[6], "Dateisystem");
-	strcpy(myarray[7], "Label");
+	strcpy(myarray[1], "Partition");
+	strcpy(myarray[2], "Typ");
+	strcpy(myarray[3], "Größe");
+	strcpy(myarray[4], "Dateisystem");
+	strcpy(myarray[5], "Label");
+	strcpy(myarray[6], "Index");
+	strcpy(myarray[7], "Status");
 	strcpy(myarray[8], "Attribut");
 	strcpy(myarray[9], "Start");
 	strcpy(myarray[10], "Ende");
@@ -134,9 +136,9 @@ void de_lang() {
 void update_column_lang(int lang) {
 
 	/* first update arrays */
-	if (lang == 0)
+	if (lang == LANG_DE)
 		de_lang();
-	else if (lang == 1)
+	else if (lang == LANG_EN)
 		en_lang();
 
 	/* second update columns */

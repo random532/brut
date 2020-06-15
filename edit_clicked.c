@@ -219,18 +219,16 @@ int gpart_add() {
 		return 0;
 		}
 
-	const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
-	if ( (strlen(gsize) == 0) || (strlen(gsize) > 20) ) {
-		msg(chose_size);
-		return 0;
-		}
-
 	/* "gpart add -t gtype -s gsize -a galignment -l glabel geom */
 	char cmd[150] ="/sbin/gpart add -t ";
 	strcat(cmd, gtype);
-	strncat(cmd, " -s ", 4);
-	strcat(cmd, gsize);	
-	strncat(cmd, " ", 1);
+	
+	const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
+	if (strlen(gsize) != 0)  {	
+		strncat(cmd, " -s ", 4);
+		strncat(cmd, gsize, 10);	
+		strncat(cmd, " ", 1);
+	}
 
 	const gchar *galignment = gtk_entry_get_text(GTK_ENTRY (text_alignment)); /* alignment */
 	if( (strlen(galignment) != 0) && (strlen(galignment) <= 20 ) ){

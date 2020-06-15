@@ -4,7 +4,9 @@ void on_toplevel_changed() {
 	char *string;
 	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_toplevel));
 	if(string == NULL) {
-		msg("Error! gtk_combo_box_text_get_active_text is empty!");
+		/* gtk_combo_box_remove_all() creates a signal each time it removes an entry */
+		/* so that this function gets called multiple times */
+		//msg("Error! gtk_combo_box_text_get_active_text is empty!");
 		return;
 	}
 	/* we don't need these any more */
@@ -37,9 +39,8 @@ void on_toplevel_changed() {
 void toplevel_entries() {
 
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_toplevel));
-	
 		/* we always want this option */
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_toplevel), NULL, overview);
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_toplevel), 0, overview);
 	
 	/* refresh the list of disks */
 	if(all_disks != NULL)

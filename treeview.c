@@ -10,6 +10,7 @@ GtkWidget *disk_treeview() {
 	cellr = gtk_cell_renderer_text_new();
 
 	g_object_set(cellr, "font", fontsize, NULL);
+	g_object_set(cellr, "editable", TRUE, NULL);
 	g_object_set(disk_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
 	/* create columns based on tree_array[] */
@@ -20,6 +21,8 @@ GtkWidget *disk_treeview() {
 
 		GtkTreeViewColumn *col = gtk_tree_view_column_new();
 		gtk_tree_view_column_set_title(col, col_title);
+		if(cnt ==1 )
+			gtk_tree_view_column_set_max_width(col, 220);
 		gtk_tree_view_column_set_clickable(col, TRUE);
 		gtk_tree_view_column_set_reorderable(col, TRUE);
 		gtk_tree_view_column_set_resizable(col, TRUE);
@@ -122,7 +125,12 @@ int fill_treeview() {
 			/* skip*/
 		}
 		else if (strncmp(&line[i], "Mediasize", 9) == 0) {
+			/* only read whats inside the brackets */
 			i = vari(line, size);
+			while( (line[i] != '(') && (i < size ) )
+				i++;
+			if(i < size)
+				format_string(&line[i]);
 			gtk_tree_store_set(treestore, &child, 3, &line[i], -1);
 		}
 		else if(strncmp(&line[i], "Sectorsize", 10) == 0) {
@@ -411,22 +419,22 @@ char *next = strtok_r(geombuf, sep, &ptr);
 			/* what file system? */
 			pfilesystem = what_file_system(pname_capital);
 			if (pfilesystem != NULL) {
-				gtk_tree_store_set(treestore1, &child, 6, pfilesystem, -1);
+				gtk_tree_store_set(treestore1, &child, 4, pfilesystem, -1);
 				free(pfilesystem);
 			}
 			
 			/* put the p.. variables in the tree */
-			gtk_tree_store_set(treestore1, &child, 2, pname_capital, 3, ptype, \
-								4, pmediasize, 9, pstart, 10, pend, 11, plength, \
+			gtk_tree_store_set(treestore1, &child, 1, pname_capital, 2, ptype, \
+								3, pmediasize, 9, pstart, 10, pend, 11, plength, \
 								12, poffset, 13, pstripesize, 14, psectorsize, \
 								15, pstripeoffset, 16, pefimedia, 17, prawuuid, \
 								18, prawtype, -1);
 
 
 			if(pindex != NULL) /* be safe with these */
-				gtk_tree_store_set(treestore1, &child, 1, pindex, -1);
+				gtk_tree_store_set(treestore1, &child, 6, pindex, -1);
 			if(plabel != NULL)
-				gtk_tree_store_set(treestore1, &child, 7, plabel, -1);
+				gtk_tree_store_set(treestore1, &child, 5, plabel, -1);
 			if(pattribute!= NULL)
 				gtk_tree_store_set(treestore1, &child, 8, pattribute, -1);
 			pattribute= NULL;
@@ -441,12 +449,12 @@ char *next = strtok_r(geombuf, sep, &ptr);
 	free_space = check_free_space(plast, pend, psectorsize);
 		if (free_space != NULL) {
 			gtk_tree_store_append(treestore1, &row_freespace, &parent);
-			gtk_tree_store_set(treestore1, &row_freespace, 3, "-free-", 4, free_space, -1);
+			gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
 			free(free_space);
 			}
 
 	/* parent or disk entries */
-	gtk_tree_store_set(treestore1, &parent, 0, disk, 3, pscheme, 4, pmediasize, 5, pstate, \
+	gtk_tree_store_set(treestore1, &parent, 0, disk, 2, pscheme, 3, pmediasize, 7, pstate, \
 						14, psectorsize, 15, pstripeoffset, -1);
 	if( (pfirst != NULL) && (plast != NULL) )
 		gtk_tree_store_set(treestore1, &parent, 19, pfirst, 20, plast, -1);
