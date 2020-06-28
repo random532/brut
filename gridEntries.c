@@ -1,6 +1,5 @@
 #include "disk.h"
 
-
 	/*combo box with disks and slices - empty */
 void create_combo_disks() {
 	combo_disks = gtk_combo_box_text_new();
@@ -14,7 +13,7 @@ void create_combo_partitions() {
 	 /* combo box with file systems */
 void create_combo_filesystems() {
 	combo_filesystems = gtk_combo_box_text_new();
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ufs1");
+//	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ufs1");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ufs2");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "FAT32");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ntfs");
@@ -38,7 +37,6 @@ void create_combo_bootoptions() {
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_bootoptions), NULL, "bootonce");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_bootoptions), NULL, "bootfailed");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_bootoptions), NULL, "lenovofix");
-
 }
 
 void create_combo_types() {
@@ -52,14 +50,12 @@ combo_types = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-ufs");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-vinum");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "freebsd-zfs");
-
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-boot");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-apfs");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-core-storage");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-hfs");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-label");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-raid");	
-	
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-raid-offline");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-tv-recovery");	
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "apple-ufs");
@@ -76,7 +72,6 @@ combo_types = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "fat16");	
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "fat32");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "fat32lba");	
-	
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "linux-data");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "linux-lvm");	
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "linux-raid");
@@ -97,7 +92,6 @@ combo_types = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-vmkdiag");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-reserved");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-vsanhdr");
-
 }
 
 void create_combo_geom() {
@@ -110,11 +104,9 @@ void create_combo_geom() {
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "resize");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "set");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "unset");
-	
-/* todo: */
-//gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "bootcode");
-//gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "file system");
-
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "file system");
+	/* todo: */
+	//gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "bootcode");
 }
 
 void create_text_label() {
@@ -123,20 +115,22 @@ void create_text_label() {
 	gtk_entry_buffer_set_max_length (buf_label, 8);
 	text_label = gtk_entry_new_with_buffer (buf_label);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_label), "label (optional)");
-
 }
-void create_text_entries() {
+
+void create_text_entries() { /* XXX: rename to create_entries? */
 	GtkEntryBuffer *buf_entries = gtk_entry_buffer_new (NULL, 0);
 	gtk_entry_buffer_set_max_length (buf_entries, 8);
 	text_entries = gtk_entry_new_with_buffer (buf_entries);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_entries), "entries (optional)");
 }
+
 void create_text_size() {
 	GtkEntryBuffer *buf_size = gtk_entry_buffer_new (NULL, 0);
 	gtk_entry_buffer_set_max_length (buf_size, 8);
 	text_size = gtk_entry_new_with_buffer (buf_size);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_size), "size, e.g. 100M");
 }
+
 void create_text_alignment() {
 	GtkEntryBuffer *buf_alignment = gtk_entry_buffer_new (NULL, 0);
 	gtk_entry_buffer_set_max_length (buf_alignment, 8);

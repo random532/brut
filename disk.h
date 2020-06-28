@@ -1,5 +1,4 @@
 /*TODO:
- * - we dont use images, so remove pango etc
  * - increase code readability
  * - find bugs
  * */
@@ -16,17 +15,22 @@
 #define LANG_EN 0
 #define LANG_DE 1
 
-	/* columns */
+	/* column header */
 #define MAX_COLUMN  24
 char myarray[MAX_COLUMN][23];
 #define MAX_D 11
 char tree_array[MAX_D][25];
 
-char fontsize[10];	/* font size */
+	/* font size */
+char fontsize[10];
+
+	/* ask for confirmation 
+	 * before issueing any gpart
+	 * command */
 int confirm_yn;
 
-/* for scanning disks */
-char * all_disks;
+	/* keep track of disks and partitions */
+char *all_disks;
 char *list_of_slices;
 char *all_partitions;
 char *slices_on_a_disk;
@@ -54,6 +58,7 @@ char chose_scheme[35];
 char chose_type[35];
 char chose_size[35];
 char chose_bootoptions[35];
+char chose_fs[35];
 char apply[15];	/* editor apply button */
 
 	/* global gtk pointer  */
@@ -92,7 +97,6 @@ GtkWidget *text_entries;
 	/* (most) functions */
 #ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED
-
 
 /* lang.c */
 void en_lang();

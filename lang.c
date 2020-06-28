@@ -1,9 +1,9 @@
 /* language related info */
 #include "disk.h"
 
-
 void en_lang() {
 
+	/* column header */
 	strncpy(overview, "Overview - All Disks                                                  ", 65);
 	strcpy(myarray[0], "Disk");
 	strcpy(myarray[1], "Partition");
@@ -45,8 +45,7 @@ void en_lang() {
 	strncpy(tree_array[10], "Stripeoffset", 15);
 	/*  lunid lun ... */
 
-	strncpy(apply, "Apply!", 10);
-	
+	/* menubar */
 	strcpy(mapplication, "_Application");
 	strcpy(moptions, "_Options");
 	strcpy(mrefresh, "Refresh");
@@ -57,20 +56,23 @@ void en_lang() {
 	strcpy(mmsg, "Ask for Confirmation");
 	strcpy(mshow, "yes");
 	strcpy(mhide, "no");
-	strcpy(medit, "Edit Disk");
+	strcpy(medit, "Editor");
 
+	/* editor */
+	strncpy(apply, "Apply!", 10);
 	strcpy(chose_disk, "Choose a disk!");
 	strcpy(chose_partition, "Choose a partition!");
 	strcpy(chose_scheme, "Chose a scheme!");
 	strcpy(chose_type, "Choose partition type!");
 	strcpy(chose_size, "How big? Which size?");
 	strcpy(chose_bootoptions, "Choose an attribute!");
+	strncpy(chose_fs,	"Chose a file system!", 25);
 }
 
 void de_lang() {
 
+	/* column header */
 	strncpy(overview, "Übersicht - Alle Disks                                        ", 65);
-	
 	strcpy(myarray[0], "Disk");
 	strcpy(myarray[1], "Partition");
 	strcpy(myarray[2], "Typ");
@@ -96,6 +98,7 @@ void de_lang() {
 	strcpy(myarray[22], "Modifiziert");
 	strcpy(myarray[23], "Modus");
 
+
 	strncpy(tree_array[0], "Name", 10);
 	strncpy(tree_array[1], "Beschreibung", 15);
 	strncpy(tree_array[2], "Ident", 10);
@@ -104,15 +107,13 @@ void de_lang() {
 	strncpy(tree_array[5], "Modus", 10);
 	strncpy(tree_array[6], "Rotation", 15);
 	strncpy(tree_array[7], "fwsectors", 10);
-	strncpy(tree_array[8], "fwheads", 10);
-	
+	strncpy(tree_array[8], "fwheads", 10);	
 	/* optional fields */
 	strncpy(tree_array[9], "Plattengröße", 15);
 	strncpy(tree_array[10], "Stripeoffset", 15);
 	/*  lunid lun ... */
 	
-	strncpy(apply, "Los jetzt!", 10);
-	
+	/* menubar */
 	strcpy(mapplication, "_Datei");
 	strcpy(moptions, "_Optionen");
 	strcpy(mrefresh, "Aktualisieren");
@@ -123,14 +124,17 @@ void de_lang() {
 	strcpy(mmsg, "Bestätigung");
 	strcpy(mshow, "ja");
 	strcpy(mhide, "nein");
-	strcpy(medit, "Editieren");
+	strcpy(medit, "Editor");
 
+	/* editor */
+	strncpy(apply, "Los jetzt!", 10);
 	strcpy(chose_disk, "Welche Disk?");
 	strcpy(chose_partition, "Welche Partition?");
 	strcpy(chose_scheme, "Welches Schema? Im Zweifel GPT!");
 	strcpy(chose_type, "Welcher Partitionstyp?");
 	strcpy(chose_size, "Wie groß?");
 	strcpy(chose_bootoptions, "Welches Attribut?");
+	strncpy(chose_fs,	"Welches Dateisystem?", 25);
 }
 
 void update_column_lang(int lang) {
@@ -163,4 +167,3 @@ void update_menubar_lang(int lang) {
 	gtk_widget_destroy(menu);
 	add_menubar();
 }
-

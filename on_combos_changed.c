@@ -68,13 +68,15 @@ void on_geom_changed() {
 	if(string == NULL)
 		return;
 	
+	/* update disk information */
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_disks));
 	add_geoms();
 	add_slices();
-	add_partitions();
-	
-	hide_widgets();
+	add_partitions();	
 		
+	/* show only relevant widgets */
+	hide_widgets();
+	
 	if(strcmp(string, "create") == 0) {
 		gtk_widget_show(GTK_WIDGET (combo_disks));
 		gtk_widget_show(GTK_WIDGET (combo_schemes));
@@ -118,6 +120,7 @@ void on_geom_changed() {
 	else if(strcmp(string, "file system") == 0) {
 		gtk_widget_show(GTK_WIDGET (combo_partitions));
 		gtk_widget_show(GTK_WIDGET (combo_filesystems));
-		gtk_widget_show(GTK_WIDGET (text_label));
+		/* XXX: gtk_text_entry "default options" or "additional command 
+		 * line options" */
 		}
 }

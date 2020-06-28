@@ -22,7 +22,7 @@ void change_lang_de (GtkMenuItem *item, gpointer user_data) {
 	update_column_lang(lang);
 	update_menubar_lang(lang);
 	redraw_cb(item, user_data);
-	gtk_button_set_label(b ,mrefresh);
+	gtk_button_set_label(GTK_BUTTON (b) ,mrefresh);
 }
 
 void change_lang_en (GtkMenuItem *item, gpointer user_data) {
@@ -31,7 +31,7 @@ void change_lang_en (GtkMenuItem *item, gpointer user_data) {
 	update_column_lang(lang);
 	update_menubar_lang(lang);
 	redraw_cb(item, user_data);
-	gtk_button_set_label(b ,mrefresh);
+	gtk_button_set_label(GTK_BUTTON (b) ,mrefresh);
 }
 
 void font_inc (GtkMenuItem *item, gpointer user_data) {    

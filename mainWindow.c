@@ -1,7 +1,6 @@
 /* includes and definitions */
 #include "disk.h"
 
-
 void top_window() {
 		/* main window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -10,6 +9,7 @@ void top_window() {
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
 }
+
 void scrolled() {
 	scrolled_window = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 	
 	/* main window */
 	top_window();
-	
+
 	/* a box */
 	fixed = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	gtk_container_add (GTK_CONTAINER (window), fixed);

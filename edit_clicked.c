@@ -2,8 +2,7 @@
 
 void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 
-
-	int gpart_success=0;
+	int gpart_success=0; /* whether gpart command succeeded */
 
 	/* what did our user choose? */
 	const gchar *action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom) );
@@ -40,21 +39,20 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 }
 
 const char *get_combo_box_disk() {
-/* retrieve the combo box entry */
+/* retrieve combo box entry */
 
 	const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
 		if(gdisk == NULL) {
 			msg(chose_disk);
 			return NULL;
 			}
-
 	if( (strlen(gdisk) == 0) || (strlen(gdisk) >= 20 ) )
 		return NULL; /* this should never happen though */	
 	return gdisk;
 }
 
 const char *get_combo_box_scheme() {
-/* retrieve the combo box entry */
+/* retrieve combo box entry */
 
 	const gchar *gscheme = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_schemes) );
 		if(gscheme == NULL) {
@@ -71,20 +69,20 @@ char *get_combo_box_partition() {
 
 /* while we are here: */
 /* make it char instead of const char */
-/* also format it */
+/* also format it!! */
 
 	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
 	if(gpartition == NULL) {
 		msg(chose_partition);
 		return NULL;
-		}
-
+	}
+	
 	int len = strlen(gpartition);
 	if( (len == 0) || (len > 20) ) {
 		free((void *)gpartition);
 		return NULL;
 		}
-
+		
 	char * buffer = malloc(len+10);
 	memset(buffer, 0, (len+10));
 	strncpy(buffer, gpartition, len);
@@ -97,7 +95,7 @@ const char *get_combo_box_type() {
 
 	const gchar *gtype = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_types) );
 	if(gtype == NULL) {
-		msg(chose_partition);
+		msg(chose_type);
 		return NULL;
 		}
 
@@ -112,8 +110,10 @@ const char *get_combo_box_type() {
 int gpart_create() {
 
 	/* "gpart create -s scheme gdisks" */
-	char cmd[100] ="/sbin/gpart create -s ";
-
+	char cmd[100];
+	memset(cmd, 0, 100);
+	strncat(cmd, "/sbin/gpart create -s ", 22);
+	
 	const gchar *gscheme = get_combo_box_scheme();
 	if (gscheme == NULL)
 		return 0;
@@ -141,24 +141,26 @@ int gpart_create() {
 	if(confirm_yn==1)
 		confirm(cmd);
 	else
-		execute_cmd(cmd);
-		
+		execute_cmd(cmd);	
 	return 1;
 }
 
 int gpart_destroy() {
 
 	/* "gpart destroy gdisks */
-	char cmd[100] ="/sbin/gpart destroy -F ";
+	char cmd[100];
+	memset(cmd, 0, 100);
+	strncat(cmd, "/sbin/gpart destroy -F ", 23);
 
 	const gchar *gdisk = get_combo_box_disk();
 	if( gdisk == NULL)
 		return 0;
 	strcat (cmd, gdisk);
 
-	execute_cmd(cmd);
-	if(confirm_yn == 1)
-		msg(cmd);
+	if(confirm_yn==1)
+		confirm(cmd);
+	else
+		execute_cmd(cmd);
 	return 1;
 }
 
@@ -222,7 +224,8 @@ int gpart_add() {
 	/* "gpart add -t gtype -s gsize -a galignment -l glabel geom */
 	char cmd[150] ="/sbin/gpart add -t ";
 	strcat(cmd, gtype);
-	
+	strncat(cmd, " ", 1);	
+
 	const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
 	if (strlen(gsize) != 0)  {	
 		strncat(cmd, " -s ", 4);
@@ -380,7 +383,48 @@ int gpart_set() {
 }
 
 int gpart_filesystem() {
-return 0;
+
+	/* double check this */
+	const gchar *gf = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_filesystems) );
+		if(gf == NULL) {
+			msg(chose_fs);
+			return 0; 
+		}
+	const gchar *gpartition = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_partitions));
+	if( gpartition == NULL) {
+		msg(chose_partition);
+		return 0;
+	}
+
+	/* what did user chose? */
+	char cmd[100];
+	memset(cmd, 0, 100);
+	/*
+	if(strncmp(gf, "ufs1", 4) == 0) {
+		strncat(cmd, "newfs", 6);
+		strcat(cmd, gpartition); //naaah
+	}
+	*/
+	if(strncmp(gf, "ufs2", 4) == 0) {
+		strncat(cmd, "newfs -JU /dev/", 14);
+		strcat(cmd, gpartition);
+	}
+	else if(strncmp(gf, "FAT32", 5) == 0) {
+		strncat(cmd, "newfs_msdos /dev/", 18);
+		strcat(cmd, gpartition);
+	}
+	else if(strncmp(gf, "ntfs", 4) == 0) {
+		strncat(cmd, "mkntfs -fC /dev/", 17);
+		strcat(cmd, gpartition);
+	}
+	
+	free((void *) gpartition);
+	free((void *) gf); //XXX: ???
+	if(confirm_yn==1)
+		confirm(cmd);
+	else
+		execute_cmd(cmd);	
+	return 1;
 }
 int gpart_bootcode() {
 return 0;

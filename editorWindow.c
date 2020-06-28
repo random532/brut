@@ -5,18 +5,15 @@ void destroy_editor (GtkMenuItem *item, gpointer user_data) {
 	}
 
 void editor() {
-
 /* 
  * create a window with a box,
  * the box contains a grid,
  * the grid has one column, and 10 or so rows
  */
-
 	window_editor = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (window_editor), "Editor");
-	g_signal_connect(window_editor, "destroy", G_CALLBACK(destroy_editor), NULL);
-
 	gtk_container_set_border_width (GTK_CONTAINER (window_editor), 30);
+	g_signal_connect(window_editor, "destroy", G_CALLBACK(destroy_editor), NULL);
 
 	/* adjust position */
 	gint x = 0;
@@ -35,7 +32,7 @@ void editor() {
 	gtk_grid_insert_column(GTK_GRID(thegrid), 0);
 	
 int rows = 0;
-	while(rows <= 13) {
+	while(rows <= 13) {	/* XXX: hardcoded? */
 	gtk_grid_insert_row (GTK_GRID(thegrid), rows);
 	rows++;
 	}
@@ -48,6 +45,7 @@ create_combo_partitions();
 create_combo_filesystems();
 create_combo_bootoptions();
 create_combo_geom();
+g_signal_connect (combo_geom, "changed", G_CALLBACK (on_geom_changed), NULL);
 create_text_label();
 create_text_entries();
 create_text_alignment();
@@ -55,15 +53,10 @@ create_text_size();
 
 /* edit button */
 edit_button = gtk_button_new_with_label(apply);
-//GtkWidget *image = gtk_image_new_from_file("icon.png");
-//gtk_button_set_image(GTK_BUTTON(edit_button), image);
-//gtk_button_set_image_position (GTK_BUTTON(edit_button), GTK_POS_LEFT);
 gtk_button_set_always_show_image (GTK_BUTTON(edit_button), TRUE);
+g_signal_connect (edit_button, "clicked", G_CALLBACK (on_edit_clicked), NULL);
 
 grid_attach_all();
-g_signal_connect (edit_button, "clicked", G_CALLBACK (on_edit_clicked), NULL);
-g_signal_connect (combo_geom, "changed", G_CALLBACK (on_geom_changed), NULL);
-
 
 gtk_widget_show_all(window_editor);
 gtk_window_resize(GTK_WINDOW(window_editor), 230, 300);
@@ -81,6 +74,4 @@ gtk_widget_hide(GTK_WIDGET (text_entries) );
 gtk_widget_hide(GTK_WIDGET (text_label) );
 gtk_widget_hide(GTK_WIDGET (text_size) );
 gtk_widget_hide(GTK_WIDGET (text_alignment) );
-
 }
-

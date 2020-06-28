@@ -402,10 +402,11 @@ void confirm(char * cmd) {
 	//gtk_dialog_set_default_response (GTK_DIALOG (message), GTK_RESPONSE_YES);
 	
 	int len = strlen(cmd);
-	char *c = malloc(len+1);
-	if(c != NULL)
+	char *c = malloc(len+5);
+	if(c != NULL) {
+		memset(c, 0, len+5);
 		strncpy(c, cmd, len);
-	
+	}
 	gtk_widget_show(message);
 	g_signal_connect(message, "response", G_CALLBACK(confirm_cb), c);
 }
