@@ -93,6 +93,10 @@ GtkWidget *text_label;
 GtkWidget *text_alignment;
 GtkWidget *text_size;
 GtkWidget *text_entries;
+GtkWidget *toggle_soft;
+GtkWidget *toggle_journal;
+GtkWidget *toggle_fast;
+GtkWidget *toggle_comp;
 
 	/* (most) functions */
 #ifndef FUNCTIONS_H_INCLUDED
@@ -121,6 +125,7 @@ void grid_attach_all();
 /* on_combos_changed.c */
 void on_geom_changed();
 void on_toplevel_changed();
+void on_fs_changed();
 void toplevel_entries();
 
 /* subr.c */

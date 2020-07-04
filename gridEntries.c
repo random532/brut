@@ -1,5 +1,21 @@
 #include "disk.h"
 
+void create_combo_geom() {
+	combo_geom = gtk_combo_box_text_new();
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "create");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "destroy");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "add");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "delete");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "modify");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "resize");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "set");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "unset");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "file system");
+	/* todo: */
+	//gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "bootcode");
+	g_signal_connect (combo_geom, "changed", G_CALLBACK (on_geom_changed), NULL);
+}
+
 	/*combo box with disks and slices - empty */
 void create_combo_disks() {
 	combo_disks = gtk_combo_box_text_new();
@@ -10,14 +26,6 @@ void create_combo_partitions() {
 	combo_partitions = gtk_combo_box_text_new();
 }
 
-	 /* combo box with file systems */
-void create_combo_filesystems() {
-	combo_filesystems = gtk_combo_box_text_new();
-//	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ufs1");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ufs2");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "FAT32");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ntfs");
-}
 	 /* combo box with partitioning schemes */
 void create_combo_schemes() {
 	combo_schemes = gtk_combo_box_text_new();
@@ -93,20 +101,14 @@ combo_types = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-reserved");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-vsanhdr");
 }
-
-void create_combo_geom() {
-	combo_geom = gtk_combo_box_text_new();
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "create");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "destroy");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "add");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "delete");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "modify");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "resize");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "set");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "unset");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "file system");
-	/* todo: */
-	//gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_geom), NULL, "bootcode");
+	 /* combo box with file systems */
+void create_combo_filesystems() {
+	combo_filesystems = gtk_combo_box_text_new();
+//	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ufs1");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ufs2");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "FAT32");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ntfs");
+	g_signal_connect (combo_filesystems, "changed", G_CALLBACK (on_fs_changed), NULL);
 }
 
 void create_text_label() {
@@ -150,5 +152,10 @@ void grid_attach_all() {
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_alignment), 0, 8, 1, 1);
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_bootoptions), 0, 9, 1, 1);
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_filesystems), 0, 10, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (edit_button), 0, 11, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_soft), 0, 11, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_journal), 0, 12, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_fast), 0, 13, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_comp), 0, 14, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (edit_button), 0, 15, 1, 1);
+
 }

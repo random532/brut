@@ -359,7 +359,7 @@ int gpart_set() {
 		}
 
 	/* "gpart set -a attribute - i index geom" */
-
+	
 	if( (strlen(gbootoptions) > 0) && (strlen(gbootoptions) <= 20) )
 		strcat(cmd, gbootoptions); /* attribute */
 	strncat(cmd, " -i ", 4);	
@@ -399,22 +399,46 @@ int gpart_filesystem() {
 	/* what did user chose? */
 	char cmd[100];
 	memset(cmd, 0, 100);
-	/*
-	if(strncmp(gf, "ufs1", 4) == 0) {
-		strncat(cmd, "newfs", 6);
-		strcat(cmd, gpartition); //naaah
-	}
-	*/
+
 	if(strncmp(gf, "ufs2", 4) == 0) {
-		strncat(cmd, "newfs -JU /dev/", 14);
+		strncat(cmd, "newfs ", 7);
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_journal)) == TRUE)
+			strncat(cmd, "-J ", 4);
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_soft)) == TRUE)
+			strncat(cmd, "-U ", 4);
+		const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
+		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
+			strncat(cmd, " -l ", 4);
+			strcat(cmd, glabel);
+		strncat(cmd, " ", 1);
+		}
+		strncat(cmd, "/dev/", 6);
 		strcat(cmd, gpartition);
 	}
 	else if(strncmp(gf, "FAT32", 5) == 0) {
-		strncat(cmd, "newfs_msdos /dev/", 18);
+		strncat(cmd, "newfs_msdos ", 13);
+		const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
+		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
+			strncat(cmd, " -l ", 4);
+			strcat(cmd, glabel);
+			strncat(cmd, " ", 1);
+		}
+		strncat(cmd, "/dev/", 6);
 		strcat(cmd, gpartition);
 	}
 	else if(strncmp(gf, "ntfs", 4) == 0) {
-		strncat(cmd, "mkntfs -fC /dev/", 17);
+		strncat(cmd, "mkntfs ", 8);
+		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (toggle_fast)) == TRUE)
+			strncat(cmd, "-f ", 4);
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (toggle_comp)) == TRUE)
+			strncat(cmd, "-C ", 4);		
+		const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
+		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
+			strncat(cmd, " -l ", 4);
+			strcat(cmd, glabel);
+		strncat(cmd, " ", 1);
+		}
+		strncat(cmd, "/dev/", 6);
 		strcat(cmd, gpartition);
 	}
 	

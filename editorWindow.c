@@ -32,12 +32,12 @@ void editor() {
 	gtk_grid_insert_column(GTK_GRID(thegrid), 0);
 	
 int rows = 0;
-	while(rows <= 13) {	/* XXX: hardcoded? */
+	while(rows <= 17) {	/* XXX: hardcoded? */
 	gtk_grid_insert_row (GTK_GRID(thegrid), rows);
 	rows++;
 	}
 
-/* grid row entries */
+/* various combo boxes */
 create_combo_schemes();
 create_combo_types();
 create_combo_disks();
@@ -45,17 +45,28 @@ create_combo_partitions();
 create_combo_filesystems();
 create_combo_bootoptions();
 create_combo_geom();
-g_signal_connect (combo_geom, "changed", G_CALLBACK (on_geom_changed), NULL);
 create_text_label();
 create_text_entries();
 create_text_alignment();
 create_text_size();
+
+/* toggle buttons */
+toggle_soft = gtk_check_button_new_with_label("Softupdates");
+gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_soft), TRUE);
+toggle_journal = gtk_check_button_new_with_label("Journaling");
+gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_journal), TRUE);
+
+toggle_fast = gtk_check_button_new_with_label("fast");
+gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_fast), TRUE);
+toggle_comp = gtk_check_button_new_with_label("enable-compression");
+gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_comp), TRUE);
 
 /* edit button */
 edit_button = gtk_button_new_with_label(apply);
 gtk_button_set_always_show_image (GTK_BUTTON(edit_button), TRUE);
 g_signal_connect (edit_button, "clicked", G_CALLBACK (on_edit_clicked), NULL);
 
+/* attach everything to grid */
 grid_attach_all();
 
 gtk_widget_show_all(window_editor);
@@ -74,4 +85,8 @@ gtk_widget_hide(GTK_WIDGET (text_entries) );
 gtk_widget_hide(GTK_WIDGET (text_label) );
 gtk_widget_hide(GTK_WIDGET (text_size) );
 gtk_widget_hide(GTK_WIDGET (text_alignment) );
+gtk_widget_hide(GTK_WIDGET (toggle_soft) );
+gtk_widget_hide(GTK_WIDGET (toggle_journal) );
+gtk_widget_hide(GTK_WIDGET (toggle_fast) );
+gtk_widget_hide(GTK_WIDGET (toggle_comp) );
 }

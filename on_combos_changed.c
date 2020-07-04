@@ -120,7 +120,31 @@ void on_geom_changed() {
 	else if(strcmp(string, "file system") == 0) {
 		gtk_widget_show(GTK_WIDGET (combo_partitions));
 		gtk_widget_show(GTK_WIDGET (combo_filesystems));
-		/* XXX: gtk_text_entry "default options" or "additional command 
-		 * line options" */
+		gtk_widget_show(GTK_WIDGET (text_label));
+		}
+}
+
+void on_fs_changed() {
+
+	char *string;
+	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_filesystems));
+	if(string == NULL)
+		return;
+		
+		/* hide all widgets */
+	gtk_widget_hide(GTK_WIDGET (toggle_soft));
+	gtk_widget_hide(GTK_WIDGET (toggle_journal));
+	gtk_widget_hide(GTK_WIDGET (toggle_fast));
+	gtk_widget_hide(GTK_WIDGET (toggle_comp));
+
+		/* show relevant widgets */
+	if(strcmp(string, "ufs2") == 0) {
+		gtk_widget_show(GTK_WIDGET (toggle_soft));
+		gtk_widget_show(GTK_WIDGET (toggle_journal));
+		}
+
+	else if(strcmp(string, "ntfs") == 0) {
+		gtk_widget_show(GTK_WIDGET (toggle_fast));
+		gtk_widget_show(GTK_WIDGET (toggle_comp));
 		}
 }
