@@ -1,7 +1,7 @@
 # $FreeBSD$
 
 PORTNAME=	xdisk
-DISTVERSION=	1.11
+DISTVERSION=	1.12
 CATEGORIES=	sysutils
 
 MAINTAINER=	georg.lastname@web.de
