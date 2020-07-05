@@ -46,7 +46,7 @@ void font_dec (GtkMenuItem *item, gpointer user_data) {
 
 void msg_show (GtkMenuItem *item, gpointer user_data) {    
 
-	confirm_yn = 1;
+	confirm = 1;
 	char buf[35];
 	strcpy(buf, mshow);
 	strcat(buf, "  (x)");
@@ -56,7 +56,7 @@ void msg_show (GtkMenuItem *item, gpointer user_data) {
 
 void msg_hide (GtkMenuItem *item, gpointer user_data) {    
 
-	confirm_yn = 0;
+	confirm = 0;
 	char buf[35];
 	strcpy(buf, mhide);
 	strcat(buf, "  (x)");
@@ -141,7 +141,7 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_hide);
 
 
-	if(confirm_yn == 1)
+	if(confirm == 1)
 		msg_show (GTK_MENU_ITEM(item_msg_show), NULL);
 	else
 		msg_hide (GTK_MENU_ITEM(item_msg_hide), NULL);

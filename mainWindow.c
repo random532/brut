@@ -37,7 +37,7 @@ int main(int argc, char *argv[]) {
 	
 	/* default settings */
 	int lang = LANG_EN; /* default language */
-	confirm_yn=0;	/* ask for confirmation */
+	confirm=0;	/* ask for confirmation */
 	if(fontsize[0] == '\0') /* initialize font size*/
 		strncpy(fontsize, "11", 2);
 	
@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
 	while((opt = getopt(argc, argv, ":l:f:c")) != -1){
       switch(opt){
 		 case 'c':
-			confirm_yn=1;
+			confirm=1;
 			break;
          case 'l':
 			if (strncmp(optarg, "de", 2) == 0 )

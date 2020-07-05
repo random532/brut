@@ -25,9 +25,8 @@ char tree_array[MAX_D][25];
 char fontsize[10];
 
 	/* ask for confirmation 
-	 * before issueing any gpart
-	 * command */
-int confirm_yn;
+	 * before issueing a command */
+int confirm;
 
 	/* keep track of disks and partitions */
 char *all_disks;
@@ -47,11 +46,15 @@ char mhide[20];
 char mfontinc[20];
 char mfontdec[20];
 char medit[25];
+char mdone[20];
+char merror[25];
+char mother[30];
 
 	/* toplevel */
 char overview[80]; 
 
 	/* editor hints */
+char no_root[35];
 char chose_disk[35];
 char chose_partition[35];
 char chose_scheme[35];
@@ -59,7 +62,7 @@ char chose_type[35];
 char chose_size[35];
 char chose_bootoptions[35];
 char chose_fs[35];
-char apply[15];	/* editor apply button */
+char apply[15];
 
 	/* global gtk pointer  */
 GtkWidget	*window; 	/* main window */
@@ -89,6 +92,7 @@ GtkWidget *combo_filesystems;
 GtkWidget *combo_bootoptions;
 GtkWidget *edit_button;
 GtkWidget *combo_geom;
+GtkWidget *combo_bootcode;
 GtkWidget *text_label;
 GtkWidget *text_alignment;
 GtkWidget *text_size;
@@ -97,6 +101,7 @@ GtkWidget *toggle_soft;
 GtkWidget *toggle_journal;
 GtkWidget *toggle_fast;
 GtkWidget *toggle_comp;
+GtkWidget *gfile;
 
 	/* (most) functions */
 #ifndef FUNCTIONS_H_INCLUDED
@@ -109,13 +114,14 @@ void update_column_lang(int );
 void update_menubar_lang(int);
 
 /* gridEntries.c */
+void create_combo_geom();
 void create_combo_schemes();
 void create_combo_types();
 void create_combo_disks();
 void create_combo_partitions();
 void create_combo_filesystems();
 void create_combo_bootoptions();
-void create_combo_geom();
+void create_combo_bootcode(); 
 void create_text_label();
 void create_text_entries();
 void create_text_size();
@@ -127,6 +133,7 @@ void on_geom_changed();
 void on_toplevel_changed();
 void on_fs_changed();
 void toplevel_entries();
+void on_bootcode_changed();
 
 /* subr.c */
 char *get_disks();
@@ -138,16 +145,20 @@ void change_fontsize(int);
 char *add_to_list(char *, char *);
 void clean_up_pointers();
 char *what_file_system(char *);
-int execute_cmd(char *);
+int execute_cmd(char *, int);
 char* command(char *);
 void msg(char *);
 void on_response(GtkDialog *, gint, gpointer);
-void confirm( char *);
-void confirm_cb(GtkDialog *, gint, gpointer);
+void ask( char *);
+void ask_cb(GtkDialog *, gint, gpointer);
 char *check_free_space(char *, char *, char *);
 int find_p(char *);
 void format_string(char *);
 int vari(char *, int);
+void mountfs(GtkMenuItem *, gpointer);
+void unmountfs();
+int is_mounted(char *);
+int root();
 
 /* editorWindow.c */
 void editor();
@@ -160,16 +171,16 @@ void redraw_cb (GtkMenuItem *, gpointer);
 
 /* edit_clicked.c */
 void on_edit_clicked (GtkMenuItem *, gpointer);
-int gpart_destroy();
-int gpart_create();
-int gpart_modify();
-int gpart_add();
-int gpart_delete();
-int gpart_resize();
-int gpart_set();
-int gpart_unset();
-int gpart_filesystem();
-int gpart_bootcode();
+char *gpart_destroy(char *);
+char *gpart_create(char *);
+char *gpart_modify(char *);
+char *gpart_add(char *);
+char *gpart_delete(char *);
+char *gpart_resize(char *);
+char *gpart_set(char *);
+char *gpart_unset(char *);
+char *gpart_filesystem(char *);
+char *gpart_bootcode(char *);
 
 /* treeview.c */
 GtkWidget *disk_treeview();
@@ -177,7 +188,8 @@ GtkWidget *make_treeview();
 int fill_treeview();
 int fill_treeview1(char *);
 void fill_tree(char *, char *);
-
+char *selected_item(GtkWidget *, int);
+gboolean view_clicked(GtkWidget *, GdkEventButton *, gpointer); 
 /* ?? */
 void show_message_cb(GtkMenuItem *item, gpointer);
 

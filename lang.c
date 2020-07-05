@@ -57,8 +57,12 @@ void en_lang() {
 	strcpy(mshow, "yes");
 	strcpy(mhide, "no");
 	strcpy(medit, "Editor");
-
+	strncpy(mdone, "Done.", 6);
+	strncpy(merror, "Command failed.", 16); 
+	strncpy(mother, "Other Location", 15);
+	
 	/* editor */
+	strncpy(no_root, "no Root! Sorry.", 16); 
 	strncpy(apply, "Apply!", 10);
 	strcpy(chose_disk, "Choose a disk!");
 	strcpy(chose_partition, "Choose a partition!");
@@ -125,8 +129,12 @@ void de_lang() {
 	strcpy(mshow, "ja");
 	strcpy(mhide, "nein");
 	strcpy(medit, "Editor");
-
+	strncpy(mdone, "Fertig.", 8);
+	strncpy(merror, "Och neeh. Ein Fehler.", 22);  
+	strncpy(mother, "Anderer Ort", 12);
+	
 	/* editor */
+	strncpy(no_root, "Du bist kein Root! Sorry", 26);
 	strncpy(apply, "Los jetzt!", 10);
 	strcpy(chose_disk, "Welche Disk?");
 	strcpy(chose_partition, "Welche Partition?");

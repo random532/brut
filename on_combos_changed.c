@@ -114,8 +114,9 @@ void on_geom_changed() {
 		gtk_widget_show(GTK_WIDGET (text_size));
 		gtk_widget_show(GTK_WIDGET (text_alignment));
 		}
-	else if(strcmp(string, "bootcode") == 0) { //??
-		gtk_widget_show(GTK_WIDGET (combo_partitions));
+	else if(strcmp(string, "bootcode") == 0) { 
+		gtk_widget_show(GTK_WIDGET (combo_bootcode));
+		gtk_widget_show(GTK_WIDGET (gfile));
 		}
 	else if(strcmp(string, "file system") == 0) {
 		gtk_widget_show(GTK_WIDGET (combo_partitions));
@@ -147,4 +148,21 @@ void on_fs_changed() {
 		gtk_widget_show(GTK_WIDGET (toggle_fast));
 		gtk_widget_show(GTK_WIDGET (toggle_comp));
 		}
+}
+
+void on_bootcode_changed() {
+	char *string;
+	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_bootcode));
+	if(string == NULL)
+		return;
+		/* hide all widgets */
+	gtk_widget_hide(GTK_WIDGET (combo_disks));
+	gtk_widget_hide(GTK_WIDGET (combo_partitions));
+	
+	if(strcmp(string, "Partition") == 0) {
+		gtk_widget_show(GTK_WIDGET (combo_partitions));
+	}
+	else if(strcmp(string, "Disk") == 0) {
+		gtk_widget_show(GTK_WIDGET (combo_disks));
+	}
 }
