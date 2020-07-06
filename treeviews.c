@@ -2,10 +2,8 @@
 #include "disk.h"
 
 GtkWidget *disk_treeview() {
-		/* create a treeview with columns */
 	
 	GtkWidget *disk_view = gtk_tree_view_new();
-	
 	gtk_container_add(GTK_CONTAINER(scrolled_window), disk_view);	
 	cellr = gtk_cell_renderer_text_new();
 
@@ -13,15 +11,15 @@ GtkWidget *disk_treeview() {
 	g_object_set(cellr, "editable", TRUE, NULL);
 	g_object_set(disk_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
-	/* create columns based on tree_array[] */
+	/* add columns  */
 	int cnt = 0;
-	while( (cnt <= MAX_D) && (strlen(tree_array[cnt]) >0 ) ) {
+	while( (cnt <= COL) && (strlen(column[cnt]) >0 ) ) {
 	
-		char *col_title = tree_array[cnt];
+		char *col_title = column[cnt];
 
 		GtkTreeViewColumn *col = gtk_tree_view_column_new();
 		gtk_tree_view_column_set_title(col, col_title);
-		if(cnt ==1 )
+		if(cnt == 1 ) /* ident string too long */
 			gtk_tree_view_column_set_max_width(col, 220);
 		gtk_tree_view_column_set_clickable(col, TRUE);
 		gtk_tree_view_column_set_reorderable(col, TRUE);
@@ -33,7 +31,7 @@ GtkWidget *disk_treeview() {
 		cnt++;
 	}	
 	/* treestore */
-	treestore = gtk_tree_store_new(MAX_D, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
+	treestore = gtk_tree_store_new(COL, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
 									G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
 									G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(disk_view), GTK_TREE_MODEL(treestore));
@@ -59,10 +57,10 @@ GtkWidget *make_treeview() {
 	g_object_set(view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 	
 	int cnt = 0;
-	while( (cnt <= MAX_COLUMN) && (strlen(myarray[cnt]) >0 ) ) {
+	while( (cnt < COLUMNS) && (strlen(columns[cnt]) >0 ) ) {
 	
 		/* first column */
-		char * col_title = myarray[cnt];
+		char * col_title = columns[cnt];
 
 		GtkTreeViewColumn   * col = gtk_tree_view_column_new();
 		gtk_tree_view_column_set_title(col, col_title);
@@ -78,7 +76,7 @@ GtkWidget *make_treeview() {
 		}
 
 	/* we always use strings */
-	treestore1 = gtk_tree_store_new(MAX_COLUMN, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	treestore1 = gtk_tree_store_new(COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(treestore1));
 	g_object_unref(treestore1); //destroy model automatically with view 
@@ -183,12 +181,11 @@ int fill_treeview() {
 	gtk_tree_view_set_enable_tree_lines (GTK_TREE_VIEW(tree), TRUE);
 	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(tree), GTK_TREE_VIEW_GRID_LINES_BOTH);
 	
-
 	return (1);
 }
 
 int fill_treeview1( char * one_disk) {
-	
+
 	/* clean up */
 	clean_up_pointers();
 
@@ -430,11 +427,11 @@ char *next = strtok_r(geombuf, sep, &ptr);
 
 
 			if(pindex != NULL) /* be safe with these */
-				gtk_tree_store_set(treestore1, &child, 6, pindex, -1);
+				gtk_tree_store_set(treestore1, &child, 8, pindex, -1);
 			if(plabel != NULL)
 				gtk_tree_store_set(treestore1, &child, 5, plabel, -1);
 			if(pattribute!= NULL)
-				gtk_tree_store_set(treestore1, &child, 8, pattribute, -1);
+				gtk_tree_store_set(treestore1, &child, 6, pattribute, -1);
 			pattribute= NULL;
 			if( pmode != NULL)
 				gtk_tree_store_set(treestore1, &child, 23, pmode, -1);
@@ -514,7 +511,7 @@ gboolean view_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) 
 		/* a potential popup menu for mount options */
 		char * my = selected_item(tree1, 4); /* file system type */
 		char *part = selected_item(tree1, 1); /* partition */
-		if((my != NULL) && (strncmp(my, "n/a", 3) != 0) && (part != NULL) ) {
+		if((my != NULL) && (part != NULL) ) {
 			GtkWidget *pop_menu = gtk_menu_new();
 			
 			int mnt = is_mounted(part);
@@ -539,7 +536,7 @@ gboolean view_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) 
 				gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_media);
 
 				/* /media */
-				GtkWidget * mount_other = gtk_menu_item_new_with_label (mother);
+				GtkWidget * mount_other = gtk_menu_item_new_with_label (l.mother);
 				gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_other);
 				
 				g_signal_connect(mount_mnt, "activate", G_CALLBACK(mountfs), NULL);

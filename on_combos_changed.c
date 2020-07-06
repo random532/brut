@@ -20,7 +20,7 @@ void on_toplevel_changed() {
 	}
 	
 	/* what did user select? */
-	if(strncmp(string, overview, 25) == 0) {
+	if(strncmp(string, l.overview, 25) == 0) {
 		/* display an overview of all disks */
 		free(string);
 		tree = disk_treeview();
@@ -40,7 +40,7 @@ void toplevel_entries() {
 
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_toplevel));
 		/* we always want this option */
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_toplevel), 0, overview);
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_toplevel), 0, l.overview);
 	
 	/* refresh the list of disks */
 	if(all_disks != NULL)

@@ -62,7 +62,7 @@ void editor() {
 	gfile = gtk_file_chooser_button_new( "bootcode", GTK_FILE_CHOOSER_ACTION_OPEN);
 
 	/* edit button */
-	edit_button = gtk_button_new_with_label(apply);
+	edit_button = gtk_button_new_with_label(l.apply);
 	gtk_button_set_always_show_image (GTK_BUTTON(edit_button), TRUE);
 	g_signal_connect (edit_button, "clicked", G_CALLBACK (on_edit_clicked), NULL);
 
@@ -70,10 +70,11 @@ void editor() {
 	grid_attach_all();
 
 	/* adjust position */
-	gint x = 0;
-	gint y = 0;
+	gint x = 0, y = 0, width, height;
 	gtk_window_get_position (GTK_WINDOW(window), &x, &y);
-	x=x+592;
+	gtk_window_get_size(GTK_WINDOW (window), &width, &height);
+	//x=x+692;
+	x = x + width;
 	gtk_window_move( GTK_WINDOW(window_editor), x, y);
 	gtk_window_set_default_size(GTK_WINDOW (window_editor), 230, 300);
 	//gtk_widget_show_all(window_editor);

@@ -22,7 +22,7 @@ void change_lang_de (GtkMenuItem *item, gpointer user_data) {
 	update_column_lang(lang);
 	update_menubar_lang(lang);
 	redraw_cb(item, user_data);
-	gtk_button_set_label(GTK_BUTTON (b) ,mrefresh);
+	gtk_button_set_label(GTK_BUTTON (b) ,l.mrefresh);
 }
 
 void change_lang_en (GtkMenuItem *item, gpointer user_data) {
@@ -31,7 +31,7 @@ void change_lang_en (GtkMenuItem *item, gpointer user_data) {
 	update_column_lang(lang);
 	update_menubar_lang(lang);
 	redraw_cb(item, user_data);
-	gtk_button_set_label(GTK_BUTTON (b) ,mrefresh);
+	gtk_button_set_label(GTK_BUTTON (b) ,l.mrefresh);
 }
 
 void font_inc (GtkMenuItem *item, gpointer user_data) {    
@@ -48,20 +48,20 @@ void msg_show (GtkMenuItem *item, gpointer user_data) {
 
 	confirm = 1;
 	char buf[35];
-	strcpy(buf, mshow);
+	strcpy(buf, l.mshow);
 	strcat(buf, "  (x)");
 	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_show), buf);
-	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_hide), mhide);
+	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_hide), l.mhide);
 }
 
 void msg_hide (GtkMenuItem *item, gpointer user_data) {    
 
 	confirm = 0;
 	char buf[35];
-	strcpy(buf, mhide);
+	strcpy(buf, l.mhide);
 	strcat(buf, "  (x)");
 	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_hide), buf);
-	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_show), mshow);
+	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_show), l.mshow);
 }
 
 void edit_clicked (GtkMenuItem *item, gpointer user_data) {  
@@ -77,30 +77,30 @@ void add_menubar() {
 
 	/* "Application" */
 	GtkWidget * menu_app = gtk_menu_new();
-	GtkWidget *menuItem1 = gtk_menu_item_new_with_mnemonic (mapplication);
+	GtkWidget *menuItem1 = gtk_menu_item_new_with_mnemonic (l.mapplication);
    	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem1), menu_app);
     gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
 
 	/* App - Refresh */
-	GtkWidget * app_refresh = gtk_menu_item_new_with_label (mrefresh);
+	GtkWidget * app_refresh = gtk_menu_item_new_with_label (l.mrefresh);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_refresh);
 
 	/* App - Edit */
-	GtkWidget * app_edit = gtk_menu_item_new_with_label (medit);
+	GtkWidget * app_edit = gtk_menu_item_new_with_label (l.medit);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_edit);
 
 	/* App - Quit */
-	GtkWidget *app_quit = gtk_menu_item_new_with_label (mquit);
+	GtkWidget *app_quit = gtk_menu_item_new_with_label (l.mquit);
     	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_quit);
 
 	/* "Options" */
 	GtkWidget *menu_options = gtk_menu_new();
-	GtkWidget *menuItem2 = gtk_menu_item_new_with_mnemonic (moptions);
+	GtkWidget *menuItem2 = gtk_menu_item_new_with_mnemonic (l.moptions);
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem2), menu_options);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem2);
 
 	/* language */
-	GtkWidget * item_lang = gtk_menu_item_new_with_label (mlanguage);
+	GtkWidget * item_lang = gtk_menu_item_new_with_label (l.mlanguage);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_lang);
 
 	/* language submenu */
@@ -116,15 +116,15 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_lang_sub), item_lang_en);
 
 	/* Font size  increase*/
-	GtkWidget * item_fontinc = gtk_menu_item_new_with_label (mfontinc);
+	GtkWidget * item_fontinc = gtk_menu_item_new_with_label (l.mfontinc);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_fontinc);
 
 	/* Font size  increase*/
-	GtkWidget * item_fontdec = gtk_menu_item_new_with_label (mfontdec);
+	GtkWidget * item_fontdec = gtk_menu_item_new_with_label (l.mfontdec);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_fontdec);
 
 	/* show messages */
-	GtkWidget * item_msg = gtk_menu_item_new_with_label (mmsg);
+	GtkWidget * item_msg = gtk_menu_item_new_with_label (l.mmsg);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_msg);
 
 
@@ -133,11 +133,11 @@ void add_menubar() {
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_msg), menu_msg_sub);
 
 	/* message -show */
-	item_msg_show = gtk_menu_item_new_with_label (mshow);
+	item_msg_show = gtk_menu_item_new_with_label (l.mshow);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_show);
 
 	/* message - hide */
-	item_msg_hide = gtk_menu_item_new_with_label (mhide);
+	item_msg_hide = gtk_menu_item_new_with_label (l.mhide);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_hide);
 
 
@@ -162,4 +162,3 @@ void add_menubar() {
 	gtk_widget_show (menuBar);
 	gtk_widget_show_all(window);
 }
-

@@ -1,5 +1,5 @@
 /*TODO:
- * - increase code readability
+ * - usermount
  * - find bugs
  * */
  
@@ -12,14 +12,17 @@
 #include <stdlib.h>
 #include <inttypes.h>
 
+
 #define LANG_EN 0
 #define LANG_DE 1
 
-	/* column header */
-#define MAX_COLUMN  24
-char myarray[MAX_COLUMN][23];
-#define MAX_D 11
-char tree_array[MAX_D][25];
+#define CMDSIZE 150
+
+	/* column header array for 2 treeviews */
+#define COLUMNS  24
+char columns[COLUMNS][25];
+#define COL 11
+char column[COL][25];
 
 	/* font size */
 char fontsize[10];
@@ -34,35 +37,6 @@ char *list_of_slices;
 char *all_partitions;
 char *slices_on_a_disk;
 
-	/* menu bar items */
-char mapplication[20];
-char moptions[20];
-char mquit[20];
-char mrefresh[20];
-char mlanguage[20];
-char mmsg[20];
-char mshow[20];
-char mhide[20];
-char mfontinc[20];
-char mfontdec[20];
-char medit[25];
-char mdone[20];
-char merror[25];
-char mother[30];
-
-	/* toplevel */
-char overview[80]; 
-
-	/* editor hints */
-char no_root[35];
-char chose_disk[35];
-char chose_partition[35];
-char chose_scheme[35];
-char chose_type[35];
-char chose_size[35];
-char chose_bootoptions[35];
-char chose_fs[35];
-char apply[15];
 
 	/* global gtk pointer  */
 GtkWidget	*window; 	/* main window */
@@ -103,6 +77,38 @@ GtkWidget *toggle_fast;
 GtkWidget *toggle_comp;
 GtkWidget *gfile;
 
+typedef struct {
+	
+	char overview[85]; 
+
+	/* menu bar items */
+	char mapplication[20];
+	char moptions[20];
+	char mquit[20];
+	char mrefresh[20];
+	char mlanguage[20];
+	char mmsg[25];
+	char mshow[20];
+	char mhide[20];
+	char mfontinc[25];
+	char mfontdec[25];
+	char medit[25];
+
+	/* hints */
+	char no_root[35];
+	char chose_disk[35];
+	char chose_partition[35];
+	char chose_scheme[35];
+	char chose_type[35];
+	char chose_size[35];
+	char chose_bootoptions[35];
+	char chose_fs[35];
+	char apply[15];
+	char mdone[20];
+	char merror[25];
+	char mother[30];
+} lang;
+
 	/* (most) functions */
 #ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED
@@ -113,7 +119,7 @@ void de_lang();
 void update_column_lang(int );
 void update_menubar_lang(int);
 
-/* gridEntries.c */
+/* EditorGridEntries.c */
 void create_combo_geom();
 void create_combo_schemes();
 void create_combo_types();
@@ -135,7 +141,7 @@ void on_fs_changed();
 void toplevel_entries();
 void on_bootcode_changed();
 
-/* subr.c */
+/* subroutines.c */
 char *get_disks();
 char *read_disk(char *);
 int add_slices();
@@ -155,10 +161,8 @@ char *check_free_space(char *, char *, char *);
 int find_p(char *);
 void format_string(char *);
 int vari(char *, int);
-void mountfs(GtkMenuItem *, gpointer);
-void unmountfs();
-int is_mounted(char *);
 int root();
+int command_exist(char *);
 
 /* editorWindow.c */
 void editor();
@@ -169,7 +173,7 @@ void add_menubar();
 void editor_cb (GtkMenuItem *, gpointer);
 void redraw_cb (GtkMenuItem *, gpointer);
 
-/* edit_clicked.c */
+/* applyButtonClicked.c */
 void on_edit_clicked (GtkMenuItem *, gpointer);
 char *gpart_destroy(char *);
 char *gpart_create(char *);
@@ -181,8 +185,9 @@ char *gpart_set(char *);
 char *gpart_unset(char *);
 char *gpart_filesystem(char *);
 char *gpart_bootcode(char *);
+int get_index(char *);
 
-/* treeview.c */
+/* treeviews.c */
 GtkWidget *disk_treeview();
 GtkWidget *make_treeview();
 int fill_treeview();
@@ -190,7 +195,20 @@ int fill_treeview1(char *);
 void fill_tree(char *, char *);
 char *selected_item(GtkWidget *, int);
 gboolean view_clicked(GtkWidget *, GdkEventButton *, gpointer); 
+
+/* mount.c */
+int is_mounted(char *);
+void mountfs(GtkMenuItem *, gpointer);
+void unmountfs();
+int nfs_usermount();
+int usermount(char *, char *);
+
 /* ?? */
 void show_message_cb(GtkMenuItem *item, gpointer);
 
+lang en;
+lang de;
 #endif
+
+ 
+lang l;

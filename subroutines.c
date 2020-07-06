@@ -418,9 +418,9 @@ void ask_cb(GtkDialog *dialog, gint response_id, gpointer c) {
 	if((response_id == GTK_RESPONSE_YES) && (c != NULL) ) {
 		int success = execute_cmd(c, 1);
 		if(success == 0)
-			msg(mdone);
+			msg(l.mdone);
 		else
-			msg(merror);
+			msg(l.merror);
 	}
 	free(c);
 	gtk_widget_destroy(GTK_WIDGET (dialog));
@@ -508,143 +508,28 @@ int vari(char *line, int max) {
 	return i;
 	}
 
-void mountfs(GtkMenuItem *gmenu, gpointer gp) {
-		/* mount a partition */
-		
-		const gchar *label = gtk_menu_item_get_label(gmenu);
-		char * part = selected_item(tree1, 1);	/* partition */
-		int plen = 	strlen(part); /* is this really 0 terminated? */
-		int mlen = 0;
-		char * fs = selected_item(tree1, 4); 	/* file system type */
-		char *path;
-		char *cmd;
-		int success = 0;
-		
-		if( (part == NULL) || (fs == NULL) || (label == NULL) )
-			return;
-		
-		/* mountpoint */
-		if(strncmp(label, "/mnt", 4) == 0) {
-			path = malloc(10);
-			mlen = 4;
-			strncpy(path, "/mnt", 5);
-		}
-		else if(strncmp(label, "/media", 7) == 0) {
-			path = malloc(10);
-			mlen = 6;
-			strncpy(path, "/media", 7);
-		}
-		else {
-			/* other path */
-			/* file chooser dialog */
-			GtkWidget * dialog;
-			GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
-			dialog = gtk_file_chooser_dialog_new("Mointpoint", GTK_WINDOW (window), action, "Cancel", GTK_RESPONSE_CANCEL, "Mount", GTK_RESPONSE_ACCEPT, NULL);
-			gint res = gtk_dialog_run(GTK_DIALOG (dialog));
-			if(res == GTK_RESPONSE_ACCEPT) {
-				GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-				path = gtk_file_chooser_get_filename(chooser);
-				mlen = strlen(path);
-				gtk_widget_destroy(dialog);
-			}
-			else {
-				gtk_widget_destroy(dialog);
-				return;
-			}
-		}
-		
-		/* file system type */
-		if(strncmp(fs, "ufs", 3) == 0) {
-			cmd = malloc(plen + mlen + 20);
-			memset(cmd, 0, plen + mlen + 20);
-			strncpy(cmd, "mount /dev/", 12);
-			strncat(cmd, part, plen);
-			strncat(cmd, " ", 2);
-			strncat(cmd, path, mlen);
-		}
-		else if(strncmp(fs, "msdos", 5) == 0) {
-			cmd = malloc(plen + mlen + 30);
-			memset(cmd, 0, plen + mlen + 30);
-			strncpy(cmd, "mount -t msdosfs /dev/", 23);
-			strncat(cmd, part, plen);
-			strncat(cmd, " ", 2);
-			strncat(cmd, path, mlen);
-		}
-		else if(strncmp(fs, "ntfs", 5) == 0) {
-			cmd = malloc(plen + mlen + 30);
-			memset(cmd, 0, plen + mlen + 30);
-			strncpy(cmd, "ntfs-3g /dev/", 13);
-			strncat(cmd, part, plen);
-			strncat(cmd, " ", 2);
-			strncat(cmd, path, mlen);
-		}
-		printf("%s\n", cmd);
-		if(confirm==1)
-			ask(cmd);
-		else
-			success = execute_cmd(cmd, 0);
-			if(success == 0)
-				msg(mdone);
-			else
-				msg(merror);
-		free(cmd);
-		free(path);
-}
-
-void unmountfs() {
-	/* unmount a partition */
-	char * part = selected_item(tree1, 1); /* get selected partition */
-	if(part != NULL) {
-		int len = strlen(part);
-		char *cmd = malloc (len + 20);
-		memset(cmd, 0, len+20);
-		strncpy(cmd, "umount /dev/", 14);
-		strncat(cmd, part, len);
-		if(confirm==1)
-			ask(cmd);
-		else {
-			int success = execute_cmd(cmd, 0);
-			if(success == 0)
-				msg(mdone);
-			else
-				msg(merror);
-		}
-		free(cmd);
-	}
-}
-int is_mounted(char *part) {
-	
-	/* execute mount */
-	/* see if we hit our partition */
-	char buf[100];
-	memset(buf, 0, 100);
-	if (part == NULL)
-		return 2; /* should never happen */
-	int len = strlen(part);
-	FILE * fp = popen("mount", "r");
-	if (fp == NULL) {
-		msg("fopen failed");
-		return 2;
-	}
-	while( fgets(buf, sizeof buf, fp)) {
-		
-		if (strncmp(part, &buf[5], len) == 0) {
-			/* mounted */
-			return 1;
-	}
-		memset(buf, 0, 100);
-	}
-	pclose(fp);
-	return 0; /* no match, not mounted*/
-}
-
 int root() {
 	/* are we root? */
 	uid_t perm = geteuid();
 	if (perm != 0 ) {
-		msg(no_root);
+		msg(l.no_root);
 		return 0; /* no */
 	}
 	else
 		return 1; /* yes */
+}
+
+int command_exist(char *cmd) {
+
+	char *localbase = PATH;
+	int a= strlen(localbase);
+	int b= strlen(cmd);
+	char *exist = malloc(a+b+5);
+	snprintf(exist, a+b+1, "%s%s", localbase, cmd);
+	
+	printf("%s\n", exist);
+	if (access(exist, X_OK) == 0) 
+		return 1;
+	else
+		return 0;
 }

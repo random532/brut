@@ -1,148 +1,152 @@
 /* language related info */
 #include "disk.h"
 
+lang en = {
+	.overview="Overview - All Disks                                                  ", 
+
+	/* menu bar items */
+	.mapplication="_Application",
+	.moptions="_Options",
+	.mquit="Quit",
+	.mrefresh="Refresh",
+	.mlanguage="Language",
+	.mmsg="Ask for Confirmation",
+	.mshow="yes",
+	.mhide="no",
+	.mfontinc="Increase font size",
+	.mfontdec="Decrease font size",
+	.medit="Editor",
+
+	/* hints */
+	.no_root="no Root! Sorry.",
+	.chose_disk="Choose a disk!",
+	.chose_partition="Choose a partition!",
+	.chose_scheme="Choose a scheme!",
+	.chose_type="Choose a type!",
+	.chose_size="How big? What size?",
+	.chose_bootoptions="Choose an attribute",
+	.chose_fs="Choose a file system!",
+	.apply="Apply",
+	.mdone="Done.",
+	.merror="Command failed.",
+	.mother="Other Location"
+};
+
+lang de = {
+	.overview="Übersicht - Alle Disks                                        ", 
+
+	/* menu bar items */
+	.mapplication="_Programm",
+	.moptions="_Optionen",
+	.mquit="Beenden",
+	.mrefresh="Aktualisieren",
+	.mlanguage="Sprache",
+	.mmsg="Immer nachfragen",
+	.mshow="Ja",
+	.mhide="Nein",
+	.mfontinc="Schrift vergrößern",
+	.mfontdec="Schrift verkleinern",
+	.medit="Editor",
+
+	/* hints */
+	.no_root="Du bist kein Root. Sorry.",
+	.chose_disk="Welche Disk?",
+	.chose_partition="Welche Partition?",
+	.chose_scheme="Welches Schema?",
+	.chose_type="Welcher Typ?",
+	.chose_size="Wie groß?",
+	.chose_bootoptions="Welches Attribut?",
+	.chose_fs="Welches Dateisystem?",
+	.apply="Los jetzt!",
+	.mdone="Fertig.",
+	.merror="Befehl fehlgeschlagen.",
+	.mother="Anderer Ort"
+};
+
+
 void en_lang() {
 
+	l = en;
 	/* column header */
-	strncpy(overview, "Overview - All Disks                                                  ", 65);
-	strcpy(myarray[0], "Disk");
-	strcpy(myarray[1], "Partition");
-	strcpy(myarray[2], "Type");
-	strcpy(myarray[3], "Size");
-	strcpy(myarray[4], "File System");
-	strcpy(myarray[5], "Label");
-	strcpy(myarray[6], "Index");
-	strcpy(myarray[7], "State");
-	strcpy(myarray[8], "Attribute");
-	strcpy(myarray[9], "Start");
-	strcpy(myarray[10], "End");
-	strcpy(myarray[11], "Length");
-	strcpy(myarray[12], "Offset");
-	strcpy(myarray[13], "Stripesize");
-	strcpy(myarray[14], "Sectorsize");
-	strcpy(myarray[15], "Stripeoffset");
-	strcpy(myarray[16], "Efimedia");
-	strcpy(myarray[17], "Rawuuid");
-	strcpy(myarray[18], "Rawtype");
-	strcpy(myarray[19], "first");
-	strcpy(myarray[20], "Last");
-	strcpy(myarray[21], "Entries");
-	strcpy(myarray[22], "Modified");
-	strcpy(myarray[23], "Mode");
+	strcpy(columns[0], "Disk");
+	strcpy(columns[1], "Partition");
+	strcpy(columns[2], "Type");
+	strcpy(columns[3], "Size");
+	strcpy(columns[4], "File System");
+	strcpy(columns[5], "Label");
+	strcpy(columns[6], "Attribute");
+	strcpy(columns[7], "State");
+	strcpy(columns[8], "Index");
+	strcpy(columns[9], "Start");
+	strcpy(columns[10], "End");
+	strcpy(columns[11], "Length");
+	strcpy(columns[12], "Offset");
+	strcpy(columns[13], "Stripesize");
+	strcpy(columns[14], "Sectorsize");
+	strcpy(columns[15], "Stripeoffset");
+	strcpy(columns[16], "Efimedia");
+	strcpy(columns[17], "Rawuuid");
+	strcpy(columns[18], "Rawtype");
+	strcpy(columns[19], "first");
+	strcpy(columns[20], "Last");
+	strcpy(columns[21], "Entries");
+	strcpy(columns[22], "Modified");
+	strcpy(columns[23], "Mode");
 
-	strncpy(tree_array[0], "Name", 10);
-	strncpy(tree_array[1], "Description", 15);
-	strncpy(tree_array[2], "Ident", 10);
-	strncpy(tree_array[3], "Mediasize", 15);
-	strncpy(tree_array[4], "Sectorsize", 15);
-	strncpy(tree_array[5], "Mode", 10);
-	strncpy(tree_array[6], "Rotationrate", 15);
-	strncpy(tree_array[7], "fwsectors", 10);
-	strncpy(tree_array[8], "fwheads", 10);
-	
-	/* optional fields */
-	strncpy(tree_array[9], "Stripesize", 15);
-	strncpy(tree_array[10], "Stripeoffset", 15);
+	strncpy(column[0], "Name", 10);
+	strncpy(column[1], "Description", 15);
+	strncpy(column[2], "Ident", 10);
+	strncpy(column[3], "Mediasize", 15);
+	strncpy(column[4], "Sectorsize", 15);
+	strncpy(column[5], "Mode", 10);
+	strncpy(column[6], "Rotationrate", 15);
+	strncpy(column[7], "fwsectors", 10);
+	strncpy(column[8], "fwheads", 10);
+	strncpy(column[9], "Stripesize", 15);
+	strncpy(column[10], "Stripeoffset", 15);
 	/*  lunid lun ... */
-
-	/* menubar */
-	strcpy(mapplication, "_Application");
-	strcpy(moptions, "_Options");
-	strcpy(mrefresh, "Refresh");
-	strcpy(mquit, "Quit");
-	strcpy(mlanguage, "Language");
-	strcpy(mfontinc, "Increase font size");
-	strcpy(mfontdec, "Decrease font size");
-	strcpy(mmsg, "Ask for Confirmation");
-	strcpy(mshow, "yes");
-	strcpy(mhide, "no");
-	strcpy(medit, "Editor");
-	strncpy(mdone, "Done.", 6);
-	strncpy(merror, "Command failed.", 16); 
-	strncpy(mother, "Other Location", 15);
-	
-	/* editor */
-	strncpy(no_root, "no Root! Sorry.", 16); 
-	strncpy(apply, "Apply!", 10);
-	strcpy(chose_disk, "Choose a disk!");
-	strcpy(chose_partition, "Choose a partition!");
-	strcpy(chose_scheme, "Chose a scheme!");
-	strcpy(chose_type, "Choose partition type!");
-	strcpy(chose_size, "How big? Which size?");
-	strcpy(chose_bootoptions, "Choose an attribute!");
-	strncpy(chose_fs,	"Chose a file system!", 25);
 }
 
 void de_lang() {
 
-	/* column header */
-	strncpy(overview, "Übersicht - Alle Disks                                        ", 65);
-	strcpy(myarray[0], "Disk");
-	strcpy(myarray[1], "Partition");
-	strcpy(myarray[2], "Typ");
-	strcpy(myarray[3], "Größe");
-	strcpy(myarray[4], "Dateisystem");
-	strcpy(myarray[5], "Label");
-	strcpy(myarray[6], "Index");
-	strcpy(myarray[7], "Status");
-	strcpy(myarray[8], "Attribut");
-	strcpy(myarray[9], "Start");
-	strcpy(myarray[10], "Ende");
-	strcpy(myarray[11], "Länge");
-	strcpy(myarray[12], "Offset");
-	strcpy(myarray[13], "Stripegröße");
-	strcpy(myarray[14], "Sectorgröße");
-	strcpy(myarray[15], "Stripeoffset");
-	strcpy(myarray[16], "Efimedia");
-	strcpy(myarray[17], "Rawuuid");
-	strcpy(myarray[18], "Rawtype");
-	strcpy(myarray[19], "Erster");
-	strcpy(myarray[20], "Letzter");
-	strcpy(myarray[21], "Einträge");
-	strcpy(myarray[22], "Modifiziert");
-	strcpy(myarray[23], "Modus");
+	l=de;
 
+	strcpy(columns[0], "Disk");
+	strcpy(columns[1], "Partition");
+	strcpy(columns[2], "Typ");
+	strcpy(columns[3], "Größe");
+	strcpy(columns[4], "Dateisystem");
+	strcpy(columns[5], "Label");
+	strcpy(columns[6], "Attribut");
+	strcpy(columns[7], "Status");
+	strcpy(columns[8], "Index");
+	strcpy(columns[9], "Start");
+	strcpy(columns[10], "Ende");
+	strcpy(columns[11], "Länge");
+	strcpy(columns[12], "Offset");
+	strcpy(columns[13], "Stripegröße");
+	strcpy(columns[14], "Sectorgröße");
+	strcpy(columns[15], "Stripeoffset");
+	strcpy(columns[16], "Efimedia");
+	strcpy(columns[17], "Rawuuid");
+	strcpy(columns[18], "Rawtype");
+	strcpy(columns[19], "Erster");
+	strcpy(columns[20], "Letzter");
+	strcpy(columns[21], "Einträge");
+	strcpy(columns[22], "Modifiziert");
+	strcpy(columns[23], "Modus");
 
-	strncpy(tree_array[0], "Name", 10);
-	strncpy(tree_array[1], "Beschreibung", 15);
-	strncpy(tree_array[2], "Ident", 10);
-	strncpy(tree_array[3], "Größe", 15);
-	strncpy(tree_array[4], "Sectorgröße", 15);
-	strncpy(tree_array[5], "Modus", 10);
-	strncpy(tree_array[6], "Rotation", 15);
-	strncpy(tree_array[7], "fwsectors", 10);
-	strncpy(tree_array[8], "fwheads", 10);	
-	/* optional fields */
-	strncpy(tree_array[9], "Plattengröße", 15);
-	strncpy(tree_array[10], "Stripeoffset", 15);
-	/*  lunid lun ... */
-	
-	/* menubar */
-	strcpy(mapplication, "_Datei");
-	strcpy(moptions, "_Optionen");
-	strcpy(mrefresh, "Aktualisieren");
-	strcpy(mquit, "Beenden");
-	strcpy(mlanguage, "Sprache");
-	strcpy(mfontinc, "Schrift vergrößern");
-	strcpy(mfontdec, "Schrift verkleinern");
-	strcpy(mmsg, "Bestätigung");
-	strcpy(mshow, "ja");
-	strcpy(mhide, "nein");
-	strcpy(medit, "Editor");
-	strncpy(mdone, "Fertig.", 8);
-	strncpy(merror, "Och neeh. Ein Fehler.", 22);  
-	strncpy(mother, "Anderer Ort", 12);
-	
-	/* editor */
-	strncpy(no_root, "Du bist kein Root! Sorry", 26);
-	strncpy(apply, "Los jetzt!", 10);
-	strcpy(chose_disk, "Welche Disk?");
-	strcpy(chose_partition, "Welche Partition?");
-	strcpy(chose_scheme, "Welches Schema? Im Zweifel GPT!");
-	strcpy(chose_type, "Welcher Partitionstyp?");
-	strcpy(chose_size, "Wie groß?");
-	strcpy(chose_bootoptions, "Welches Attribut?");
-	strncpy(chose_fs,	"Welches Dateisystem?", 25);
+	strncpy(column[0], "Name", 10);
+	strncpy(column[1], "Beschreibung", 15);
+	strncpy(column[2], "Ident", 10);
+	strncpy(column[3], "Größe", 15);
+	strncpy(column[4], "Sectorgröße", 15);
+	strncpy(column[5], "Modus", 10);
+	strncpy(column[6], "Rotation", 15);
+	strncpy(column[7], "fwsectors", 10);
+	strncpy(column[8], "fwheads", 10);	
+	strncpy(column[9], "Stripesize", 15);
+	strncpy(column[10], "Stripeoffset", 15);
 }
 
 void update_column_lang(int lang) {
@@ -156,16 +160,16 @@ void update_column_lang(int lang) {
 	/* second update columns */
 	int n =0;
 	if(tree != NULL) {
-		while(n < MAX_D) {
+		while(n < COL) {
 			GtkTreeViewColumn   *col = gtk_tree_view_get_column( GTK_TREE_VIEW(tree), n);
-			gtk_tree_view_column_set_title(col, tree_array[n]);
+			gtk_tree_view_column_set_title(col, column[n]);
 			n++;	
 		}
 	}
 	else if(tree1 != NULL) {
-		while(n <MAX_COLUMN) {
+		while(n <COLUMNS) {
 				GtkTreeViewColumn *col  = gtk_tree_view_get_column( GTK_TREE_VIEW(tree1), n);
-				gtk_tree_view_column_set_title(col, myarray[n]);
+				gtk_tree_view_column_set_title(col, columns[n]);
 				n++;	
 		}
 	}

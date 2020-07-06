@@ -14,7 +14,7 @@ void scrolled() {
 	scrolled_window = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
                                     GTK_POLICY_ALWAYS, GTK_POLICY_AUTOMATIC);
-	 gtk_widget_set_size_request (scrolled_window, 570, 350); /* width, height */
+	 gtk_widget_set_size_request (scrolled_window, 665, 350); /* width, height */
 	 
 	 gtk_box_pack_end(GTK_BOX(fixed), scrolled_window, TRUE, TRUE, 0);
 }
@@ -39,7 +39,7 @@ int main(int argc, char *argv[]) {
 	int lang = LANG_EN; /* default language */
 	confirm=0;	/* ask for confirmation */
 	if(fontsize[0] == '\0') /* initialize font size*/
-		strncpy(fontsize, "11", 2);
+		strncpy(fontsize, "12", 2);
 	
 	/* parse command line options */
 	int opt;
@@ -99,7 +99,7 @@ int main(int argc, char *argv[]) {
 	main_combo();
 
 	/* refresh button */
-	b = gtk_button_new_with_label(mrefresh);
+	b = gtk_button_new_with_label(l.mrefresh);
 	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (b), 1, 0, 1, 1);
 	g_signal_connect (b, "clicked", G_CALLBACK (redraw_cb), NULL);
 
