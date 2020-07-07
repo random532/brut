@@ -9,7 +9,7 @@ Q: What can I do with it?<br>
 A: - view all hard disks, memory cards, sd cards on the system<br>
    - create/destroy partitioning schemes<br>
    - add/remove/modify partitions<br>
-   - mount/unmount file systems<br>
+   - mount/unmount<br>
    - create file systems<br>
    
 Q: What are the dependencies?<br>
