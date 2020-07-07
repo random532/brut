@@ -27,10 +27,11 @@ Q: How to uninstall?<br>
 A: run "pkg remove xdisk"<br>
 
 Q: Is it safe? <br>
-A: Yes. It carefully translates mouse clicks into gpart commands.<br>
+A: Non-root users can see the partitions, only root can edit them. <br>
+   If you are the only user (e.g. on a laptop), consider "chmod +s"<br>
 
-Q: Why is this not an official port yet?<br>
-A: It needs more testing.
+Q: Why is this not an official port?<br>
+A: It needs more testing. Currently I only tested it on a thinkpad x220 and a raspberry pi 3.
 
 ![](screenshot/xdisk-1.png)
 ![](screenshot/xdisk-2.png)
