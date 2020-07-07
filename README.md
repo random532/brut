@@ -1,5 +1,5 @@
 ------------------------
-xdisk - disk editor
+xdisk
 ------------------------
 
 Q: What is xdisk?<br>
