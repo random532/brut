@@ -30,7 +30,7 @@ void on_toplevel_changed() {
 	else {
 		/* display a particular disk */
 		tree1 = make_treeview();
-		fill_treeview1(string);
+		fill_treeview1(string); /* do we need to check return value? */
 		gtk_widget_show(tree1);
 		free(string);
 	}

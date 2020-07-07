@@ -9,7 +9,7 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 	}
 	memset(cmd, 0, 150);
 	int inform = 1;
-	int success = 0;
+	int error = 0;
 		
 	/* what did our user choose? */
 	const gchar *action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom) );
@@ -40,22 +40,27 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 		cmd = gpart_filesystem(cmd);
 		inform = 0;
 	}
-	 if(cmd != NULL) {
-		 if(confirm==1)
-			ask(cmd);
+	if(cmd == NULL) 
+		return;
+	if(confirm==1) /* ask for confirmation */
+		ask(cmd);
+	else { /* file systems inform too verboose */
+		if(inform == 1 )
+			execute_cmd(cmd, 1);
 		else {
-			success = execute_cmd(cmd, inform);
-			if( (inform == 0) && (success != 0) )
-				msg(l.merror);
-			else if((inform == 0) && (success != 0))
+			error = execute_cmd(cmd, 0);	
+			if(error == 0)
 				msg(l.mdone);
+			else
+				msg(l.merror);
 		}
+	}
 		free(cmd);
 		/* also redraw everything */
 		on_toplevel_changed();
 		gtk_widget_destroy(window_editor);
 		editor();
-	}
+
 }
 
 const char *get_combo_box_disk() {
@@ -163,7 +168,7 @@ char *gpart_destroy( char *cmd) {
 }
 
 char *gpart_modify( char *cmd) {
-
+	
 	int type = 0;
 	int label = 0;
 	
@@ -194,54 +199,51 @@ char *gpart_modify( char *cmd) {
 	else if( (!label) && (type) )
 		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -t %s -i %s %s", gtype, &gpartition[i], gpartition);
 	else {
-		msg(l.chose_type); /* or label.. */
+		msg(l.chose_type);
 		return NULL;
 	} 
-				
+
 	free(gpartition);
 	return cmd;
 }
 
-	/* add */
 char *gpart_add( char *cmd) {
 
+	int maxlen = ENTRY_MAX+2;
 	const char *gdisk = get_combo_box_disk();
-	if(gdisk == NULL) {
+	if( (gdisk == NULL) || (strlen(gdisk) > 25) ) {
 		free(cmd);
 		return NULL;
-		}
+	}
 
 	const char *gtype = get_combo_box_type();
-	if(gtype == NULL) {
+	if( (gtype == NULL) || (strlen(gtype) > 25) ) {
 		free(cmd);
 		return NULL;
-		}
-
-	/* "gpart add -t gtype -s gsize -a galignment -l glabel geom */
-	strncat(cmd, "/sbin/gpart add -t ", 20);
-	strcat(cmd, gtype);
-	strncat(cmd, " ", 1);	
-
+	}
+		
+	/* gpart add -t gtype -s gsize -a galignment -l glabel geom */
+	snprintf(cmd, 50, "/sbin/gpart add -t %s ", gtype);
 	const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
-	if (strlen(gsize) != 0)  {	
+	if( (strlen(gsize) > 0) && (strlen(gsize) < maxlen) ) {	
 		strncat(cmd, " -s ", 4);
-		strncat(cmd, gsize, 10);	
+		strncat(cmd, gsize, maxlen);	
 		strncat(cmd, " ", 1);
 	}
 
-	const gchar *galignment = gtk_entry_get_text(GTK_ENTRY (text_alignment)); /* alignment */
-	if( (strlen(galignment) != 0) && (strlen(galignment) <= 20 ) ){
+	const gchar *galignment = gtk_entry_get_text(GTK_ENTRY (text_alignment));
+	if( (strlen(galignment) > 0) && (strlen(galignment) < maxlen ) ) {
 		strncat(cmd, " -a ", 4);
-		strcat(cmd, galignment); 
+		strncat(cmd, galignment, maxlen);
 		strncat(cmd, " ", 1);
-		}
+	}
 
-	const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
-	if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
+	const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));
+	if( (strlen(glabel) > 0) && (strlen(glabel) < maxlen ) ) {
 		strncat(cmd, " -l ", 4);
-		strcat(cmd, glabel);
+		strncat(cmd, glabel, maxlen);
 		strncat(cmd, " ", 1);
-		}
+	}
 
 	strcat(cmd, gdisk);
 	free((void *)gdisk);
@@ -268,7 +270,6 @@ char *gpart_delete( char *cmd) {
 	return cmd;
 }
 
-	/* resize */
 char *gpart_resize( char *cmd) {
 
 	int a = 0;

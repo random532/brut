@@ -82,11 +82,11 @@ void add_menubar() {
     gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
 
 	/* App - Refresh */
-	GtkWidget * app_refresh = gtk_menu_item_new_with_label (l.mrefresh);
+	GtkWidget * app_refresh = gtk_menu_item_new_with_mnemonic (l.mrefresh);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_refresh);
 
 	/* App - Edit */
-	GtkWidget * app_edit = gtk_menu_item_new_with_label (l.medit);
+	GtkWidget * app_edit = gtk_menu_item_new_with_mnemonic (l.medit);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_edit);
 
 	/* App - Quit */

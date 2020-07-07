@@ -196,9 +196,9 @@ int fill_treeview1( char * one_disk) {
 	/* call geom with diskname */
 	geom_info = read_disk(one_disk);
 	if (geom_info == NULL ) {
-		printf("read_disk() failed. This is critical.\n");
+		printf("read_disk() failed.\n");
 		return 0;	
-		}
+	}
 		
 	/* fill in the tree	*/
 	fill_tree(geom_info, one_disk);

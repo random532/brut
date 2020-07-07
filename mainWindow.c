@@ -99,11 +99,11 @@ int main(int argc, char *argv[]) {
 	main_combo();
 
 	/* refresh button */
-	b = gtk_button_new_with_label(l.mrefresh);
+	b = gtk_button_new_with_mnemonic(l.mrefresh);
 	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (b), 1, 0, 1, 1);
 	g_signal_connect (b, "clicked", G_CALLBACK (redraw_cb), NULL);
 
-	GtkWidget *e = gtk_button_new_with_label("Editor");
+	GtkWidget *e = gtk_button_new_with_mnemonic(l.medit);
 	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (e), 2, 0, 1, 1);
 	g_signal_connect (e, "clicked", G_CALLBACK (editor_cb), NULL);
 

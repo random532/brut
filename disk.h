@@ -110,6 +110,8 @@ typedef struct {
 	char mother[30];
 } lang;
 
+lang l;
+
 	/* (most) functions */
 #ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED
@@ -201,20 +203,15 @@ gboolean view_clicked(GtkWidget *, GdkEventButton *, gpointer);
 int is_mounted(char *);
 void mountfs(GtkMenuItem *, gpointer);
 void unmountfs();
-int nfs_usermount();
-int usermount(char *, char *);
+int vfs_usermount();
+void usermount(char *, char *);
 
 /* mainWindow.c */
+/* int main() */
 void top_window();
 void scrolled();
 void main_combo();
-/* int main() */
-
-/* ?? */
-//void show_message_cb(GtkMenuItem *item, gpointer);
 
 lang en;
 lang de;
 #endif
- 
-lang l;

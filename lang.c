@@ -8,14 +8,14 @@ lang en = {
 	.mapplication="_Application",
 	.moptions="_Options",
 	.mquit="_Quit",
-	.mrefresh="Refresh",
+	.mrefresh="_Refresh",
 	.mlanguage="_Language",
 	.mmsg="_Ask for Confirmation",
 	.mshow="_Yes",
 	.mhide="_No",
 	.mfontinc="_Increase font size",
 	.mfontdec="_Decrease font size",
-	.medit="Editor",
+	.medit="_Editor",
 
 	/* hints */
 	.no_root="no Root! Sorry.",
@@ -39,14 +39,14 @@ lang de = {
 	.mapplication="_Programm",
 	.moptions="_Optionen",
 	.mquit="_Beenden",
-	.mrefresh="Aktualisieren",
+	.mrefresh="_Aktualisieren",
 	.mlanguage="_Sprache",
 	.mmsg="_Immer nachfragen",
 	.mshow="_Ja",
 	.mhide="_Nein",
 	.mfontinc="Schrift ver_größern",
 	.mfontdec="Schrift ver_kleinern",
-	.medit="Editor",
+	.medit="_Editor",
 
 	/* hints */
 	.no_root="Du bist kein Root. Sorry.",

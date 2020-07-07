@@ -30,7 +30,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		
 	/* check permissions */
 	if(geteuid() != 0) {
-		if( nfs_usermount() != 1) {
+		if( vfs_usermount() != 1) {
 			msg(l.no_root);
 			return;
 		}
@@ -78,56 +78,75 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 			return;
 		}
 	}
-	
-	/* file system type */
-	if(strncmp(fs, "ufs", 3) == 0) {
+
 		cmd = malloc(plen + mlen + 20);
 		memset(cmd, 0, plen + mlen + 20);
+	
+	/* file system type */
+	int error = 0;
+	if(strncmp(fs, "ufs", 3) == 0) 
 		snprintf(cmd, plen+mlen+30, "mount /dev/%s %s", part, path);
-	}
-	else if(strncmp(fs, "msdos", 5) == 0) {
-		cmd = malloc(plen + mlen + 30);
-		memset(cmd, 0, plen + mlen + 30);
+	else if(strncmp(fs, "msdos", 5) == 0) 
 		snprintf(cmd, plen+mlen+30, "mount -t msdosfs /dev/%s %s", part, path);
-	}
 	else if(strncmp(fs, "ntfs", 5) == 0) {
 		
 		/* see if ntfs-3g is installed */
 		if (!command_exist("/bin/ntfs-3g")) {
 			msg("To mount ntfs file systems, please install this package: ntfs-3g. Also kldload fuse.");
-			free(cmd);
-			free(path);
-			return;
+			error = 1;
 		}
-		cmd = malloc(plen + mlen + 30);
-		memset(cmd, 0, plen + mlen + 30);
 		snprintf(cmd, plen+mlen+30, "ntfs-3g /dev/%s %s", part, path);
 	}
+	else if(strncmp(fs, "cd9660", 6) == 0)
+		snprintf(cmd, plen+mlen+30, "mount_cd9660 /dev/%s %s", part, path);
+	else if(strncmp(fs, "ext2fs", 5) == 0) {
+		if (!command_exist("/bin/fuse-ext2")) {
+			msg("To mount ext2 file systems, please install this package: fusefs-ext2. Also kldload fuse.");
+			error = 1;
+		}
+		snprintf(cmd, plen+mlen+30, "fuse-ext2 /dev/%s %s", part, path);
+	}
+	else if(strncmp(fs, "exfat", 5) == 0) {
+		if (!command_exist("/sbin/mount.exfat")) {
+			msg("To mount exfat file systems, please build this package via ports: sysutils/fusefs-exfat. Also kldload fuse(?).");
+			error = 1;
+		}
+		snprintf(cmd, plen+mlen+30, "mount.exfat /dev/%s %s", part, path);
+	}
+	else if(strncmp(fs, "geli", 4) == 0)
+		snprintf(cmd, plen+mlen+30, "mount /dev/%s %s", part, path);
+
+	else if(strncmp(fs, "zfs", 3) == 0)
+		snprintf(cmd, plen+mlen+30, "mount -t zfs /dev/%s %s", part, path);
+
 	else if(strncmp(fs, "n/a", 3) == 0) {
-		/* file system is unknown to us */
-		/* we have usermount */
-		usermount(cmd, path);
-		free(path);
-		free(cmd);
-		return;
+		/* no read write permission on partition */
+		msg("no read-write permission on partition.");
+		error = 1;
+	}
+	else { /* undocumented file system */
+		msg("undocumented file system.");
+		error = 1;
 	}
 	
-	if(confirm==1)
-		ask(cmd);
-	else {
-		success = execute_cmd(cmd, 0);
-		if(success == 0)
-			msg(l.mdone);
-		else
-			msg(l.merror);
+	if(!error) {
+		if(confirm==1)
+			ask(cmd);
+		else {
+			success = execute_cmd(cmd, 0);
+			if(success == 0)
+				msg(l.mdone);
+			else
+				msg(l.merror);
+		}
 	}
 	free(cmd);
 	free(path);
 }
 
 void unmountfs() {
-	/* unmount a partition */
-	char *part = selected_item(tree1, 1); /* get selected partition */
+	/* unmount */
+	char *part = selected_item(tree1, 1); /* partition */
 	if(part != NULL) {
 		int len = strlen(part);
 		char *cmd = malloc (len + 20);
@@ -146,7 +165,7 @@ void unmountfs() {
 	}
 }
 
-int nfs_usermount() {
+int vfs_usermount() {
 	
 	/* whether regular users are allowed to mount */
 	int usermnt = 0;
@@ -164,7 +183,42 @@ int nfs_usermount() {
 	return usermnt;
 }
 
-int usermount(char *cmd, char *path) {
-	msg("Usermount not implemented yet.");
-	return 1;
+void usermount(char *geom, char *path) {
+	
+	char cmd[CMDSIZE];
+	int error=0;
+	
+	/* try ufs */
+	snprintf(cmd, CMDSIZE-1, "mount /dev/%s %s", geom, path);
+	if( execute_cmd(cmd, 0) != 0) {
+		/* try msdosfs */
+		snprintf(cmd, CMDSIZE-1, "mount -t msdosfs /dev/%s %s", geom, path);
+		if( execute_cmd(cmd, 0) != 0) {
+			/* try zfs */
+			snprintf(cmd, CMDSIZE-1, "mount -t zfs /dev/%s %s", geom, path);
+			if( execute_cmd(cmd, 0) != 0) {
+				/* try ntfs */
+				snprintf(cmd, CMDSIZE-1, "ntfs-3g /dev/%s %s", geom, path);
+				if( execute_cmd(cmd, 0) != 0) {
+					/* try exfat */
+					snprintf(cmd, CMDSIZE-1, "mount.exfat /dev/%s %s", geom, path);
+					if( execute_cmd(cmd, 0) != 0) {
+						/* try ext2 */
+						snprintf(cmd, CMDSIZE-1, "fuse-ext2 /dev/%s %s", geom, path);
+						if( execute_cmd(cmd, 0) != 0) {
+							/* try cd9660 */
+							snprintf(cmd, CMDSIZE-1, "fuse-ext2 /dev/%s %s", geom, path);
+							if( execute_cmd(cmd, 0) != 0) {
+								error = 1;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	if( error == 1)
+		msg(l.merror);
+	else
+		msg(l.mdone);
 }
