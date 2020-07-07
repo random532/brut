@@ -23,7 +23,7 @@ Q: What are the dependencies?<br>
 A: It uses gtk3. "pkg install gtk3" is recommended.<br>
    Other than that, it only uses system tools (e.g. geom, gpart, newfs).<br>
 
-Q: How do you install xdisk?<br>
+Q: How do I install xdisk?<br>
 A: Install as a port:<br>
 1. Download ports/Makefile and ports/pkg-descr
 2. Run "make makesum" and "make install clean"
@@ -36,10 +36,9 @@ A: run "pkg remove xdisk"<br>
 Q: Is it safe? <br>
 A: Non-root users can see the partitions, only root can edit them. <br>
 
+Q: How do I mount/unmount?
+A: Right-click on a partition. If you have permissions, a popup menu will appear.<br>
+
 Q: Why is this not an official port?<br>
 A: It needs more testing. <br>
-   I only tested it on a thinkpad x220 and a raspberry pi 3.
-
-![](screenshot/xdisk-2.png)
-![](screenshot/xdisk-3.png)
-![](screenshot/xdisk-4.png)
+   I only tested it on a thinkpad x220 and a raspberry pi 3.<br>
