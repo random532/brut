@@ -36,7 +36,7 @@ A: run "pkg remove xdisk"<br>
 Q: Is it safe? <br>
 A: Non-root users can see the partitions, only root can edit them. <br>
 
-Q: How do I mount/unmount?
+Q: How do I mount/unmount?<br>
 A: Right-click on a partition. If you have permissions, a popup menu will appear.<br>
 
 Q: Why is this not an official port?<br>
