@@ -13,8 +13,8 @@ A: - view all hard disks, memory cards, sd cards on the system<br>
    - create file systems<br>
    
 Q: What are the dependencies?<br>
-A: It uses gtk3. "pkg install gtk3" is recommended. Other than that, it only uses
-system tools (e.g. geom, gpart, newfs).<br>
+A: It uses gtk3. "pkg install gtk3" is recommended.<br>
+   Other than that, it only uses system tools (e.g. geom, gpart, newfs).<br>
 
 Q: How do you install xdisk?<br>
 A: Install as a port:<br>
@@ -28,10 +28,10 @@ A: run "pkg remove xdisk"<br>
 
 Q: Is it safe? <br>
 A: Non-root users can see the partitions, only root can edit them. <br>
-   If you are the only user (e.g. on a laptop), consider "chmod +s"<br>
 
 Q: Why is this not an official port?<br>
-A: It needs more testing. Currently I only tested it on a thinkpad x220 and a raspberry pi 3.
+A: It needs more testing. <br>
+   I only tested it on a thinkpad x220 and a raspberry pi 3.
 
 ![](screenshot/xdisk-1.png)
 ![](screenshot/xdisk-2.png)
