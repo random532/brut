@@ -1,6 +1,5 @@
 #include "disk.h"
 
-
 /* return a buffer with disk names, space separated */
 char *get_disks() {
 
@@ -526,8 +525,7 @@ int command_exist(char *cmd) {
 	int b= strlen(cmd);
 	char *exist = malloc(a+b+5);
 	snprintf(exist, a+b+1, "%s%s", localbase, cmd);
-	
-	printf("%s\n", exist);
+
 	if (access(exist, X_OK) == 0) 
 		return 1;
 	else

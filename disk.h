@@ -1,6 +1,5 @@
 /*TODO:
  * - usermount
- * - find bugs
  * */
  
 #include <unistd.h>
@@ -17,8 +16,9 @@
 #define LANG_DE 1
 
 #define CMDSIZE 150
+#define ENTRY_MAX 8
 
-	/* column header array for 2 treeviews */
+	/* column header for 2 treeviews */
 #define COLUMNS  24
 char columns[COLUMNS][25];
 #define COL 11
@@ -77,6 +77,7 @@ GtkWidget *toggle_fast;
 GtkWidget *toggle_comp;
 GtkWidget *gfile;
 
+/* strings */
 typedef struct {
 	
 	char overview[85]; 
@@ -203,12 +204,17 @@ void unmountfs();
 int nfs_usermount();
 int usermount(char *, char *);
 
+/* mainWindow.c */
+void top_window();
+void scrolled();
+void main_combo();
+/* int main() */
+
 /* ?? */
-void show_message_cb(GtkMenuItem *item, gpointer);
+//void show_message_cb(GtkMenuItem *item, gpointer);
 
 lang en;
 lang de;
 #endif
-
  
 lang l;

@@ -15,12 +15,10 @@ void create_combo_geom() {
 	g_signal_connect (combo_geom, "changed", G_CALLBACK (on_geom_changed), NULL);
 }
 
-	/*combo box with disks and slices - empty */
 void create_combo_disks() {
 	combo_disks = gtk_combo_box_text_new();
 }
 
-	/* combo box with partitions - empty */
 void create_combo_partitions() {
 	combo_partitions = gtk_combo_box_text_new();
 }
@@ -32,14 +30,13 @@ void create_combo_bootcode() {
 	g_signal_connect (combo_bootcode, "changed", G_CALLBACK (on_bootcode_changed), NULL);
 }
 
-	 /* combo box with partitioning schemes */
 void create_combo_schemes() {
 	combo_schemes = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "APM");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "BSD");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "BSD64");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "LDM");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "GPT (recommended)");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "GPT");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "MBR");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_schemes), NULL, "VTOC8");
 }
@@ -107,7 +104,7 @@ combo_types = gtk_combo_box_text_new();
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-reserved");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "vmware-vsanhdr");
 }
-	 /* combo box with file systems */
+
 void create_combo_filesystems() {
 	combo_filesystems = gtk_combo_box_text_new();
 //	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_filesystems), NULL, "ufs1");
@@ -118,30 +115,29 @@ void create_combo_filesystems() {
 }
 
 void create_text_label() {
-
 	GtkEntryBuffer *buf_label = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf_label, 8);
+	gtk_entry_buffer_set_max_length (buf_label, ENTRY_MAX);
 	text_label = gtk_entry_new_with_buffer (buf_label);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_label), "label (optional)");
 }
 
-void create_text_entries() { /* XXX: rename to create_entries? */
+void create_text_entries() {
 	GtkEntryBuffer *buf_entries = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf_entries, 8);
+	gtk_entry_buffer_set_max_length (buf_entries, ENTRY_MAX);
 	text_entries = gtk_entry_new_with_buffer (buf_entries);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_entries), "entries (optional)");
 }
 
 void create_text_size() {
 	GtkEntryBuffer *buf_size = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf_size, 8);
+	gtk_entry_buffer_set_max_length (buf_size, ENTRY_MAX);
 	text_size = gtk_entry_new_with_buffer (buf_size);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_size), "size, e.g. 100M");
 }
 
 void create_text_alignment() {
 	GtkEntryBuffer *buf_alignment = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf_alignment, 8);
+	gtk_entry_buffer_set_max_length (buf_alignment, ENTRY_MAX);
 	text_alignment = gtk_entry_new_with_buffer (buf_alignment);
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_alignment), "alignment (optional)");
 }
@@ -165,6 +161,4 @@ void grid_attach_all() {
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_comp), 0, 15, 1, 1);
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (gfile), 0, 16, 1, 1);
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (edit_button), 0, 17, 1, 1);
-
-
 }

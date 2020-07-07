@@ -2,18 +2,16 @@
 
 void destroy_editor (GtkMenuItem *item, gpointer user_data) {    
 	window_editor=NULL;
-	}
+}
 
 void editor() {
-
 	if(!root() )
 		return;
 /* 
  * we want a window with a box,
  * the box contains a grid,
- * the grid has one column, and 15 or so rows
+ * the grid has one column, and 18 or so rows
  */
- 
 	window_editor = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (window_editor), "Editor");
 	gtk_container_set_border_width (GTK_CONTAINER (window_editor), 30);
@@ -30,8 +28,8 @@ void editor() {
 	
 	int rows = 0;
 	while(rows <= 19) {	/* XXX: hardcoded? */
-	gtk_grid_insert_row (GTK_GRID(thegrid), rows);
-	rows++;
+		gtk_grid_insert_row (GTK_GRID(thegrid), rows);
+		rows++;
 	}
 
 	/* various combo boxes */
@@ -61,9 +59,8 @@ void editor() {
 	/* file chooser */
 	gfile = gtk_file_chooser_button_new( "bootcode", GTK_FILE_CHOOSER_ACTION_OPEN);
 
-	/* edit button */
-	edit_button = gtk_button_new_with_label(l.apply);
-	gtk_button_set_always_show_image (GTK_BUTTON(edit_button), TRUE);
+	/* apply button */
+	edit_button = gtk_button_new_with_mnemonic(l.apply);
 	g_signal_connect (edit_button, "clicked", G_CALLBACK (on_edit_clicked), NULL);
 
 	/* attach everything to grid */
@@ -73,18 +70,14 @@ void editor() {
 	gint x = 0, y = 0, width, height;
 	gtk_window_get_position (GTK_WINDOW(window), &x, &y);
 	gtk_window_get_size(GTK_WINDOW (window), &width, &height);
-	//x=x+692;
 	x = x + width;
 	gtk_window_move( GTK_WINDOW(window_editor), x, y);
 	gtk_window_set_default_size(GTK_WINDOW (window_editor), 230, 300);
-	//gtk_widget_show_all(window_editor);
 	gtk_widget_show(GTK_WIDGET (window_editor));
 	gtk_widget_show(box);
 	gtk_widget_show(thegrid);
 	gtk_widget_show(GTK_WIDGET (combo_geom));
 	gtk_widget_show(GTK_WIDGET(edit_button));
-	//gtk_window_resize(GTK_WINDOW(window_editor), 230, 300);	
-	//hide_widgets();	
 }
 
 void hide_widgets() {

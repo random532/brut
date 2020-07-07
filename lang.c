@@ -7,14 +7,14 @@ lang en = {
 	/* menu bar items */
 	.mapplication="_Application",
 	.moptions="_Options",
-	.mquit="Quit",
+	.mquit="_Quit",
 	.mrefresh="Refresh",
-	.mlanguage="Language",
-	.mmsg="Ask for Confirmation",
-	.mshow="yes",
-	.mhide="no",
-	.mfontinc="Increase font size",
-	.mfontdec="Decrease font size",
+	.mlanguage="_Language",
+	.mmsg="_Ask for Confirmation",
+	.mshow="_Yes",
+	.mhide="_No",
+	.mfontinc="_Increase font size",
+	.mfontdec="_Decrease font size",
 	.medit="Editor",
 
 	/* hints */
@@ -26,7 +26,7 @@ lang en = {
 	.chose_size="How big? What size?",
 	.chose_bootoptions="Choose an attribute",
 	.chose_fs="Choose a file system!",
-	.apply="Apply",
+	.apply="_Apply!",
 	.mdone="Done.",
 	.merror="Command failed.",
 	.mother="Other Location"
@@ -38,14 +38,14 @@ lang de = {
 	/* menu bar items */
 	.mapplication="_Programm",
 	.moptions="_Optionen",
-	.mquit="Beenden",
+	.mquit="_Beenden",
 	.mrefresh="Aktualisieren",
-	.mlanguage="Sprache",
-	.mmsg="Immer nachfragen",
-	.mshow="Ja",
-	.mhide="Nein",
-	.mfontinc="Schrift vergrößern",
-	.mfontdec="Schrift verkleinern",
+	.mlanguage="_Sprache",
+	.mmsg="_Immer nachfragen",
+	.mshow="_Ja",
+	.mhide="_Nein",
+	.mfontinc="Schrift ver_größern",
+	.mfontdec="Schrift ver_kleinern",
 	.medit="Editor",
 
 	/* hints */
@@ -57,7 +57,7 @@ lang de = {
 	.chose_size="Wie groß?",
 	.chose_bootoptions="Welches Attribut?",
 	.chose_fs="Welches Dateisystem?",
-	.apply="Los jetzt!",
+	.apply="_Los jetzt!",
 	.mdone="Fertig.",
 	.merror="Befehl fehlgeschlagen.",
 	.mother="Anderer Ort"
@@ -110,7 +110,6 @@ void en_lang() {
 void de_lang() {
 
 	l=de;
-
 	strcpy(columns[0], "Disk");
 	strcpy(columns[1], "Partition");
 	strcpy(columns[2], "Typ");

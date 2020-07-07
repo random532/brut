@@ -90,8 +90,8 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_edit);
 
 	/* App - Quit */
-	GtkWidget *app_quit = gtk_menu_item_new_with_label (l.mquit);
-    	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_quit);
+	GtkWidget *app_quit = gtk_menu_item_new_with_mnemonic (l.mquit);
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_quit);
 
 	/* "Options" */
 	GtkWidget *menu_options = gtk_menu_new();
@@ -100,7 +100,7 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem2);
 
 	/* language */
-	GtkWidget * item_lang = gtk_menu_item_new_with_label (l.mlanguage);
+	GtkWidget * item_lang = gtk_menu_item_new_with_mnemonic (l.mlanguage);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_lang);
 
 	/* language submenu */
@@ -108,36 +108,35 @@ void add_menubar() {
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_lang), menu_lang_sub);
 
 	/* language - de */
-	GtkWidget * item_lang_de = gtk_menu_item_new_with_label ("Deutsch");
+	GtkWidget * item_lang_de = gtk_menu_item_new_with_mnemonic ("_Deutsch");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_lang_sub), item_lang_de);
 
 	/* language - en */
-	GtkWidget * item_lang_en = gtk_menu_item_new_with_label ("English");
+	GtkWidget * item_lang_en = gtk_menu_item_new_with_mnemonic ("_English");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_lang_sub), item_lang_en);
 
 	/* Font size  increase*/
-	GtkWidget * item_fontinc = gtk_menu_item_new_with_label (l.mfontinc);
+	GtkWidget * item_fontinc = gtk_menu_item_new_with_mnemonic (l.mfontinc);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_fontinc);
 
 	/* Font size  increase*/
-	GtkWidget * item_fontdec = gtk_menu_item_new_with_label (l.mfontdec);
+	GtkWidget * item_fontdec = gtk_menu_item_new_with_mnemonic (l.mfontdec);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_fontdec);
 
 	/* show messages */
-	GtkWidget * item_msg = gtk_menu_item_new_with_label (l.mmsg);
+	GtkWidget * item_msg = gtk_menu_item_new_with_mnemonic (l.mmsg);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_msg);
-
 
 	/* message submenu */
 	GtkWidget *menu_msg_sub = gtk_menu_new();
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_msg), menu_msg_sub);
 
 	/* message -show */
-	item_msg_show = gtk_menu_item_new_with_label (l.mshow);
+	item_msg_show = gtk_menu_item_new_with_mnemonic (l.mshow);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_show);
 
 	/* message - hide */
-	item_msg_hide = gtk_menu_item_new_with_label (l.mhide);
+	item_msg_hide = gtk_menu_item_new_with_mnemonic (l.mhide);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_hide);
 
 
@@ -146,7 +145,7 @@ void add_menubar() {
 	else
 		msg_hide (GTK_MENU_ITEM(item_msg_hide), NULL);
 
-	/* if a menu item is clicked */
+	/*  callback functions */
 	g_signal_connect_swapped (app_quit, "activate", G_CALLBACK(gtk_main_quit), NULL);
    	g_signal_connect (app_refresh, "activate", G_CALLBACK (redraw_cb), NULL);
 	g_signal_connect (item_lang_de, "activate", G_CALLBACK (change_lang_de), NULL);
@@ -158,7 +157,6 @@ void add_menubar() {
 	g_signal_connect (item_msg_hide, "activate", G_CALLBACK (msg_hide), NULL);
 
 	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
-
 	gtk_widget_show (menuBar);
 	gtk_widget_show_all(window);
 }

@@ -9,20 +9,20 @@ int is_mounted(char *part) {
 	if (part == NULL)
 		return 2; /* should never happen */
 	int len = strlen(part);
-	FILE * fp = popen("mount", "r");
+	FILE *fp = popen("mount", "r");
 	if (fp == NULL) {
 		msg("fopen failed");
 		return 2;
 	}
 	while( fgets(buf, sizeof buf, fp)) {	
-		if (strncmp(part, &buf[5], len) == 0) {
+		if (strncmp(part, &buf[5], len) == 0) { /* skip "/dev/" */
 			/* mounted */
 			return 1;
-	}
-	memset(buf, 0, 100);
+		}
+		memset(buf, 0, 100);
 	}
 	pclose(fp);
-	return 0; /* no match, not mounted*/
+	return 0; /* no match, not mounted */
 }
 
 void mountfs(GtkMenuItem *gmenu, gpointer gp) {
@@ -35,9 +35,11 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 			return;
 		}
 	}
+	
+	/* setup */
 	const gchar *label = gtk_menu_item_get_label(gmenu);
 	char * part = selected_item(tree1, 1);	/* partition */
-	int plen = 	strlen(part); /* is this really 0 terminated? */
+	int plen = strlen(part); /* is this really 0 terminated? */
 	int mlen = 0;
 	char * fs = selected_item(tree1, 4); 	/* file system type */
 	char *path;
@@ -112,26 +114,25 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	
 	if(confirm==1)
 		ask(cmd);
-	else
+	else {
 		success = execute_cmd(cmd, 0);
 		if(success == 0)
 			msg(l.mdone);
 		else
 			msg(l.merror);
+	}
 	free(cmd);
 	free(path);
 }
 
 void unmountfs() {
 	/* unmount a partition */
-	char * part = selected_item(tree1, 1); /* get selected partition */
+	char *part = selected_item(tree1, 1); /* get selected partition */
 	if(part != NULL) {
 		int len = strlen(part);
 		char *cmd = malloc (len + 20);
 		memset(cmd, 0, len+20);
 		snprintf(cmd, len+20, "umount /dev/%s", part);
-/*		strncpy(cmd, "umount /dev/", 14);
-		strncat(cmd, part, len); */
 		if(confirm==1)
 			ask(cmd);
 		else {
@@ -158,7 +159,7 @@ int nfs_usermount() {
 	}
 	fgets(buf, sizeof buf, fp);
 	if (strncmp("1", buf, 1) == 0) 
-			usermnt = 1;
+		usermnt = 1;
 	pclose(fp);
 	return usermnt;
 }
