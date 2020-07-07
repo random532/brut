@@ -1,9 +1,12 @@
 
-![](screenshot/xdisk1.png)
-
 ------------------------
 xdisk
 ------------------------
+![](screenshot/xdisk1.png)
+
+-----------------------
+FAQ
+-----------------------
 
 Q: What is xdisk?<br>
 A: xdisk is a partition editor for FreeBSD with a graphical user interface.<br>
