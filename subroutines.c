@@ -255,7 +255,6 @@ else {
 return free_megabytes;
 }
 
-/* increase or decrease fontsize */
 void change_fontsize(int what) {
 
 	long fsize = strtol(fontsize, NULL, 0);
@@ -293,7 +292,6 @@ char *add_to_list(char *pname, char *mylist) {
 return(mylist);
 }
 
-/* set back the list of disks, list of partitions, list of slices */
 void clean_up_pointers() {
 	if(all_disks != NULL) {
 		free(all_disks);
@@ -303,61 +301,73 @@ void clean_up_pointers() {
 		free(all_partitions);
 		all_partitions = NULL;
 		}
-	if(list_of_slices != NULL) {
-		free(list_of_slices);
-		list_of_slices = NULL;
+	if(all_slices != NULL) {
+		free(all_slices);
+		all_slices = NULL;
 		}
 }
-
-/* determine the file system on a partition */
-/* uses fstyp(), which only suceeds as root */
 
 char *what_file_system(char *partition) {
 
 	if (partition == NULL)
 		return NULL;
+	int len = strlen(partition);
+	char *part = malloc(len + 30);
+	snprintf(part, len+30, "/dev/%s", partition);
+	char *cmd;
+	int size=30;
+	char *fs_type = malloc(size);
 
-	char cmd[35];
-	strcpy(cmd, "fstyp -u /dev/");
-	strcat(cmd, partition);
-	strcat(cmd ," 2>&1"); // also capture stderr
-
-	int len= 40;
-	char *fs_type = malloc(len);
-
-	FILE * fp = popen(cmd, "r");
-	if ( fp == NULL ) {
-		printf("could not execute fstyp %s\n", partition);	
-	return NULL;
-	}
-
-	if ( fgets(fs_type, len, fp) == NULL) {
-		free(fs_type);
-		return NULL;
+	if( access(part, R_OK ) == 0 ) { /* read access on partition? */
+		cmd = realloc(part, len+50);
+		snprintf(cmd, len+50, "fstyp -u /dev/%s 2>/dev/null", partition);
+		FILE * fp = popen(cmd, "r");
+		if ( fp == NULL ) {
+			printf("could not execute popen() with %s\n", partition);	
+			free(cmd);
+			return NULL;
 		}
-	else if (strncmp(fs_type,"fstyp:", 6) == 0 ) {
-		/* that's either fs type not recognized, or permission denied */
-
-		char *brk;
-		strtok_r( &fs_type[8], ":", &brk);
-
-		if(strncmp(brk, " Permission", 11) == 0) {
-			strcpy(fs_type, "n/a");
-			return fs_type;
-			}
-		free(fs_type);
-		return NULL;
-	}
-
-	else {
-	/* we actually have a file system */
-		int len = strlen(fs_type);
-		fs_type[len-1] = '\0'; /* replace 0x0A */
-
-		gtk_window_set_title (GTK_WINDOW (window), "Xdisk - as root");
+		if ( fgets(fs_type, size, fp) == NULL) {
+			free(fs_type);
+			fs_type = NULL;
+		}
+		else {
+			len = strlen(fs_type);
+			fs_type[len-1] = '\0'; /* replace 0x0A */
+		}
+		pclose(fp);
+		free(cmd);
 		return fs_type;
-		}
+	}
 
+	/* try again with sudo */
+	else if( !pw_needed()) {
+		cmd = realloc(part, len+50);
+		snprintf(cmd, len+50, "sudo -S fstyp -u %s 2>/dev/null", part);
+		FILE * fp = popen(cmd, "r");
+		if ( fp == NULL ) {
+			printf("could not execute popen() with %s\n", partition);	
+			free(cmd);
+			return NULL;
+		}
+		if( fgets(fs_type, size, fp) == NULL) {
+			free(fs_type);
+			fs_type = NULL;
+		}
+		else {
+			len = strlen(fs_type);
+			fs_type[len-1] = '\0'; /* replace 0x0A */
+		}
+		pclose(fp);
+		free(cmd);
+		return fs_type;
+	}
+	else {
+		/* dont bother elevating permissions */
+		strncpy(fs_type, "n/a", 4);
+		free(part);
+	}
+	return fs_type;
 }
 
 /* execute a shell command */
@@ -387,6 +397,8 @@ int execute_cmd(char * cmd, int inform) {
 	/* popup a message box */
 void msg(char * blah) {
 	GtkWidget * message = gtk_message_dialog_new(GTK_WINDOW (window_editor), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "%s", blah);
+	gtk_window_set_modal(GTK_WINDOW (message), TRUE);
+	gtk_window_set_transient_for(GTK_WINDOW(message), GTK_WINDOW(window)); 
 	gtk_widget_show(message);
 	g_signal_connect(message, "response", G_CALLBACK(on_response), NULL);
 	}
@@ -412,16 +424,11 @@ void ask(char * cmd) {
 	g_signal_connect(message, "response", G_CALLBACK(ask_cb), c);
 }
 
-void ask_cb(GtkDialog *dialog, gint response_id, gpointer c) {
+void ask_cb(GtkDialog *dialog, gint response_id, gpointer cmd) {
 	/* YES -> execute, No -> skip */
-	if((response_id == GTK_RESPONSE_YES) && (c != NULL) ) {
-		int success = execute_cmd(c, 1);
-		if(success == 0)
-			msg(l.mdone);
-		else
-			msg(l.merror);
-	}
-	free(c);
+	if((response_id == GTK_RESPONSE_YES) && (cmd != NULL) )
+		submit(cmd, 0);
+	free(cmd);
 	gtk_widget_destroy(GTK_WIDGET (dialog));
 }
 /* execute a command */
@@ -511,7 +518,6 @@ int root() {
 	/* are we root? */
 	uid_t perm = geteuid();
 	if (perm != 0 ) {
-		msg(l.no_root);
 		return 0; /* no */
 	}
 	else
@@ -530,4 +536,80 @@ int command_exist(char *cmd) {
 		return 1;
 	else
 		return 0;
+}
+
+int submit(char *cmd, int conf) {
+	
+	int error = 0;
+	
+	if( todo == MOUNT) {
+		error = execute_cmd(cmd, 0);
+		if(error == 0)
+			msg(l.mdone);
+		else
+			msg(l.merror);
+	}
+	else if( todo == GPART) {
+		if(conf == 1)
+			ask(cmd);
+		else
+			error = execute_cmd(cmd, 1);
+	}
+	else if(todo == FS) {
+		if( conf == 1)
+			ask(cmd);
+		else {
+			error = execute_cmd(cmd, 0);
+			if(error == 0)
+				msg(l.mdone);
+			else
+				msg(l.merror);
+		}
+	}
+	return error;
+}
+
+void fsscan() {
+	
+	todo = MOUNT;
+	/* this is abit odd */
+	char *cmd = malloc(10);
+	strncpy(cmd, "whoami", 7);
+	window_pw(cmd);
+}
+void destroyme(GtkMenuItem *item, gpointer user_data) {
+	gtk_widget_destroy(user_data);
+}
+void info_cb(GtkMenuItem *item, gpointer user_data) {
+	GtkWidget *hello = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	gtk_window_set_title (GTK_WINDOW (hello), "Hello  World");
+	gtk_container_set_border_width (GTK_CONTAINER (hello), 30);
+	gtk_window_set_default_size(GTK_WINDOW (hello), 250, 100);
+	gtk_window_set_modal(GTK_WINDOW(hello), TRUE);
+	gtk_window_set_transient_for(GTK_WINDOW(hello), GTK_WINDOW(window)); 
+	
+	gint x = 0, y = 0, width, height;
+	gtk_window_get_position (GTK_WINDOW(window), &x, &y);
+	gtk_window_get_size(GTK_WINDOW (window), &width, &height);
+	x = x +150;
+	y = y + 50;
+	gtk_window_move( GTK_WINDOW(hello), x, y);
+	
+	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	gtk_container_add (GTK_CONTAINER (hello), box);
+	GtkWidget *agrid = gtk_grid_new();
+	gtk_grid_insert_column(GTK_GRID(agrid), 3);
+	gtk_box_pack_end(GTK_BOX(box), agrid, TRUE, TRUE, 0);
+	gtk_grid_set_column_homogeneous(GTK_GRID(agrid), FALSE);
+	gtk_grid_set_column_spacing(GTK_GRID(agrid), 5);
+	GtkWidget *label1 = gtk_label_new(l.mhello);
+	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label1), TRUE, TRUE, 0);	
+	GtkWidget *label = gtk_label_new(l.mhello1);
+	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label), TRUE, TRUE, 0);
+
+	GtkWidget *c = gtk_button_new_with_mnemonic("_Ok");
+	gtk_grid_attach(GTK_GRID (agrid), GTK_WIDGET (c), 1, 0, 1, 1);
+	g_signal_connect (c, "clicked", G_CALLBACK(destroyme), hello);
+	gtk_widget_show_all(hello);
+	
 }

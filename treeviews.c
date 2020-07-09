@@ -379,7 +379,7 @@ char *next = strtok_r(geombuf, sep, &ptr);
 		else if ( (strcmp(next, "type:") )== 0) {
 			ptype = strtok_r(NULL, sep, &ptr);
 			if(strcmp(ptype, "freebsd") == 0) {
-				list_of_slices = add_to_list(pname_capital, list_of_slices);
+				all_slices = add_to_list(pname_capital, all_slices);
 				slices_on_a_disk =add_to_list(pname_capital, slices_on_a_disk);
 					/* a slice */
 				}
@@ -402,7 +402,7 @@ char *next = strtok_r(geombuf, sep, &ptr);
 			free_space = check_free_space(pstart, pend_old, psectorsize);
 			if (free_space != NULL) {
 				gtk_tree_store_append(treestore1, &row_freespace, &parent);
-				gtk_tree_store_set(treestore1, &row_freespace, 3, "-free-", 4, free_space, -1);
+				gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
 				free(free_space);
 				}
 			
@@ -512,6 +512,7 @@ gboolean view_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) 
 		char * my = selected_item(tree1, 4); /* file system type */
 		char *part = selected_item(tree1, 1); /* partition */
 		if((my != NULL) && (part != NULL) ) {
+			todo = MOUNT;
 			GtkWidget *pop_menu = gtk_menu_new();
 			
 			int mnt = is_mounted(part);
@@ -521,6 +522,13 @@ gboolean view_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) 
 				g_signal_connect(unmount, "activate", G_CALLBACK(unmountfs), NULL);
 			}
 			else if (mnt == 0) {
+				if(strncmp(my, "n/a", 3) == 0) {
+				/* scan for file system */		
+					GtkWidget *rescan = gtk_menu_item_new_with_label(l.mrescan);
+					gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), rescan);
+					g_signal_connect(rescan, "activate", G_CALLBACK(fsscan), NULL);
+				}
+				else {
 				GtkWidget *mount = gtk_menu_item_new_with_label("mount");
 				gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), mount);
 				
@@ -535,14 +543,14 @@ gboolean view_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) 
 				GtkWidget * mount_media = gtk_menu_item_new_with_label ("/media");
 				gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_media);
 
-				/* /media */
+				/* other */
 				GtkWidget * mount_other = gtk_menu_item_new_with_label (l.mother);
 				gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_other);
 				
 				g_signal_connect(mount_mnt, "activate", G_CALLBACK(mountfs), NULL);
 				g_signal_connect(mount_media, "activate", G_CALLBACK(mountfs), NULL);
 				g_signal_connect(mount_other, "activate", G_CALLBACK(mountfs), NULL);
-
+				}
 			}
 			else if (mnt == 2)
 				msg("error in mount routines!");

@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 	confirm=0;	/* ask for confirmation */
 	if(fontsize[0] == '\0') /* initialize font size*/
 		strncpy(fontsize, "12", 2);
-	
+
 	/* parse command line options */
 	int opt;
 	long fsize;
@@ -73,6 +73,10 @@ int main(int argc, char *argv[]) {
 
 	/* gtk */
 	gtk_init(&argc, &argv);
+
+	/* disable annoying bell */
+	g_object_set(gtk_settings_get_default(), "gtk-error-bell", FALSE, NULL);
+
 	
 	/* main window */
 	top_window();

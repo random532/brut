@@ -13,12 +13,13 @@ lang en = {
 	.mmsg="_Ask for Confirmation",
 	.mshow="_Yes",
 	.mhide="_No",
-	.mfontinc="_Increase font size",
-	.mfontdec="_Decrease font size",
+	.mfont="_Font size",
+	.mfontinc="_Increase",
+	.mfontdec="_Decrease",
 	.medit="_Editor",
 
 	/* hints */
-	.no_root="no Root! Sorry.",
+	.no_root="not Root! Sorry.",
 	.chose_disk="Choose a disk!",
 	.chose_partition="Choose a partition!",
 	.chose_scheme="Choose a scheme!",
@@ -29,7 +30,12 @@ lang en = {
 	.apply="_Apply!",
 	.mdone="Done.",
 	.merror="Command failed.",
-	.mother="Other Location"
+	.mother="Other Location",
+	.mrescan="Show Filesystems",
+	.mpassw="Enter your sudo password!",
+	.mexplain="This command needs higher privileges.",
+	.mhello1="Hello. I am Pikachu.. hehe",
+	.mhello="github.com/random532/xdisk"
 };
 
 lang de = {
@@ -44,8 +50,9 @@ lang de = {
 	.mmsg="_Immer nachfragen",
 	.mshow="_Ja",
 	.mhide="_Nein",
-	.mfontinc="Schrift ver_größern",
-	.mfontdec="Schrift ver_kleinern",
+	.mfont="_Schriftgröße",
+	.mfontinc="ver_größern",
+	.mfontdec="ver_kleinern",
 	.medit="_Editor",
 
 	/* hints */
@@ -60,13 +67,19 @@ lang de = {
 	.apply="_Los jetzt!",
 	.mdone="Fertig.",
 	.merror="Befehl fehlgeschlagen.",
-	.mother="Anderer Ort"
+	.mother="Anderer Ort",
+	.mrescan="Zeige Dateisysteme",
+	.mpassw="Geben Sie Ihr Sudo Passwort ein!",
+	.mexplain="Dieser Befehl braucht mehr Berechtigungen.",
+	.mhello1="Hallo. Ich bin Pikachu.. hehe",
+	.mhello="github.com/random532/xdisk"
 };
 
 
 void en_lang() {
 
 	l = en;
+	
 	/* column header */
 	strcpy(columns[0], "Disk");
 	strcpy(columns[1], "Partition");

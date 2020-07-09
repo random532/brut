@@ -89,6 +89,13 @@ void add_menubar() {
 	GtkWidget * app_edit = gtk_menu_item_new_with_mnemonic (l.medit);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_edit);
 
+	/* App - Info */
+	GtkWidget * app_info = gtk_menu_item_new_with_mnemonic ("Info");
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_info);
+
+	GtkWidget *sep = gtk_separator_menu_item_new();
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), sep);
+	
 	/* App - Quit */
 	GtkWidget *app_quit = gtk_menu_item_new_with_mnemonic (l.mquit);
     gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_quit);
@@ -115,13 +122,21 @@ void add_menubar() {
 	GtkWidget * item_lang_en = gtk_menu_item_new_with_mnemonic ("_English");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_lang_sub), item_lang_en);
 
+	/* Font size  */
+	GtkWidget * item_font = gtk_menu_item_new_with_mnemonic (l.mfont);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_font);
+	
+	/* Font submenu */
+	GtkWidget *menu_font_sub = gtk_menu_new();
+	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_font), menu_font_sub);
+
 	/* Font size  increase*/
 	GtkWidget * item_fontinc = gtk_menu_item_new_with_mnemonic (l.mfontinc);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_fontinc);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_font_sub), item_fontinc);
 
 	/* Font size  increase*/
 	GtkWidget * item_fontdec = gtk_menu_item_new_with_mnemonic (l.mfontdec);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_fontdec);
+	gtk_menu_shell_append (GTK_MENU_SHELL (menu_font_sub), item_fontdec);
 
 	/* show messages */
 	GtkWidget * item_msg = gtk_menu_item_new_with_mnemonic (l.mmsg);
@@ -148,6 +163,7 @@ void add_menubar() {
 	/*  callback functions */
 	g_signal_connect_swapped (app_quit, "activate", G_CALLBACK(gtk_main_quit), NULL);
    	g_signal_connect (app_refresh, "activate", G_CALLBACK (redraw_cb), NULL);
+   	g_signal_connect (app_info, "activate", G_CALLBACK (info_cb), NULL);
 	g_signal_connect (item_lang_de, "activate", G_CALLBACK (change_lang_de), NULL);
 	g_signal_connect (item_lang_en, "activate", G_CALLBACK (change_lang_en), NULL);
 	g_signal_connect (item_fontinc, "activate", G_CALLBACK (font_inc), NULL);

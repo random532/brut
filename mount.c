@@ -28,14 +28,6 @@ int is_mounted(char *part) {
 void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	/* mount a partition */
 		
-	/* check permissions */
-	if(geteuid() != 0) {
-		if( vfs_usermount() != 1) {
-			msg(l.no_root);
-			return;
-		}
-	}
-	
 	/* setup */
 	const gchar *label = gtk_menu_item_get_label(gmenu);
 	char * part = selected_item(tree1, 1);	/* partition */
@@ -52,11 +44,13 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	/* mountpoint */
 	if(strncmp(label, "/mnt", 4) == 0) {
 		path = malloc(10);
+		memset(path, 0, 10);
 		mlen = 4;
 		strncpy(path, "/mnt", 5);
 	}
 	else if(strncmp(label, "/media", 7) == 0) {
 		path = malloc(10);
+		memset(path, 0, 10);
 		mlen = 6;
 		strncpy(path, "/media", 7);
 	}
@@ -128,46 +122,76 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		msg("undocumented file system.");
 		error = 1;
 	}
+	free(path);
 	
 	if(!error) {
-		if(confirm==1)
-			ask(cmd);
-		else {
-			success = execute_cmd(cmd, 0);
-			if(success == 0)
-				msg(l.mdone);
-			else
-				msg(l.merror);
+		if(!root() )  {
+			if(vfs_usermount() == 1) {
+				if (execute_cmd(cmd, 0) == 0) {
+					free(cmd);
+					msg(l.mdone);
+					return;
+				}
+			}
+			/* try sudo */
+			if(pw_needed() ) {
+				window_pw(cmd);
+				return;
+			}
+			else {
+				/* no password needed */
+				cmd = sudo(cmd, "empty", 0);
+				if(cmd == NULL) {
+					printf("restart recommended..\n");
+					return;
+				}
+			}
 		}
-	}
-	free(cmd);
-	free(path);
-}
-
-void unmountfs() {
-	/* unmount */
-	char *part = selected_item(tree1, 1); /* partition */
-	if(part != NULL) {
-		int len = strlen(part);
-		char *cmd = malloc (len + 20);
-		memset(cmd, 0, len+20);
-		snprintf(cmd, len+20, "umount /dev/%s", part);
-		if(confirm==1)
-			ask(cmd);
-		else {
-			int success = execute_cmd(cmd, 0);
-			if(success == 0)
-				msg(l.mdone);
-			else
-				msg(l.merror);
-		}
+		submit(cmd, 0);
 		free(cmd);
 	}
 }
 
+void unmountfs() {
+	/* unmount */
+	int success=0;
+	char *part = selected_item(tree1, 1); /* partition */
+	if(part == NULL)
+		return;
+		
+	int len = strlen(part);
+	char *cmd = malloc (len + 20);
+	memset(cmd, 0, len+20);
+	snprintf(cmd, len+20, "umount /dev/%s", part);
+	if(!root()) {
+		if( (vfs_usermount() == 0) ) { 
+			if( execute_cmd(cmd, 0) == 0) {
+				msg(l.mdone);
+				free(cmd);
+				return;
+			}
+		}
+		/* try sudo */
+		if(pw_needed() ) {
+			window_pw(cmd);
+			return;
+		}
+		else {
+			/* no password needed */
+			cmd = sudo(cmd, "empty", 0);
+			if(cmd == NULL) {
+				printf("restart recommended..\n");
+				return;
+			}
+		}
+	}
+	submit(cmd, 0);
+		free(cmd);
+}
+
 int vfs_usermount() {
 	
-	/* whether regular users are allowed to mount */
+	/* checks wether regular users are allowed to mount */
 	int usermnt = 0;
 	char buf[30];
 	memset(buf, 0, 30);
@@ -181,44 +205,4 @@ int vfs_usermount() {
 		usermnt = 1;
 	pclose(fp);
 	return usermnt;
-}
-
-void usermount(char *geom, char *path) {
-	
-	char cmd[CMDSIZE];
-	int error=0;
-	
-	/* try ufs */
-	snprintf(cmd, CMDSIZE-1, "mount /dev/%s %s", geom, path);
-	if( execute_cmd(cmd, 0) != 0) {
-		/* try msdosfs */
-		snprintf(cmd, CMDSIZE-1, "mount -t msdosfs /dev/%s %s", geom, path);
-		if( execute_cmd(cmd, 0) != 0) {
-			/* try zfs */
-			snprintf(cmd, CMDSIZE-1, "mount -t zfs /dev/%s %s", geom, path);
-			if( execute_cmd(cmd, 0) != 0) {
-				/* try ntfs */
-				snprintf(cmd, CMDSIZE-1, "ntfs-3g /dev/%s %s", geom, path);
-				if( execute_cmd(cmd, 0) != 0) {
-					/* try exfat */
-					snprintf(cmd, CMDSIZE-1, "mount.exfat /dev/%s %s", geom, path);
-					if( execute_cmd(cmd, 0) != 0) {
-						/* try ext2 */
-						snprintf(cmd, CMDSIZE-1, "fuse-ext2 /dev/%s %s", geom, path);
-						if( execute_cmd(cmd, 0) != 0) {
-							/* try cd9660 */
-							snprintf(cmd, CMDSIZE-1, "fuse-ext2 /dev/%s %s", geom, path);
-							if( execute_cmd(cmd, 0) != 0) {
-								error = 1;
-							}
-						}
-					}
-				}
-			}
-		}
-	}
-	if( error == 1)
-		msg(l.merror);
-	else
-		msg(l.mdone);
 }

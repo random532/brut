@@ -5,8 +5,7 @@ void destroy_editor (GtkMenuItem *item, gpointer user_data) {
 }
 
 void editor() {
-	if(!root() )
-		return;
+
 /* 
  * we want a window with a box,
  * the box contains a grid,

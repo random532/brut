@@ -4,8 +4,8 @@ void on_toplevel_changed() {
 	char *string;
 	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_toplevel));
 	if(string == NULL) {
-		/* gtk_combo_box_remove_all() creates a signal each time it removes an entry */
-		/* so that this function gets called multiple times */
+		/* gtk_combo_box_remove_all() creates a signal for each removed entry */
+		/* this function is called multiple times */
 		//msg("Error! gtk_combo_box_text_get_active_text is empty!");
 		return;
 	}

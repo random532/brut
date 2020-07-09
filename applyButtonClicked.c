@@ -2,13 +2,13 @@
 
 void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 
+	todo = GPART;
 	char *cmd = malloc(CMDSIZE); /* the command we want to execute */
 	if(cmd == NULL) {
 		msg("malloc failed.");
 		return;
 	}
 	memset(cmd, 0, 150);
-	int inform = 1;
 	int error = 0;
 		
 	/* what did our user choose? */
@@ -38,29 +38,35 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 		cmd = gpart_bootcode(cmd);
 	else if(strncmp(action, "file system", 11) == 0) {
 		cmd = gpart_filesystem(cmd);
-		inform = 0;
+		todo = FS;
 	}
-	if(cmd == NULL) 
+
+	if(cmd == NULL) /* error */
 		return;
-	if(confirm==1) /* ask for confirmation */
-		ask(cmd);
-	else { /* file systems inform too verboose */
-		if(inform == 1 )
-			execute_cmd(cmd, 1);
+
+	if(!root() )  { /* try sudo */
+		if(pw_needed() ) {
+			window_pw(cmd);
+			goto end;
+		}
 		else {
-			error = execute_cmd(cmd, 0);	
-			if(error == 0)
-				msg(l.mdone);
-			else
-				msg(l.merror);
+			/* no password needed */
+			cmd = sudo(cmd, "empty", 0);
+			if(cmd == NULL) {
+				printf("restart recommended..\n");
+				return;
+			}
 		}
 	}
-		free(cmd);
-		/* also redraw everything */
-		on_toplevel_changed();
-		gtk_widget_destroy(window_editor);
-		editor();
 
+	submit(cmd, confirm);
+	if(confirm != 1)	/* keep it until user makes his choice */
+		free(cmd);
+	/* also redraw everything */
+end:	
+	on_toplevel_changed();
+	gtk_widget_destroy(window_editor);
+	editor();
 }
 
 const char *get_combo_box_disk() {

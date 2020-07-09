@@ -1,16 +1,16 @@
 /*TODO:
- * - usermount
+ * - test everything
+ * - get feedback
  * */
  
-#include <unistd.h>
-#include <string.h>
-#include <gtk/gtk.h>
-#include <math.h>
-#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <math.h>
+#include <ctype.h>
 #include <inttypes.h>
-
+#include <gtk/gtk.h>
 
 #define LANG_EN 0
 #define LANG_DE 1
@@ -31,12 +31,17 @@ char fontsize[10];
 	 * before issueing a command */
 int confirm;
 
+	/* do we mount or gpart? Or something else? */
+#define MOUNT	0
+#define GPART	1
+#define FS 		3
+int todo;
+
 	/* keep track of disks and partitions */
 char *all_disks;
-char *list_of_slices;
+char *all_slices;
 char *all_partitions;
 char *slices_on_a_disk;
-
 
 	/* global gtk pointer  */
 GtkWidget	*window; 	/* main window */
@@ -56,6 +61,8 @@ GtkWidget *grid;
 GtkWidget * item_msg_hide;
 GtkWidget * item_msg_show;
 GtkWidget *b;
+GtkWidget *su;
+GtkWidget *passbuf;
 
 /* all items in the grid/editor window */
 GtkWidget *combo_schemes;
@@ -91,6 +98,7 @@ typedef struct {
 	char mmsg[25];
 	char mshow[20];
 	char mhide[20];
+	char mfont[20];
 	char mfontinc[25];
 	char mfontdec[25];
 	char medit[25];
@@ -108,6 +116,11 @@ typedef struct {
 	char mdone[20];
 	char merror[25];
 	char mother[30];
+	char mrescan[30];
+	char mpassw[50];
+	char mexplain[60];
+	char mhello[60];
+	char mhello1[60];
 } lang;
 
 lang l;
@@ -166,6 +179,15 @@ void format_string(char *);
 int vari(char *, int);
 int root();
 int command_exist(char *);
+int submit(char *, int);
+void fsscan();
+void info_cb(GtkMenuItem *, gpointer);
+
+/* root.c */
+char *sudo(char *, char *, int);
+int test_pw(char *);
+void window_pw(char *);
+int pw_needed();
 
 /* editorWindow.c */
 void editor();
