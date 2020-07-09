@@ -15,6 +15,8 @@ GH_ACCOUNT=	random532
 USES=		gnome
 USE_GNOME=	gtk30
 
+RUN_DEPENDS=	sudo>0:security/sudo
+
 PLIST_FILES=	bin/xdisk
 
 do-install:
