@@ -20,8 +20,7 @@ A: You can..<br>
    - create file systems<br>
    
 Q: What are the dependencies?<br>
-A: It uses gtk3. "pkg install gtk3" is recommended.<br>
-   Other than that, it only uses system tools (e.g. geom, gpart, newfs).<br>
+A: gtk3 and sudo. "pkg install gtk3" is recommended, since it is huge!<br>
 
 Q: How do I install xdisk?<br>
 A: Install as a port:<br>
@@ -34,11 +33,13 @@ Q: How to uninstall?<br>
 A: run "pkg remove xdisk"<br>
 
 Q: Is it safe? <br>
-A: Non-root users can see the partitions, only root can edit them. <br>
+A: There are mixed opinions about whether GUI programms should issue root commands. <br>
+Either way, xdisk uses sudo(8) as backend. This way xdisk will mirror the security policy<br>
+of sudo. More in sudo.conf(5).
 
 Q: How do I mount/unmount?<br>
-A: Right-click on a partition. If you have permissions, a popup menu will appear.<br>
+A: Right-click on a partition. A popup menu will appear.<br>
 
 Q: Why is this not an official port?<br>
-A: It needs more testing. <br>
-   I only tested it on a thinkpad x220 and a raspberry pi 3.<br>
+A: It's still in development. <br>
+   I test it on a thinkpad x220 and a raspberry pi 3.<br>
