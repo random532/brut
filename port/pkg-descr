@@ -1,5 +1,10 @@
-This is a GUI for editing hard drives on FreeBSD (partition editor, disk editor).
-It uses gtk3.
+xdisk is a partition editor with a graphical user interface.
+It uses gtk3 for the GUI elements.
+It uses sudo as backend.
 
-Start it with xdisk. 
+Start it with xdisk.
+
 If it complains about missing machine-id, run "dbus-uuidgen --ensure".
+Command line options are -l (language), -c (ask for confirmation) and -f (fontsize). 
+
+www.github.com/random532/xdisk
