@@ -41,5 +41,4 @@ Q: How do I mount/unmount?<br>
 A: Right-click on a partition. A popup menu will appear.<br>
 
 Q: Why is this not an official port?<br>
-A: It's still in development. <br>
-   I test it on a thinkpad x220 and a raspberry pi 3.<br>
+A: It needs more testing.  You can test, too! The application name might change in the future.<br>
