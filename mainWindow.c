@@ -4,7 +4,7 @@
 void top_window() {
 		/* main window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (window), "xdisk");
+	gtk_window_set_title (GTK_WINDOW (window), "disk editor");
 	gtk_window_set_position (GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);

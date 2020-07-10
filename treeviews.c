@@ -83,7 +83,7 @@ GtkWidget *make_treeview() {
   	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
                              GTK_SELECTION_SINGLE);
 
-	g_signal_connect(G_OBJECT (view), "button-press-event", G_CALLBACK(view_clicked), NULL);
+	g_signal_connect(G_OBJECT (view), "button-press-event", G_CALLBACK(right_clicked), NULL);
 return view;
 }
 
@@ -464,12 +464,13 @@ char *next = strtok_r(geombuf, sep, &ptr);
 }
 
 char *selected_item(GtkWidget *tview, int column) {
-	char *user_data = NULL;
-
+	
+	/* get contents of the selected row in a treeview*/
+	char *data = NULL;
 	if(tview != NULL) {
 		GtkTreeSelection *selected = gtk_tree_view_get_selection(GTK_TREE_VIEW (tview));
 		if (selected == NULL) {
-			printf("gtk_tree_view_get_selection() failed \n");
+			printf("please select a row!\n");
 			return NULL;
 		}
 		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW (tview));
@@ -479,77 +480,75 @@ char *selected_item(GtkWidget *tview, int column) {
 		}
 		GtkTreeIter iter;
 		if (gtk_tree_selection_get_selected(selected, &model, &iter) ) {
-			gtk_tree_model_get(model, &iter, column, &user_data, -1);
-			if(user_data != NULL) 
-				return user_data;
+			gtk_tree_model_get(model, &iter, column, &data, -1);
+			if(data != NULL) 
+				return data;
 		}
-		else /* obsolete */
-			msg("select a row!");
 	}
 	return NULL;
 }
 
-gboolean view_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) {
-	if (event->type == GDK_BUTTON_PRESS && event->button == 3) {
-		GtkTreePath *path;
-		GtkTreeViewColumn *column;
+gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) {
+	
+	if( (event->type != GDK_BUTTON_PRESS) || (event->button != 3) ) 
+		return FALSE;  
 
-		GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree1));
-		if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tree1), event->x, event->y, &path, &column, NULL, NULL))
+	/* Where did he click? */
+	GtkTreePath *path;
+	GtkTreeViewColumn *column;
+	if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tree1), event->x, event->y, &path, &column, NULL, NULL))
 			return FALSE;
 
-/*		if (column != gtk_tree_view_get_column(GTK_TREE_VIEW(tree1), 0)) {	
-			// wrong column, don't bother
-			gtk_tree_path_free(path);
-			return FALSE;
-		}
-*/
-		gtk_tree_selection_unselect_all(selection);
-		gtk_tree_selection_select_path(selection, path);
-		gtk_tree_path_free(path);
+	/* select the row that was clicked */
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree1));
+	gtk_tree_selection_unselect_all(selection);
+	gtk_tree_selection_select_path(selection, path);
+	gtk_tree_path_free(path);
 
-		/* a potential popup menu for mount options */
-		char * my = selected_item(tree1, 4); /* file system type */
-		char *part = selected_item(tree1, 1); /* partition */
+	/* a potential popup menu for mount options */
+	char *my = selected_item(tree1, 4); /* file system type */
+	char *part = selected_item(tree1, 1); /* partition */
 		if((my != NULL) && (part != NULL) ) {
 			todo = MOUNT;
 			GtkWidget *pop_menu = gtk_menu_new();
 			
 			int mnt = is_mounted(part);
 			if (mnt == 1) {
+				/* "unmount" */
 				GtkWidget *unmount = gtk_menu_item_new_with_label ("unmount");
 				gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), unmount);
 				g_signal_connect(unmount, "activate", G_CALLBACK(unmountfs), NULL);
 			}
 			else if (mnt == 0) {
 				if(strncmp(my, "n/a", 3) == 0) {
-				/* scan for file system */		
+				/* "show file system" */		
 					GtkWidget *rescan = gtk_menu_item_new_with_label(l.mrescan);
 					gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), rescan);
 					g_signal_connect(rescan, "activate", G_CALLBACK(fsscan), NULL);
 				}
 				else {
-				GtkWidget *mount = gtk_menu_item_new_with_label("mount");
-				gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), mount);
+					/* "mount" "mointpoints" */
+					GtkWidget *mount = gtk_menu_item_new_with_label("mount");
+					gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), mount);
 				
-				GtkWidget *mount_sub = gtk_menu_new();
-				gtk_menu_item_set_submenu (GTK_MENU_ITEM (mount), mount_sub);
+					GtkWidget *mount_sub = gtk_menu_new();
+					gtk_menu_item_set_submenu (GTK_MENU_ITEM (mount), mount_sub);
 
-				/* /mnt */
-				GtkWidget * mount_mnt = gtk_menu_item_new_with_label ("/mnt");
-				gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_mnt);
+					/* /mnt */
+					GtkWidget * mount_mnt = gtk_menu_item_new_with_label ("/mnt");
+					gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_mnt);
 
-				/* /media */
-				GtkWidget * mount_media = gtk_menu_item_new_with_label ("/media");
-				gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_media);
+					/* /media */
+					GtkWidget * mount_media = gtk_menu_item_new_with_label ("/media");
+					gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_media);
 
-				/* other */
-				GtkWidget * mount_other = gtk_menu_item_new_with_label (l.mother);
-				gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_other);
+					/* other */
+					GtkWidget * mount_other = gtk_menu_item_new_with_label (l.mother);
+					gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_other);
 				
-				g_signal_connect(mount_mnt, "activate", G_CALLBACK(mountfs), NULL);
-				g_signal_connect(mount_media, "activate", G_CALLBACK(mountfs), NULL);
-				g_signal_connect(mount_other, "activate", G_CALLBACK(mountfs), NULL);
+					g_signal_connect(mount_mnt, "activate", G_CALLBACK(mountfs), NULL);
+					g_signal_connect(mount_media, "activate", G_CALLBACK(mountfs), NULL);
+					g_signal_connect(mount_other, "activate", G_CALLBACK(mountfs), NULL);
 				}
 			}
 			else if (mnt == 2)
@@ -558,8 +557,5 @@ gboolean view_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) 
 			gtk_widget_show_all(pop_menu);
 			gtk_menu_popup_at_pointer( GTK_MENU (pop_menu), NULL);
 		}
-		return TRUE;
-	}
-	else
-		return FALSE;
+		return TRUE; /* right click finished */
 	}

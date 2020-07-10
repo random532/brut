@@ -3,54 +3,51 @@
 /* return a buffer with disk names, space separated */
 char *get_disks() {
 
-/* buffer to read input stream */
-char line[150];
-
-/* buffer to hold our disk names */
-int disk_buf_size = 30;
-char* disk_buf = malloc(disk_buf_size);
-	if ( disk_buf == NULL ) {
+int size = 40;
+char* buf = malloc(size);
+	if ( buf == NULL ) {
 		return NULL;	
 	}
-	memset(disk_buf, 0, disk_buf_size);
+memset(buf, 0, size);
 
-FILE * fp = popen("geom disk status -s", "r");
+FILE * fp = popen("geom disk status -s | awk '{print $1}'", "r");
 if ( fp == NULL ) {
 	printf("could not execute geom disk status\n");
-	free(disk_buf);	
+	free(buf);	
 	return NULL;
-	}
-
-while( fgets(line, sizeof line, fp) ) {
-
-		strtok(line, " ");
-		strcat( disk_buf, line );
-		strcat( disk_buf, " " );	
-	
-		disk_buf_size = disk_buf_size + 7;	
-		disk_buf = realloc(disk_buf, disk_buf_size);
-		if(disk_buf == NULL ) {
-			printf("realloc(): failed\n");			
-			return NULL;
-			}
- 
-	 memset(line, 0, 150);
-	}
-
-pclose(fp);
-return disk_buf;
 }
 
-/* XXX: */
+char line[40];
+int len;
+while( fgets(line, sizeof line, fp) ) {
+
+	len = strlen(line);
+	line[len-1] = (char) 0;
+	size = size + len + 5;
+	buf = realloc(buf, size);
+	if( buf == NULL)
+		goto finish;
+	strncat(buf, line, len);
+	strncat(buf, " ", 1);
+
+	 memset(line, 0, sizeof line);
+	}
+
+len = strlen(buf);
+buf[len-1] = (char) 0;
+
+finish:
+pclose(fp);
+return buf;
+}
+
+
 int add_slices() {
 
 /* buffer to read input stream */
-char line[150];
-int len=150;
-int i=0;
-int e=0;
+char line[50];
 
-FILE * fp = popen("geom part status -gs", "r");
+FILE * fp = popen("geom part status -s | awk '{print $1}'", "r");
 if ( fp == NULL ) {
 	printf("could not execute geom part status\n");
 	return 0;
@@ -58,107 +55,75 @@ if ( fp == NULL ) {
 
 while( fgets(line, sizeof line, fp) ) {
 
-	while(strncmp(&line[i], " ", 1) == 0)
-		i++;
-	e = i + 1;
-	while(strncmp(&line[e], " ", 1) != 0)
-		e++;
-	line[e] = (char) 0;
-	/* do some heuristics */
-	/* we only want slices */
-	/* so we inspect the string */
-	if ( (strncmp(&line[i], "diskid", 6) != 0)) {
-		e--; /* last char - always a number */
-		e--;
-		while( (line[e] == '0') || (line[e] == '1') || (line[e] == '2') \
-		  || (line[e] == '3') || (line[e] == '4') || (line[e] == '5') \
-		  || (line[e] == '6') || (line[e] == '7') || (line[e] == '8') \
-		  || (line[e] =='9') )
-		  e--;
-		 e--; /* this is either 'p' or 's' */
-		 if( (line[e] == '0') || (line[e] == '1') || (line[e] == '2') \
-		  || (line[e] == '3') || (line[e] == '4') || (line[e] == '5') \
-		  || (line[e] == '6') || (line[e] == '7') || (line[e] == '8') \
-		  || (line[e] =='9') )
-			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, &line[i]); 
+	int len = strlen(line);
+	line[len-1] = (char) 0;
+	
+	if(strncmp( line, "diskid", 5) != 0 ) {
+
+		/* is partition a "freebsd" partition? */
+		char *ptype = get_type(line);
+		if(ptype == NULL)
+			return 0;
+		if( (strncmp(ptype, "freebsd", 7) == 0 ) && (strlen(ptype) == 7) )  
+			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, line);
+		free(ptype); 
 	}
 	/* prepare next round */
-	memset(line, 0, 150);
-	i=0;
-	e=0;
-	}
+	memset(line, 0, sizeof line);
+}
 	
 pclose(fp);
 return 1;
 }
+
 
 int add_geoms() {
-	
-/* buffer to read input stream */
-char line[150];
-int len=150;
-int i=0;
-int e=0;
+/* add disks to the combo box */
 
-FILE * fp = popen("geom disk status -gs", "r");
-if ( fp == NULL ) {
-	printf("could not execute geom part status\n");
-	return 0;
+//	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_disks)); SLICES!
+
+	FILE * fp = popen("geom disk status -s | awk '{print $1}'", "r");
+	if ( fp == NULL ) {
+		printf("could not execute geom disk status\n");	
+		return 0;
 	}
 
-while( fgets(line, sizeof line, fp) ) {
+	char line[40];
+	int len;
+	while( fgets(line, sizeof line, fp) ) {
 
-	while(strncmp(&line[i], " ", 1) == 0)
-		i++;
-	e = i + 1;
-	while(strncmp(&line[e], " ", 1) != 0)
-		e++;
-	line[e] = (char) 0;
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, &line[i]); 
-
-	/* prepare next round */
-	memset(line, 0, 150);
-	i=0;
-	e=0;
+		len = strlen(line);
+		line[len-1] = (char) 0;
+		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_disks), NULL, line); 
+		memset(line, 0, sizeof line);
 	}
-	
 pclose(fp);
 return 1;
 }
+
 /* add all partitions on the system */
 /* to the partition combo box */
 int add_partitions() {
 
 gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_partitions));
 
-/* buffer to read input stream */
-char line[150];
-int len=150;
-int i=0;
-int e=0;
-
-FILE * fp = popen("geom part status -s", "r");
+FILE * fp = popen("geom part status -s | awk '{print $1}'", "r");
 if ( fp == NULL ) {
 	printf("could not execute geom part status\n");
 	return 0;
 	}
 
+char line[50];
 while( fgets(line, sizeof line, fp) ) {
 
-	while(strncmp(&line[i], " ", 1) == 0)
-		i++;
-	e = i + 1;
-	while(strncmp(&line[e], " ", 1) != 0)
-		e++;
-	line[e] = (char) 0;
-	if ( (strncmp(&line[i], "diskid", 6) != 0)) 
-		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_partitions), NULL, &line[i]); 
+	int len = strlen(line);
+	line[len-1] = (char) 0;
 	
-	/* prepare next round */
-	memset(line, 0, 150);
-	i=0;
-	e=0;
-	}
+	if(strncmp( line, "diskid", 5) != 0 )
+		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_partitions), NULL, line); 
+
+	memset(line, 0, sizeof line);
+}
 	
 pclose(fp);
 return 1;
@@ -167,43 +132,42 @@ return 1;
 /* return a buffer with all the geom information */
 char *read_disk(char *diskname) {
 
-	char buf[30]= "geom part list ";		
-	char buffer[150];
-	int size=150;	
+	int size = CMDSIZE;
+	char buffer[CMDSIZE];
+	snprintf(buffer, sizeof buffer, "geom part list %s 2>&1", diskname);
+
 	char* diskinfo = malloc(size);
 	if ( diskinfo == NULL ) {
 		return NULL;	
 	}
 	memset(diskinfo, 0, size);
 
-	strcat(buf, diskname);
-	strcat(buf ," 2>&1"); // also capture stderr
-	FILE * fp = popen(buf, "r");
+	FILE * fp = popen(buffer, "r");
 	if ( fp == NULL ) {
 		printf("could not execute geom part list %s\n", diskname);	
 	return NULL;
 	}
-
+	memset(buffer, 0, sizeof buffer);
+	
 	while( fgets(buffer, sizeof buffer, fp) ) {
 		
 		if(strncmp(buffer, "geom:", 5) == 0) {
 			pclose(fp);
 			return diskinfo;
-			}
+		}
 		size= size + strlen(buffer);
-		diskinfo = realloc(diskinfo, size);
+		diskinfo = realloc(diskinfo, size +5);
 		if( diskinfo == NULL ) {
 			printf("realloc(): failed\n");
 			return NULL;
-			}
-		strcat(diskinfo, buffer);
-		memset(buffer, 0, 150);
 		}
+		strcat(diskinfo, buffer);
+		memset(buffer, 0, sizeof buffer);
+	}
 	
 	pclose(fp);
 	return diskinfo;
 }
-
 
 /* remove brackets, i.e. () from a string */
 void format_string(char* mystring) {
@@ -228,7 +192,6 @@ char *check_free_space( char *pstart, char *pend, char *psectorsize) {
 if( (pstart == NULL) || (pend == NULL) )
 	return NULL;
 
-
 long p_end = strtol(pend, NULL, 0);	/* convert to integer */
 long p_start = strtol(pstart, NULL, 0);
 long result = p_start - p_end;
@@ -236,7 +199,8 @@ long result = p_start - p_end;
 if(result <=100 ) 
 	return NULL;
 
-char* free_megabytes = malloc(20);
+int size = 20;
+char* free_megabytes = malloc(size);
 
 long sectorsize = strtol(psectorsize, NULL, 0);
 result = result * sectorsize;
@@ -244,13 +208,13 @@ result = result / 1024;	/* kilobytes */
 result = result / 1024;	/* megabytes */
 
 if( result <= 1024 ) {
-	sprintf(free_megabytes, " %ld", result);
-	strcat(free_megabytes, "M");
+	snprintf(free_megabytes, size, " %ld", result);
+	strncat(free_megabytes, "M", 1);
 }
 else {
 	result = result / 1024; /* gigabytes */
-	sprintf(free_megabytes, " %ld", result);
-	strcat(free_megabytes, "G");
+	snprintf(free_megabytes, size, " %ld", result);
+	strncat(free_megabytes, "G", 1);
 }
 return free_megabytes;
 }
@@ -280,7 +244,7 @@ char *add_to_list(char *pname, char *mylist) {
 		mylist = malloc(len);
 		if(mylist != NULL)
 			strcpy(mylist, pname);
-		}
+	}
 
 	else {
 		buflen = strlen(mylist);
@@ -288,7 +252,7 @@ char *add_to_list(char *pname, char *mylist) {
 		mylist = realloc(mylist, buflen);
 		strcat(mylist, " ");
 		strcat(mylist, pname);
-		}
+	}
 return(mylist);
 }
 
@@ -296,15 +260,15 @@ void clean_up_pointers() {
 	if(all_disks != NULL) {
 		free(all_disks);
 		all_disks = NULL;
-		}
+	}
 	if(all_partitions != NULL) {
 		free(all_partitions);
 		all_partitions = NULL;
-		}
+	}
 	if(all_slices != NULL) {
 		free(all_slices);
 		all_slices = NULL;
-		}
+	}
 }
 
 char *what_file_system(char *partition) {
@@ -371,24 +335,25 @@ char *what_file_system(char *partition) {
 }
 
 /* execute a shell command */
-/* return with a message box */
-
 int execute_cmd(char * cmd, int inform) {
 
-	char buf[200];
+	if(cmd == NULL)
+		return 1;
+	int len = strlen(cmd);
+	char *buf = malloc(len +20);
+	memset(buf, 0, len+20);
 	
-	strcpy(buf, cmd);
-	strcat(buf ," 2>&1"); // also capture stderr
-	
+	snprintf(buf, len+20, "%s 2>&1", cmd);
 	FILE * fp = popen(buf, "r");
 	if (fp == NULL)
 		msg("couldnt popen");
 	
-	while( fgets(buf, sizeof buf, fp)) {
+	char info[200];
+	while( fgets(info, sizeof info, fp)) {
 		
 		}
 	if(inform == 1)
-		msg(buf);
+		msg(info);
 	int suc = pclose(fp)/256;
 		
 	return suc;
@@ -403,7 +368,6 @@ void msg(char * blah) {
 	g_signal_connect(message, "response", G_CALLBACK(on_response), NULL);
 	}
 
-	/* destroy message box if ok is clicked */
 void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
 	gtk_widget_destroy(GTK_WIDGET (dialog));	
@@ -499,19 +463,20 @@ while( (partition[len] !='p') && (partition[len] != 's') )
 }
 
 int vari(char *line, int max) {
+	
+	/* in a string like " name: variable" find the variable */
 	int i = 0;
 	while( (strncmp(&line[i], ":", 1) != 0) && (i < max) )
-				i++;
+		i++;
 	i++;
 	
-	/*XXX: is this good? */
 	/* zero terminate instead of 0xA */
 	int z = strlen(&line[i]);
 	z = z + i;
 	z--;
 	line[z] = (char) 0;
 	
-	return i;
+	return i; /* XXX: has potential space charackter at the beginning */
 	}
 
 int root() {
@@ -611,5 +576,25 @@ void info_cb(GtkMenuItem *item, gpointer user_data) {
 	gtk_grid_attach(GTK_GRID (agrid), GTK_WIDGET (c), 1, 0, 1, 1);
 	g_signal_connect (c, "clicked", G_CALLBACK(destroyme), hello);
 	gtk_widget_show_all(hello);
+}
+
+char *get_type( char *part) {
 	
+	if(part == NULL)
+		return NULL;
+	int len = strlen(part);
+	
+	/* extract the disk */
+	char *disk = malloc(len+30);
+	strncpy(disk, part, len+1);
+	find_p(disk);
+	
+	char *cmd = malloc(CMDSIZE);
+	snprintf(cmd, CMDSIZE, "geom part list %s | grep -A15 -E 'Name: %s' | awk '/ type: /{print $2}'", disk, part);
+	FILE *fp = popen(cmd, "r");
+	char *type = disk;
+	fgets(type, len+30, fp);
+	len = strlen(type);
+	disk[len-1] = (char) 0;
+	return type;
 }

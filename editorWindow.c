@@ -69,7 +69,9 @@ void editor() {
 	gint x = 0, y = 0, width, height;
 	gtk_window_get_position (GTK_WINDOW(window), &x, &y);
 	gtk_window_get_size(GTK_WINDOW (window), &width, &height);
-	x = x + width;
+	/* XXX: get border width, and add it too! */
+	guint border = gtk_container_get_border_width(GTK_CONTAINER(window));
+	x = x + width + border;
 	gtk_window_move( GTK_WINDOW(window_editor), x, y);
 	gtk_window_set_default_size(GTK_WINDOW (window_editor), 230, 300);
 	gtk_widget_show(GTK_WIDGET (window_editor));

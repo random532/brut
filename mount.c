@@ -2,12 +2,12 @@
 
 int is_mounted(char *part) {
 	
-	/* execute mount */
-	/* see if we hit our partition */
-	char buf[100];
-	memset(buf, 0, 100);
 	if (part == NULL)
 		return 2; /* should never happen */
+	
+	/* execute mount w/o arguments */
+	char buf[100];
+	memset(buf, 0, 100);
 	int len = strlen(part);
 	FILE *fp = popen("mount", "r");
 	if (fp == NULL) {
@@ -43,16 +43,16 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	
 	/* mountpoint */
 	if(strncmp(label, "/mnt", 4) == 0) {
-		path = malloc(10);
+		path = malloc(20);
 		memset(path, 0, 10);
 		mlen = 4;
-		strncpy(path, "/mnt", 5);
+		strncpy(path, "/mnt", mlen);
 	}
 	else if(strncmp(label, "/media", 7) == 0) {
-		path = malloc(10);
+		path = malloc(20);
 		memset(path, 0, 10);
 		mlen = 6;
-		strncpy(path, "/media", 7);
+		strncpy(path, "/media", mlen);
 	}
 	else {
 		/* other path */
@@ -72,16 +72,16 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 			return;
 		}
 	}
-
-		cmd = malloc(plen + mlen + 20);
-		memset(cmd, 0, plen + mlen + 20);
+		int x = 50;
+		cmd = malloc(plen + mlen + x + 1);
+		memset(cmd, 0, plen + mlen + x + 1);
 	
 	/* file system type */
 	int error = 0;
 	if(strncmp(fs, "ufs", 3) == 0) 
-		snprintf(cmd, plen+mlen+30, "mount /dev/%s %s", part, path);
-	else if(strncmp(fs, "msdos", 5) == 0) 
-		snprintf(cmd, plen+mlen+30, "mount -t msdosfs /dev/%s %s", part, path);
+		snprintf(cmd, plen+mlen+x, "mount /dev/%s %s", part, path);
+	else if(strncmp(fs, "msdosfs", 7) == 0) 
+		snprintf(cmd, plen+mlen+x, "mount -t msdosfs /dev/%s %s", part, path);
 	else if(strncmp(fs, "ntfs", 5) == 0) {
 		
 		/* see if ntfs-3g is installed */
@@ -89,29 +89,29 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 			msg("To mount ntfs file systems, please install this package: ntfs-3g. Also kldload fuse.");
 			error = 1;
 		}
-		snprintf(cmd, plen+mlen+30, "ntfs-3g /dev/%s %s", part, path);
+		snprintf(cmd, plen+mlen+x, "ntfs-3g /dev/%s %s", part, path);
 	}
 	else if(strncmp(fs, "cd9660", 6) == 0)
-		snprintf(cmd, plen+mlen+30, "mount_cd9660 /dev/%s %s", part, path);
+		snprintf(cmd, plen+mlen+x, "mount_cd9660 /dev/%s %s", part, path);
 	else if(strncmp(fs, "ext2fs", 5) == 0) {
 		if (!command_exist("/bin/fuse-ext2")) {
 			msg("To mount ext2 file systems, please install this package: fusefs-ext2. Also kldload fuse.");
 			error = 1;
 		}
-		snprintf(cmd, plen+mlen+30, "fuse-ext2 /dev/%s %s", part, path);
+		snprintf(cmd, plen+mlen+x, "fuse-ext2 /dev/%s %s", part, path);
 	}
 	else if(strncmp(fs, "exfat", 5) == 0) {
 		if (!command_exist("/sbin/mount.exfat")) {
 			msg("To mount exfat file systems, please build this package via ports: sysutils/fusefs-exfat. Also kldload fuse(?).");
 			error = 1;
 		}
-		snprintf(cmd, plen+mlen+30, "mount.exfat /dev/%s %s", part, path);
+		snprintf(cmd, plen+mlen+x, "mount.exfat /dev/%s %s", part, path);
 	}
 	else if(strncmp(fs, "geli", 4) == 0)
-		snprintf(cmd, plen+mlen+30, "mount /dev/%s %s", part, path);
+		snprintf(cmd, plen+mlen+x, "mount /dev/%s %s", part, path);
 
 	else if(strncmp(fs, "zfs", 3) == 0)
-		snprintf(cmd, plen+mlen+30, "mount -t zfs /dev/%s %s", part, path);
+		snprintf(cmd, plen+mlen+x, "mount -t zfs /dev/%s %s", part, path);
 
 	else if(strncmp(fs, "n/a", 3) == 0) {
 		/* no read write permission on partition */

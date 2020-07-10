@@ -3,7 +3,7 @@
 char *sudo( char *cmd, char *passw, int pw) {
 
 	if( (cmd == NULL) || (strlen(cmd) == 0) )
-		return 0;
+		return NULL;
 	if( (passw == NULL) || (strlen(passw) == 0) )
 		return NULL;
 		
@@ -17,7 +17,7 @@ char *sudo( char *cmd, char *passw, int pw) {
 	if(pw == 1)
 		snprintf(rcmd, len2, "echo \"%s\" | sudo -S %s", passw, cmd);
 	else
-		snprintf(rcmd, len2, "sudo -S %s", cmd); /* XXX: add -n? */
+		snprintf(rcmd, len2, "sudo -S %s", cmd); /* XXX: add -n ? */
 	free(cmd);
 	return rcmd;
 }
@@ -65,13 +65,14 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 	/* "Cancel" button */
 	if(cmd != NULL)
 		free(cmd);
-	gtk_entry_set_text(GTK_ENTRY (passbuf), "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" );
+	char *hash = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+	gtk_entry_set_text(GTK_ENTRY (passbuf),  hash);
 	gtk_widget_destroy(su);
+	on_toplevel_changed();
 	if( (window_editor != NULL) && (todo != MOUNT )) {
 		gtk_widget_destroy(window_editor);
 		editor();
 	}
-	on_toplevel_changed();
 }
 
 void o_cb(GtkMenuItem *item, gpointer cmd) {
@@ -121,7 +122,7 @@ void window_pw(char *cmd) {
 	
 	/* this window asks for root password */
 	su = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (su), "elevate privileges");
+	gtk_window_set_title (GTK_WINDOW (su), "sudo password");
 	gtk_container_set_border_width (GTK_CONTAINER (su), 30);
 	gtk_window_set_default_size(GTK_WINDOW (su), 250, 100);
 	gtk_window_set_modal(GTK_WINDOW(su), TRUE);
@@ -164,6 +165,8 @@ void window_pw(char *cmd) {
 	GtkWidget *o = gtk_button_new_with_mnemonic("_Ok");
 	gtk_grid_attach(GTK_GRID (agrid), GTK_WIDGET (o), 2, 0, 1, 1);
 	g_signal_connect (o, "clicked", G_CALLBACK (o_cb), cmd);
+
+	//g_signal_connect() enter pressed
 
 	gtk_widget_show_all(GTK_WIDGET(su) );
 	gtk_widget_grab_focus(GTK_WIDGET(passbuf));

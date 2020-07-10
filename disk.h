@@ -182,6 +182,8 @@ int command_exist(char *);
 int submit(char *, int);
 void fsscan();
 void info_cb(GtkMenuItem *, gpointer);
+char *get_partition_type(char *);
+char *get_type(char *);
 
 /* root.c */
 char *sudo(char *, char *, int);
@@ -219,7 +221,7 @@ int fill_treeview();
 int fill_treeview1(char *);
 void fill_tree(char *, char *);
 char *selected_item(GtkWidget *, int);
-gboolean view_clicked(GtkWidget *, GdkEventButton *, gpointer); 
+gboolean right_clicked(GtkWidget *, GdkEventButton *, gpointer); 
 
 /* mount.c */
 int is_mounted(char *);
