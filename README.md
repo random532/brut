@@ -20,7 +20,7 @@ A: You can..<br>
    - create file systems<br>
    
 Q: What are the dependencies?<br>
-A: gtk3 and sudo. "pkg install gtk3" is recommended, since it is huge!<br>
+A: gtk3 and sudo. "pkg install gtk3" is recommended.<br>
 
 Q: How do I install xdisk?<br>
 A: Install as a port:<br>
