@@ -29,10 +29,10 @@ sudo behavior in sudo.conf(5).<br><br>
 
 5. How do I install xdisk?<br>
 Install as a port:<br>
-1. Download ports/Makefile and ports/pkg-descr<br>
-2. Run "make makesum" and "make install clean"<br>
-3. (recommended: Run "dbus-uuidgen --ensure", for dbus)<br>
-4. Start it with xdisk :)<br><br>
+- Download ports/Makefile and ports/pkg-descr<br>
+- Run "make makesum" and "make install clean"<br>
+- (recommended: Run "dbus-uuidgen --ensure", for dbus)<br>
+- Start it with xdisk :)<br><br>
 
 6. How to uninstall?<br>
 run "pkg remove xdisk"<br><br>
