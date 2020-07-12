@@ -86,10 +86,10 @@ void en_lang() {
 	strcpy(columns[2], "Type");
 	strcpy(columns[3], "Size");
 	strcpy(columns[4], "File System");
-	strcpy(columns[5], "Label");
-	strcpy(columns[6], "Attribute");
-	strcpy(columns[7], "State");
-	strcpy(columns[8], "Index");
+	strcpy(columns[5], "Mountpoint");
+	strcpy(columns[6], "Label");
+	strcpy(columns[7], "Attribute");
+	strcpy(columns[8], "State");
 	strcpy(columns[9], "Start");
 	strcpy(columns[10], "End");
 	strcpy(columns[11], "Length");
@@ -105,7 +105,8 @@ void en_lang() {
 	strcpy(columns[21], "Entries");
 	strcpy(columns[22], "Modified");
 	strcpy(columns[23], "Mode");
-
+	strcpy(columns[24], "Index");
+	
 	strncpy(column[0], "Name", 10);
 	strncpy(column[1], "Description", 15);
 	strncpy(column[2], "Ident", 10);
@@ -128,10 +129,10 @@ void de_lang() {
 	strcpy(columns[2], "Typ");
 	strcpy(columns[3], "Größe");
 	strcpy(columns[4], "Dateisystem");
-	strcpy(columns[5], "Label");
-	strcpy(columns[6], "Attribut");
-	strcpy(columns[7], "Status");
-	strcpy(columns[8], "Index");
+	strcpy(columns[5], "Mountpoint");
+	strcpy(columns[6], "Label");
+	strcpy(columns[7], "Attribute");
+	strcpy(columns[8], "Status");
 	strcpy(columns[9], "Start");
 	strcpy(columns[10], "Ende");
 	strcpy(columns[11], "Länge");
@@ -147,6 +148,7 @@ void de_lang() {
 	strcpy(columns[21], "Einträge");
 	strcpy(columns[22], "Modifiziert");
 	strcpy(columns[23], "Modus");
+	strcpy(columns[24], "Index");
 
 	strncpy(column[0], "Name", 10);
 	strncpy(column[1], "Beschreibung", 15);

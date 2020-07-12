@@ -75,6 +75,7 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 	}
 }
 
+
 void o_cb(GtkMenuItem *item, gpointer cmd) {
 		
 	/* "Okay" button */
@@ -90,15 +91,10 @@ void o_cb(GtkMenuItem *item, gpointer cmd) {
 	strncpy(passw, pass, len+1);
 	
 	/* test password */
-	if( (test_pw( passw) == 0) || (cmd == NULL) )
-		goto bad;
+	char *error = sudo_backend(cmd, passw);
+	if( error != NULL) /* we dont need that string really */
+		free(error);
 
-	cmd = sudo(cmd, passw, 1);
-	free(passw);
-	
-	submit(cmd, confirm);
-	if(confirm == 0)
-		free(cmd);
 	gtk_widget_destroy(su);
 	on_toplevel_changed();
 	if(window_editor != NULL) {
@@ -127,7 +123,8 @@ void window_pw(char *cmd) {
 	gtk_window_set_default_size(GTK_WINDOW (su), 250, 100);
 	gtk_window_set_modal(GTK_WINDOW(su), TRUE);
 	gtk_window_set_transient_for(GTK_WINDOW(su), GTK_WINDOW(window)); 
-	
+
+	/* position in on top */
 	gint x = 0, y = 0, width, height;
 	gtk_window_get_position (GTK_WINDOW(window), &x, &y);
 	gtk_window_get_size(GTK_WINDOW (window), &width, &height);
@@ -135,15 +132,18 @@ void window_pw(char *cmd) {
 	y = y + 50;
 	gtk_window_move( GTK_WINDOW(su), x, y);
 	
+	/* a box */
 	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	gtk_container_add (GTK_CONTAINER (su), box);
 
+	/* grid for two buttons - ok - cancel*/
 	GtkWidget *agrid = gtk_grid_new();
 	gtk_grid_insert_column(GTK_GRID(agrid), 3);
 	gtk_box_pack_end(GTK_BOX(box), agrid, TRUE, TRUE, 0);
 	gtk_grid_set_column_homogeneous(GTK_GRID(agrid), FALSE);
 	gtk_grid_set_column_spacing(GTK_GRID(agrid), 85);
 	
+	/* type your password in here */
 	GtkEntryBuffer *pass = gtk_entry_buffer_new (NULL, 0);
 	gtk_entry_buffer_set_max_length (pass, 40);
 	passbuf = gtk_entry_new_with_buffer (pass);
@@ -152,12 +152,20 @@ void window_pw(char *cmd) {
 	//gtk_entry_set_invisible_char(GTK_ENTRY(passbuf), 9679);
 	g_object_set(passbuf, "input-purpose", GTK_INPUT_PURPOSE_PASSWORD, NULL);
 	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(passbuf), TRUE, TRUE, 0);
+	g_signal_connect(passbuf, "activate", G_CALLBACK(o_cb), cmd);
 	
-	GtkWidget *label1 = gtk_label_new(l.mpassw);
-	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label1), TRUE, TRUE, 0);	
+	/* some labels */
+	GtkWidget *label2 = gtk_label_new(l.mpassw);
+	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label2), TRUE, TRUE, 0);
+	
+	if(confirm == 1) {
+		GtkWidget *label1 = gtk_label_new(cmd);
+		gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label1), TRUE, TRUE, 0);	
+	}
 	GtkWidget *label = gtk_label_new(l.mexplain);
 	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label), TRUE, TRUE, 0);
 
+	/* two buttons */
 	GtkWidget *c = gtk_button_new_with_mnemonic("_Cancel");
 	gtk_grid_attach(GTK_GRID (agrid), GTK_WIDGET (c), 1, 0, 1, 1);
 	g_signal_connect (c, "clicked", G_CALLBACK (c_cb), cmd);
@@ -166,8 +174,95 @@ void window_pw(char *cmd) {
 	gtk_grid_attach(GTK_GRID (agrid), GTK_WIDGET (o), 2, 0, 1, 1);
 	g_signal_connect (o, "clicked", G_CALLBACK (o_cb), cmd);
 
-	//g_signal_connect() enter pressed
-
+	/* and go! */
 	gtk_widget_show_all(GTK_WIDGET(su) );
 	gtk_widget_grab_focus(GTK_WIDGET(passbuf));
+}
+
+char *sudo_backend(char *rcmd, char * password) {
+
+	/* sudo password */
+	char *pw =malloc (strlen(password) +5);
+	sprintf(pw, "%s\n%d", password, EOF); /* newline and EOF? */
+	
+	/* create named pipe */
+	char *pwfile = "/tmp/qwzrfw";
+	if (mkfifo(pwfile, 0660) != 0) {
+		printf("fifo error\n");
+		return NULL;
+	}
+
+	/* run child process */
+	int cmdlen = strlen(rcmd) + strlen(pwfile) + 20;
+	char *cmd = malloc(cmdlen);
+	snprintf(cmd, cmdlen, "sudo -p- -S %s <%s 2>&1", rcmd, pwfile);
+	FILE* child = popen(cmd, "r");
+
+	/*write password to pipe and wait... */
+	int fd;	
+	if((fd = open(pwfile, O_WRONLY)) < 0) {
+		printf("open() O_WRONLY failed\n");
+		return NULL;
+	}
+	ssize_t written = write(fd, pw, strlen(password)+2 );
+	if( written <= 0)
+		printf("write() error\n");
+	
+	/* close pipe */
+	close(fd);
+	
+	/* get stdout of child */
+	int buflen= 30; 
+	int len;
+	char *buf = malloc(buflen); 	
+	char line[100]; /* max line length */
+	memset(line, 0, sizeof line);
+	memset(buf, 0, buflen);
+	
+	int sudo_failed = 0;
+	
+	while(fgets(line, sizeof line, child) ) {
+		len = strlen(line);
+		if(len > 0) {
+			
+			buflen = len + buflen + 1; /* increase buffer */
+			buf = realloc(buf, buflen);
+			if(buf != NULL)
+				strncat(buf, line, len);
+			if(strncmp(line, "sudo:", 5) == 0) {
+				sudo_failed = 1; 
+				break;
+			}
+		}
+	}
+	
+	/* end child process */	
+	int error = pclose(child);
+	
+	/* destroy pipe */
+	if (unlink(pwfile) != 0)
+		printf("unlink() failed\n");
+		
+	free(pw);
+	free(cmd);
+	
+	/* inform user */
+	if( (todo == MOUNT) || (todo == FS) ) {
+		if(error == 0)
+			msg(l.mdone);
+		else {
+			if(sudo_failed == 1 )
+				msg("sudo: Sorry, try again.");
+			else
+				msg(l.merror);
+		}
+	}
+	else if(todo == GPART) {
+		if(sudo_failed == 1 )
+			msg("sudo: Sorry, try again.");
+		else
+			msg(buf);
+	}
+
+	return buf;
 }

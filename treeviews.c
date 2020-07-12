@@ -76,7 +76,11 @@ GtkWidget *make_treeview() {
 		}
 
 	/* we always use strings */
-	treestore1 = gtk_tree_store_new(COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
+	treestore1 = gtk_tree_store_new(COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, \
+		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
+		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
+		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
+		G_TYPE_STRING, G_TYPE_STRING);
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(treestore1));
 	g_object_unref(treestore1); //destroy model automatically with view 
@@ -408,13 +412,17 @@ char *next = strtok_r(geombuf, sep, &ptr);
 			
 			/* XXX: do we still need this?*/
 			/* add partition to all_partitions */
-			all_partitions = add_to_list(pname_capital, all_partitions);
+			//all_partitions = add_to_list(pname_capital, all_partitions);
 			gtk_tree_store_append(treestore1, &child, &parent);
 	
 			/* what file system? */
 			pfilesystem = what_file_system(pname_capital);
 			if (pfilesystem != NULL) {
 				gtk_tree_store_set(treestore1, &child, 4, pfilesystem, -1);
+				char *mountpoint = is_mounted(pname_capital);
+				if(mountpoint != NULL)
+					gtk_tree_store_set(treestore1, &child, 5, mountpoint, -1);
+				free(mountpoint); 
 				free(pfilesystem);
 			}
 			
@@ -427,11 +435,11 @@ char *next = strtok_r(geombuf, sep, &ptr);
 
 
 			if(pindex != NULL) /* be safe with these */
-				gtk_tree_store_set(treestore1, &child, 8, pindex, -1);
+				gtk_tree_store_set(treestore1, &child, 24, pindex, -1);
 			if(plabel != NULL)
-				gtk_tree_store_set(treestore1, &child, 5, plabel, -1);
+				gtk_tree_store_set(treestore1, &child, 6, plabel, -1);
 			if(pattribute!= NULL)
-				gtk_tree_store_set(treestore1, &child, 6, pattribute, -1);
+				gtk_tree_store_set(treestore1, &child, 7, pattribute, -1);
 			pattribute= NULL;
 			if( pmode != NULL)
 				gtk_tree_store_set(treestore1, &child, 23, pmode, -1);
@@ -449,7 +457,7 @@ char *next = strtok_r(geombuf, sep, &ptr);
 			}
 
 	/* parent or disk entries */
-	gtk_tree_store_set(treestore1, &parent, 0, disk, 2, pscheme, 3, pmediasize, 7, pstate, \
+	gtk_tree_store_set(treestore1, &parent, 0, disk, 2, pscheme, 3, pmediasize, 8, pstate, \
 						14, psectorsize, 15, pstripeoffset, -1);
 	if( (pfirst != NULL) && (plast != NULL) )
 		gtk_tree_store_set(treestore1, &parent, 19, pfirst, 20, plast, -1);
@@ -512,14 +520,18 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 			todo = MOUNT;
 			GtkWidget *pop_menu = gtk_menu_new();
 			
-			int mnt = is_mounted(part);
-			if (mnt == 1) {
+			char *mnt = is_mounted(part);
+			if (mnt != NULL) {
+				
+				free(mnt);
 				/* "unmount" */
 				GtkWidget *unmount = gtk_menu_item_new_with_label ("unmount");
 				gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), unmount);
 				g_signal_connect(unmount, "activate", G_CALLBACK(unmountfs), NULL);
 			}
-			else if (mnt == 0) {
+			else if (mnt == NULL) {
+				
+				/* XXX: NULL could be an error too! */
 				if(strncmp(my, "n/a", 3) == 0) {
 				/* "show file system" */		
 					GtkWidget *rescan = gtk_menu_item_new_with_label(l.mrescan);
@@ -551,8 +563,6 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 					g_signal_connect(mount_other, "activate", G_CALLBACK(mountfs), NULL);
 				}
 			}
-			else if (mnt == 2)
-				msg("error in mount routines!");
 
 			gtk_widget_show_all(pop_menu);
 			gtk_menu_popup_at_pointer( GTK_MENU (pop_menu), NULL);

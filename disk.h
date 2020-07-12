@@ -9,6 +9,9 @@
 #include <string.h>
 #include <math.h>
 #include <ctype.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/wait.h>
 #include <inttypes.h>
 #include <gtk/gtk.h>
 
@@ -19,8 +22,8 @@
 #define ENTRY_MAX 8
 
 	/* column header for 2 treeviews */
-#define COLUMNS  24
-char columns[COLUMNS][25];
+#define COLUMNS  25
+char columns[COLUMNS][26];
 #define COL 11
 char column[COL][25];
 
@@ -190,6 +193,7 @@ char *sudo(char *, char *, int);
 int test_pw(char *);
 void window_pw(char *);
 int pw_needed();
+char *sudo_backend(char *, char *);
 
 /* editorWindow.c */
 void editor();
@@ -224,7 +228,7 @@ char *selected_item(GtkWidget *, int);
 gboolean right_clicked(GtkWidget *, GdkEventButton *, gpointer); 
 
 /* mount.c */
-int is_mounted(char *);
+char *is_mounted(char *);
 void mountfs(GtkMenuItem *, gpointer);
 void unmountfs();
 int vfs_usermount();

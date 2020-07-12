@@ -5,9 +5,9 @@ char *get_disks() {
 
 int size = 40;
 char* buf = malloc(size);
-	if ( buf == NULL ) {
+	if ( buf == NULL )
 		return NULL;	
-	}
+
 memset(buf, 0, size);
 
 FILE * fp = popen("geom disk status -s | awk '{print $1}'", "r");
@@ -31,7 +31,7 @@ while( fgets(line, sizeof line, fp) ) {
 	strncat(buf, " ", 1);
 
 	 memset(line, 0, sizeof line);
-	}
+}
 
 len = strlen(buf);
 buf[len-1] = (char) 0;
@@ -51,7 +51,7 @@ FILE * fp = popen("geom part status -s | awk '{print $1}'", "r");
 if ( fp == NULL ) {
 	printf("could not execute geom part status\n");
 	return 0;
-	}
+}
 
 while( fgets(line, sizeof line, fp) ) {
 
@@ -111,7 +111,7 @@ FILE * fp = popen("geom part status -s | awk '{print $1}'", "r");
 if ( fp == NULL ) {
 	printf("could not execute geom part status\n");
 	return 0;
-	}
+}
 
 char line[50];
 while( fgets(line, sizeof line, fp) ) {
@@ -137,15 +137,15 @@ char *read_disk(char *diskname) {
 	snprintf(buffer, sizeof buffer, "geom part list %s 2>&1", diskname);
 
 	char* diskinfo = malloc(size);
-	if ( diskinfo == NULL ) {
+	if ( diskinfo == NULL )
 		return NULL;	
-	}
+
 	memset(diskinfo, 0, size);
 
 	FILE * fp = popen(buffer, "r");
 	if ( fp == NULL ) {
 		printf("could not execute geom part list %s\n", diskname);	
-	return NULL;
+		return NULL;
 	}
 	memset(buffer, 0, sizeof buffer);
 	
@@ -175,9 +175,9 @@ void format_string(char* mystring) {
 	int len = strlen(mystring);
 	int i=0;
 
-while(i < len) {
-	if( (mystring[i] == '(') || (mystring[i] == ')') ){	
-		mystring[i] = ' ';
+	while(i < len) {
+		if( (mystring[i] == '(') || (mystring[i] == ')') ){	
+			mystring[i] = ' ';
 		}
 	i++;
 	}
@@ -349,7 +349,7 @@ int execute_cmd(char * cmd, int inform) {
 		msg("couldnt popen");
 	
 	char info[200];
-	while( fgets(info, sizeof info, fp)) {
+	while( fgets(info, sizeof info, fp)) { /* pointless? */
 		
 		}
 	if(inform == 1)
@@ -366,7 +366,7 @@ void msg(char * blah) {
 	gtk_window_set_transient_for(GTK_WINDOW(message), GTK_WINDOW(window)); 
 	gtk_widget_show(message);
 	g_signal_connect(message, "response", G_CALLBACK(on_response), NULL);
-	}
+}
 
 void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
@@ -452,7 +452,7 @@ while( (partition[len] !='p') && (partition[len] != 's') )
 			partition[len+1] = '7';
 		partition[len+2] = (char) 0;
 		break;
-		}
+	}
 	len--;
 	if (len == 0)
 		break;
@@ -477,7 +477,7 @@ int vari(char *line, int max) {
 	line[z] = (char) 0;
 	
 	return i; /* XXX: has potential space charackter at the beginning */
-	}
+}
 
 int root() {
 	/* are we root? */
@@ -590,11 +590,9 @@ char *get_type( char *part) {
 	find_p(disk);
 	
 	char *cmd = malloc(CMDSIZE);
-	snprintf(cmd, CMDSIZE, "geom part list %s | grep -A15 -E 'Name: %s' | awk '/ type: /{print $2}'", disk, part);
+	snprintf(cmd, CMDSIZE, "geom part list %s | grep -A15 -E 'Name: %s' | awk '/ type: /{printf "" $2}'", disk, part);
 	FILE *fp = popen(cmd, "r");
 	char *type = disk;
 	fgets(type, len+30, fp);
-	len = strlen(type);
-	disk[len-1] = (char) 0;
 	return type;
 }

@@ -14,7 +14,7 @@ void scrolled() {
 	scrolled_window = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
                                     GTK_POLICY_ALWAYS, GTK_POLICY_AUTOMATIC);
-	 gtk_widget_set_size_request (scrolled_window, 665, 350); /* width, height */
+	 gtk_widget_set_size_request (scrolled_window, 670, 350); /* width, height */
 	 
 	 gtk_box_pack_end(GTK_BOX(fixed), scrolled_window, TRUE, TRUE, 0);
 }

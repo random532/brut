@@ -75,7 +75,7 @@ const char *get_combo_box_disk() {
 		if(gdisk == NULL) {
 			msg(l.chose_disk);
 			return NULL;
-			}
+		}
 	if( (strlen(gdisk) == 0) || (strlen(gdisk) >= 20 ) )
 		return NULL; /* this should never happen though */	
 	return gdisk;
@@ -87,7 +87,7 @@ const char *get_combo_box_scheme() {
 		if(gscheme == NULL) {
 			msg(l.chose_scheme);
 			return NULL;
-			}
+		}
 	if( (strlen(gscheme) == 0)  || (strlen(gscheme) >= 20 ) )
 		return NULL; /* should never be that long */
 
@@ -110,7 +110,7 @@ char *get_combo_box_partition() {
 	if( (len == 0) || (len > 20) ) {
 		free((void *)gpartition);
 		return NULL;
-		}
+	}
 		
 	char * buffer = malloc(len+10);
 	memset(buffer, 0, (len+10));
@@ -126,13 +126,13 @@ const char *get_combo_box_type() {
 	if(gtype == NULL) {
 		msg(l.chose_type);
 		return NULL;
-		}
+	}
 
 	int len = strlen(gtype);
 	if( (len == 0) || (len > 20) ) {
 		free((void *)gtype);
 		return NULL;
-		}
+	}
 	return gtype;
 }
 
@@ -197,7 +197,6 @@ char *gpart_modify( char *cmd) {
 	if( (strlen(glabel) > 0) && (strlen(glabel) <= 20) )
 		label = 1;
 
-	
 	if( (label) && (!type) )
 		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -l %s -i %s %s", glabel, &gpartition[i], gpartition);
 	else if( (label) && (type) )
@@ -264,7 +263,7 @@ char *gpart_delete( char *cmd) {
 	if(gpartition == NULL) {
 		free(cmd);
 		return NULL;
-		}
+	}
 	int i = get_index(gpartition);
 	if( i == 0) {
 		free(cmd);
@@ -283,7 +282,7 @@ char *gpart_resize( char *cmd) {
 	if(gpartition == NULL) {
 		free(cmd);
 		return NULL;
-		}
+	}
 	int i = get_index(gpartition);
 	if( i == 0) {
 		free(cmd);
@@ -295,7 +294,7 @@ char *gpart_resize( char *cmd) {
 		msg(l.chose_size);
 		free(cmd);
 		return NULL;
-		}
+	}
 
 	const gchar *galign = gtk_entry_get_text(GTK_ENTRY (text_alignment));	/* alignment */
 	if( (galign != NULL) && (strlen(galign) != 0) && (strlen(galign) <= 20 ) ) 
@@ -318,7 +317,7 @@ char *gpart_set( char *cmd ) {
 		msg("Error.Don't know if set or unset.\n");
 		free(cmd);
 		return NULL;
-		}
+	}
 	if(strncmp(gcmd, "set", 3) == 0)
 		set = 1;
 	else if((strncmp(gcmd, "unset", 5)) == 0 )
@@ -328,7 +327,7 @@ char *gpart_set( char *cmd ) {
 	if(gpartition == NULL) {
 		free(cmd);
 		return NULL;
-		}
+	}
 	int i = get_index(gpartition);
 	if( i == 0) {
 		free(cmd);
@@ -340,7 +339,7 @@ char *gpart_set( char *cmd ) {
 		msg(l.chose_bootoptions);
 		free(cmd);
 		return NULL;
-		}
+	}
 
 	if(set)
 		snprintf(cmd, CMDSIZE, "/sbin/gpart set -a %s -i %s %s", gbootoptions, &gpartition[i], gpartition);
@@ -359,7 +358,7 @@ char *gpart_filesystem( char *cmd) {
 			msg(l.chose_fs);
 			free(cmd);
 			return NULL; 
-		}
+	}
 	const gchar *gpartition = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_partitions));
 	if( gpartition == NULL) {
 		msg(l.chose_partition);
@@ -379,7 +378,7 @@ char *gpart_filesystem( char *cmd) {
 		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
 			strncat(cmd, " -l ", 4);
 			strcat(cmd, glabel);
-		strncat(cmd, " ", 1);
+			strncat(cmd, " ", 1);
 		}
 		strncat(cmd, "/dev/", 6);
 		strcat(cmd, gpartition);
@@ -413,7 +412,7 @@ char *gpart_filesystem( char *cmd) {
 		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
 			strncat(cmd, " -l ", 4);
 			strcat(cmd, glabel);
-		strncat(cmd, " ", 1);
+			strncat(cmd, " ", 1);
 		}
 		strncat(cmd, "/dev/", 6);
 		strcat(cmd, gpartition);

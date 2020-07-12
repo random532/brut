@@ -1,28 +1,35 @@
 #include "disk.h"
 
-int is_mounted(char *part) {
-	
-	if (part == NULL)
-		return 2; /* should never happen */
-	
+char *is_mounted(char *part) {
 	/* execute mount w/o arguments */
+	/* return Mountpoint or NULL */
+		
+	if (part == NULL)
+		return NULL;
+
 	char buf[100];
 	memset(buf, 0, 100);
+	
 	int len = strlen(part);
-	FILE *fp = popen("mount", "r");
+	sprintf(buf, "mount | awk '/");
+	strcat( buf, part);
+	strcat( buf, "/{printf $3}'");
+	
+	FILE *fp = popen(buf, "r");
 	if (fp == NULL) {
 		msg("fopen failed");
-		return 2;
+		return NULL;
 	}
-	while( fgets(buf, sizeof buf, fp)) {	
-		if (strncmp(part, &buf[5], len) == 0) { /* skip "/dev/" */
-			/* mounted */
-			return 1;
-		}
-		memset(buf, 0, 100);
-	}
+	fgets(buf, sizeof buf, fp);
 	pclose(fp);
-	return 0; /* no match, not mounted */
+		if( strncmp(buf, "/", 1) == 0 ) {
+			char *mountpoint = malloc(len+5);
+			if( mountpoint != NULL)
+				strncpy(mountpoint, buf, len+1);
+			return mountpoint;
+		}
+		else
+			return NULL;
 }
 
 void mountfs(GtkMenuItem *gmenu, gpointer gp) {
