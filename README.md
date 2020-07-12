@@ -34,8 +34,8 @@ A: run "pkg remove xdisk"<br>
 
 Q: Is it safe? <br>
 A: Start it as regular user. For root commands, it has sudo(8) backend.<br>
-Password is piped to sudo via named pipe. You can change your <br>
-sudo settings in sudo.conf(5).<br>
+Password is piped to sudo via named pipe. You can change <br>
+sudo behavior in sudo.conf(5).<br>
 
 Q: How do I mount/unmount?<br>
 A: Right-click on a partition. A popup menu will appear.<br>
