@@ -9,7 +9,7 @@ FAQ
 -----------------------
 
 1. What is xdisk?<br>
-xdisk is a partition editor for FreeBSD with a graphical user interface.<br>
+xdisk is a partition editor for FreeBSD with a graphical user interface.<br><br>
 
 2. What can I do with it?<br>
 You can..<br>
@@ -17,28 +17,28 @@ You can..<br>
    - create/destroy partitioning schemes<br>
    - add/remove/modify partitions<br>
    - mount/unmount<br>
-   - create file systems<br>
-   
+   - create file systems<br><br>
+
 3. What are the dependencies?<br>
-gtk3 and sudo. "pkg install gtk3" is recommended.<br>
+gtk3 and sudo. "pkg install gtk3" is recommended.<br><br>
 
 4. How do I install xdisk?<br>
 Install as a port:<br>
-1. Download ports/Makefile and ports/pkg-descr
-2. Run "make makesum" and "make install clean"
-3. (recommended: Run "dbus-uuidgen --ensure", for dbus)
-4. Start it with xdisk :)<br>
+1. Download ports/Makefile and ports/pkg-descr<br>
+2. Run "make makesum" and "make install clean"<br>
+3. (recommended: Run "dbus-uuidgen --ensure", for dbus)<br>
+4. Start it with xdisk :)<br><br>
 
 5. How to uninstall?<br>
-run "pkg remove xdisk"<br>
+run "pkg remove xdisk"<br><br>
 
 6. Is it safe? <br>
 Start xdisk as regular user. For root commands, it has sudo(8) backend.<br>
 Password is piped to sudo via named pipe. You can change <br>
-sudo behavior in sudo.conf(5).<br>
+sudo behavior in sudo.conf(5).<br><br>
 
 7. How do I mount/unmount?<br>
-Right-click on a partition. A popup menu will appear.<br>
+Right-click on a partition. A popup menu will appear.<br><br>
 
 8. Why is this not an official port?<br>
 I want to test it more.<br>
