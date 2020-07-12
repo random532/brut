@@ -33,12 +33,12 @@ Q: How to uninstall?<br>
 A: run "pkg remove xdisk"<br>
 
 Q: Is it safe? <br>
-A: There are mixed opinions about whether GUI programms should issue root commands. <br>
-Either way, xdisk uses sudo(8) as backend. This way xdisk will mirror the security policy<br>
-of sudo. More in sudo.conf(5).
+A: Run it as regular user. For root commands, it has a sudo(8) backend.<br>
+Password is piped to sudo via named pipe. You can change your <br>
+sudo settings in sudo.conf(5).<br>
 
 Q: How do I mount/unmount?<br>
 A: Right-click on a partition. A popup menu will appear.<br>
 
 Q: Why is this not an official port?<br>
-A: It needs more testing.  You can test, too! The application name might change in the future.<br>
+A: It needs more testing.  If you have an idea for a better app name, let me know. ;-)<br>
