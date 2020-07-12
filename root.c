@@ -22,7 +22,7 @@ char *sudo( char *cmd, char *passw, int pw) {
 	return rcmd;
 }
 
-int test_pw(char *passw) {
+int test_pw(char *passw) { /* deprecated */
 	
 	char buf[200];
 	memset(buf, 0, 200);
@@ -75,7 +75,6 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 	}
 }
 
-
 void o_cb(GtkMenuItem *item, gpointer cmd) {
 		
 	/* "Okay" button */
@@ -91,7 +90,7 @@ void o_cb(GtkMenuItem *item, gpointer cmd) {
 	strncpy(passw, pass, len+1);
 	
 	/* test password */
-	char *error = sudo_backend(cmd, passw);
+	char *error = sudo_backend(cmd, passw, 0);
 	if( error != NULL) /* we dont need that string really */
 		free(error);
 
@@ -247,6 +246,7 @@ char *sudo_backend(char *rcmd, char * password) {
 	free(cmd);
 	
 	/* inform user */
+	
 	if( (todo == MOUNT) || (todo == FS) ) {
 		if(error == 0)
 			msg(l.mdone);
