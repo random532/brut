@@ -90,7 +90,7 @@ void o_cb(GtkMenuItem *item, gpointer cmd) {
 	strncpy(passw, pass, len+1);
 	
 	/* test password */
-	char *error = sudo_backend(cmd, passw, 0);
+	char *error = sudo_backend(cmd, passw);
 	if( error != NULL) /* we dont need that string really */
 		free(error);
 
