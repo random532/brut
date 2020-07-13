@@ -5,6 +5,6 @@ It uses sudo as backend.
 Start it with xdisk.
 
 If it complains about missing machine-id, run "dbus-uuidgen --ensure".
-Command line options are -l (language), -c (ask for confirmation) and -f (fontsize). 
+Command line options are -l (language, de, en), -c (ask for confirmation) and -f (fontsize). 
 
 www.github.com/random532/xdisk
