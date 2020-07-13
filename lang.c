@@ -75,11 +75,9 @@ lang de = {
 	.mhello="github.com/random532/xdisk"
 };
 
-
 void en_lang() {
 
-	l = en;
-	
+	l = en;	
 	/* column header */
 	strcpy(columns[0], "Disk");
 	strcpy(columns[1], "Partition");
@@ -182,9 +180,9 @@ void update_column_lang(int lang) {
 	}
 	else if(tree1 != NULL) {
 		while(n <COLUMNS) {
-				GtkTreeViewColumn *col  = gtk_tree_view_get_column( GTK_TREE_VIEW(tree1), n);
-				gtk_tree_view_column_set_title(col, columns[n]);
-				n++;	
+			GtkTreeViewColumn *col  = gtk_tree_view_get_column( GTK_TREE_VIEW(tree1), n);
+			gtk_tree_view_column_set_title(col, columns[n]);
+			n++;	
 		}
 	}
 }

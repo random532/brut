@@ -216,7 +216,6 @@ char *gpart_set(char *);
 char *gpart_unset(char *);
 char *gpart_filesystem(char *);
 char *gpart_bootcode(char *);
-int get_index(char *);
 
 /* treeviews.c */
 GtkWidget *disk_treeview();

@@ -1,6 +1,9 @@
 #include "disk.h"
 
 void on_toplevel_changed() {
+
+	/* update a disk view */
+	
 	char *string;
 	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_toplevel));
 	if(string == NULL) {
@@ -37,7 +40,7 @@ void on_toplevel_changed() {
 }
 
 void toplevel_entries() {
-
+	
 	/* cleanup */
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_toplevel));
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_toplevel), 0, l.overview);

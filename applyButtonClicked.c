@@ -107,16 +107,15 @@ char *get_combo_box_partition() {
 	}
 	
 	int len = strlen(gpartition);
-	if( (len == 0) || (len > 20) ) {
+	if( (len == 0) || (len > 30) ) {
 		free((void *)gpartition);
 		return NULL;
 	}
 		
-	char * buffer = malloc(len+10);
+	char *buffer = malloc(len+10);
 	memset(buffer, 0, (len+10));
 	strncpy(buffer, gpartition, len);
 	free((void *)gpartition);
-	int sep = find_p(buffer);
 	return buffer;
 }
 
@@ -183,8 +182,8 @@ char *gpart_modify( char *cmd) {
 		free(cmd);
 		return NULL;
 	}
-	int i = get_index(gpartition);
-	if( i == 0) {
+	int index = find_p(gpartition);
+	if( index == 0) {
 		free(cmd);
 		return NULL;
 	}
@@ -198,11 +197,11 @@ char *gpart_modify( char *cmd) {
 		label = 1;
 
 	if( (label) && (!type) )
-		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -l %s -i %s %s", glabel, &gpartition[i], gpartition);
+		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -l %s -i %i %s", glabel, index, gpartition);
 	else if( (label) && (type) )
-		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -t %s -l %s -i %s %s", gtype, glabel, &gpartition[i], gpartition);
+		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -t %s -l %s -i %i %s", gtype, glabel, index, gpartition);
 	else if( (!label) && (type) )
-		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -t %s -i %s %s", gtype, &gpartition[i], gpartition);
+		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -t %s -i %i %s", gtype, index, gpartition);
 	else {
 		msg(l.chose_type);
 		return NULL;
@@ -264,13 +263,13 @@ char *gpart_delete( char *cmd) {
 		free(cmd);
 		return NULL;
 	}
-	int i = get_index(gpartition);
-	if( i == 0) {
+	int index = find_p(gpartition);
+	if( index == 0) {
 		free(cmd);
 		return NULL;
 	}
 	
-	snprintf(cmd, CMDSIZE, "/sbin/gpart delete -i %s %s", &gpartition[i], gpartition);
+	snprintf(cmd, CMDSIZE, "/sbin/gpart delete -i %i %s", index, gpartition);
 	free(gpartition);
 	return cmd;
 }
@@ -283,8 +282,8 @@ char *gpart_resize( char *cmd) {
 		free(cmd);
 		return NULL;
 	}
-	int i = get_index(gpartition);
-	if( i == 0) {
+	int index = find_p(gpartition);
+	if( index == 0) {
 		free(cmd);
 		return NULL;
 	}
@@ -301,9 +300,9 @@ char *gpart_resize( char *cmd) {
 		a =1;
 
 	if(a)
-		snprintf(cmd, CMDSIZE, "/sbin/gpart resize -s %s -a %s -i %s %s", gsize, galign, &gpartition[i], gpartition);
+		snprintf(cmd, CMDSIZE, "/sbin/gpart resize -s %s -a %s -i %i %s", gsize, galign, index, gpartition);
 	else
-		snprintf(cmd, CMDSIZE, "/sbin/gpart resize -s %s -i %s %s", gsize, &gpartition[i], gpartition);
+		snprintf(cmd, CMDSIZE, "/sbin/gpart resize -s %s -i %i %s", gsize, index, gpartition);
 
 	free(gpartition);
 	return cmd;
@@ -328,8 +327,8 @@ char *gpart_set( char *cmd ) {
 		free(cmd);
 		return NULL;
 	}
-	int i = get_index(gpartition);
-	if( i == 0) {
+	int index = find_p(gpartition);
+	if( index == 0) {
 		free(cmd);
 		return NULL;
 	}
@@ -342,9 +341,9 @@ char *gpart_set( char *cmd ) {
 	}
 
 	if(set)
-		snprintf(cmd, CMDSIZE, "/sbin/gpart set -a %s -i %s %s", gbootoptions, &gpartition[i], gpartition);
+		snprintf(cmd, CMDSIZE, "/sbin/gpart set -a %s -i %i %s", gbootoptions, index, gpartition);
 	else
-		snprintf(cmd, CMDSIZE, "/sbin/gpart unset -a %s -i %s %s", gbootoptions, &gpartition[i], gpartition);
+		snprintf(cmd, CMDSIZE, "/sbin/gpart unset -a %s -i %i %s", gbootoptions, index, gpartition);
 	
 	free(gpartition);
 	return cmd;
@@ -426,7 +425,7 @@ char *gpart_filesystem( char *cmd) {
 char *gpart_bootcode( char *cmd ) {
 	
 	int i=0;
-	int c = 0;
+	int index = 0;
 	const char *gdisk;
 	char *gpartition;
 	
@@ -444,8 +443,8 @@ char *gpart_bootcode( char *cmd ) {
 			free(cmd);
 			return NULL;
 		}
-		c = get_index(gpartition);
-		if( c == 0) {
+		index = find_p(gpartition);
+		if( index == 0) {
 			free(cmd);
 			return NULL;
 		}
@@ -483,22 +482,9 @@ char *gpart_bootcode( char *cmd ) {
 	if(i) 
 		snprintf(cmd, len+100, "/sbin/gpart bootcode -b %s /dev/%s", fname, gdisk);
 	else {
-		snprintf(cmd, len+100, "/sbin/gpart bootcode -p %s -i %s %s", fname, &gpartition[c], gpartition);
+		snprintf(cmd, len+100, "/sbin/gpart bootcode -p %s -i %i %s", fname, index, gpartition);
 		free(gpartition);
 	}
 	free((void *) gf);
 	return cmd;
-}
-
-int get_index(char *gpartition) {
-	int i=0;
-	for(i=0; i<=20; i++) {
-		if( gpartition[i] == (char) 0 )
-			break;
-		if(i == 20) {
-			return 0;
-		}
-	}
-	i++;
-	return i;
 }

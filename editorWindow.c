@@ -74,9 +74,12 @@ void editor() {
 	x = x + width + border;
 	gtk_window_move( GTK_WINDOW(window_editor), x, y);
 	gtk_window_set_default_size(GTK_WINDOW (window_editor), 230, 300);
+	
 	gtk_widget_show(GTK_WIDGET (window_editor));
 	gtk_widget_show(box);
 	gtk_widget_show(thegrid);
+	
+	/* user will only see those two for now */
 	gtk_widget_show(GTK_WIDGET (combo_geom));
 	gtk_widget_show(GTK_WIDGET(edit_button));
 }

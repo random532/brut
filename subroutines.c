@@ -58,7 +58,7 @@ while( fgets(line, sizeof line, fp) ) {
 	int len = strlen(line);
 	line[len-1] = (char) 0;
 	
-	if(strncmp( line, "diskid", 5) != 0 ) {
+	if( (strncmp( line, "diskid", 6) != 0 ) && (strncmp( line, "gptid", 5) != 0) ){
 
 		/* is partition a "freebsd" partition? */
 		char *ptype = get_type(line);
@@ -394,6 +394,7 @@ void ask_cb(GtkDialog *dialog, gint response_id, gpointer cmd) {
 		submit(cmd, 0);
 	free(cmd);
 	gtk_widget_destroy(GTK_WIDGET (dialog));
+	/* XXX: redraw? */
 }
 /* execute a command */
 /* return the result in a buffer */
@@ -424,42 +425,66 @@ char* command(char *cmd) {
 	return ret;
 }
 
-/* find the partition index in a string like ada1p1 */
-/* modify it to look like "ada1 1" */
-
 int find_p(char *partition) {
 
-/* search backwards */
-int len = strlen(partition);
-while( (partition[len] !='p') && (partition[len] != 's') )
-	{
-	/* handle slices */
-	if( (partition[len] == 'a') || (partition[len] == 'b')  || (partition[len] == 'c')  || (partition[len] == 'd')  || (partition[len] == 'e')  || (partition[len] == 'f')  || (partition[len] == 'g') ) {
-	/* an index should be a number, not a char */
-		if(partition[len] == 'a')
-			partition[len+1] = '1';
-		else if(partition[len] == 'b')
-			partition[len+1] = '2';
-		else if(partition[len] == 'c')
-			partition[len+1] = '3';
-		else if(partition[len] == 'd')
-			partition[len+1] = '4';
-		else if(partition[len] == 'e')
-			partition[len+1] = '5';
-		else if(partition[len] == 'f')
-			partition[len+1] = '6';
-		else if(partition[len] == 'g')
-			partition[len+1] = '7';
-		partition[len+2] = (char) 0;
-		break;
-	}
-	len--;
-	if (len == 0)
-		break;
-	}
+/* return the partition index in a string like ada1p1 */
+/* also remove any "s1" or p10" strings */
 
-	partition[len] = (char) 0;
-	return len;
+/* search backwards */
+	int index=0;
+	int slice;
+	int len = strlen(partition);
+	len--;
+	
+	if( (partition[len] >= '0') && (partition[len] <= '9') )
+		slice = 0;
+
+	else
+		slice = 1;
+		
+	if( slice == 0) {
+		while( (partition[len] >= '0') && (partition[len] <= '9') ) 
+			len--;
+		partition[len] = (char) 0;
+		index = atoi(&partition[len+1]);	
+	}
+	else if( slice == 1 ) {
+		
+		if(partition[len] == 'a')
+			index=1;
+		else if(partition[len] == 'b')
+			index=2;
+		else if(partition[len] == 'c')
+			index=3;
+		else if(partition[len] == 'd')
+			index=4;
+		else if(partition[len] == 'e')
+			index=5;
+		else if(partition[len] == 'f')
+			index=6;
+		else if(partition[len] == 'g')
+			index=7;
+		else if(partition[len] == 'h')
+			index=8;
+		else if(partition[len] == 'i')
+			index=9;
+		else if(partition[len] == 'j')
+			index=10;
+		else if(partition[len] == 'k')
+			index=11;
+		else if(partition[len] == 'l')
+			index=12;
+		else if(partition[len] == 'm')
+			index=13;
+		else if(partition[len] == 'n')
+			index=14;
+		else  {/* unsupported */
+			printf("xdisk: warning: I only support partitions up to 'n'!\n");
+			index=0;
+		}
+		partition[len] = (char) 0;
+	}		
+	return index;
 }
 
 int vari(char *line, int max) {
@@ -594,5 +619,6 @@ char *get_type( char *part) {
 	FILE *fp = popen(cmd, "r");
 	char *type = disk;
 	fgets(type, len+30, fp);
+	pclose(fp);
 	return type;
 }

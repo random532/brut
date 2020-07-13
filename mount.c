@@ -23,6 +23,7 @@ char *is_mounted(char *part) {
 	fgets(buf, sizeof buf, fp);
 	pclose(fp);
 		if( strncmp(buf, "/", 1) == 0 ) {
+			len= strlen(buf);
 			char *mountpoint = malloc(len+5);
 			if( mountpoint != NULL)
 				strncpy(mountpoint, buf, len+1);
@@ -49,18 +50,12 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		return;
 	
 	/* mountpoint */
-	if(strncmp(label, "/mnt", 4) == 0) {
-		path = malloc(20);
-		memset(path, 0, 10);
-		mlen = 4;
-		strncpy(path, "/mnt", mlen);
-	}
-	else if(strncmp(label, "/media", 7) == 0) {
-		path = malloc(20);
-		memset(path, 0, 10);
-		mlen = 6;
-		strncpy(path, "/media", mlen);
-	}
+	path = malloc(10);
+	memset(path, 0, 10);
+	if( strncmp(label, "/mnt", 4) == 0) 
+		strncpy(path, "/mnt", 4);
+	else if( strncmp(label, "/media", 6) == 0)  
+		strncpy(path, label, 6);
 	else {
 		/* other path */
 		/* file chooser dialog */
@@ -89,7 +84,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		snprintf(cmd, plen+mlen+x, "mount /dev/%s %s", part, path);
 	else if(strncmp(fs, "msdosfs", 7) == 0) 
 		snprintf(cmd, plen+mlen+x, "mount -t msdosfs /dev/%s %s", part, path);
-	else if(strncmp(fs, "ntfs", 5) == 0) {
+	else if(strncmp(fs, "ntfs", 4) == 0) {
 		
 		/* see if ntfs-3g is installed */
 		if (!command_exist("/bin/ntfs-3g")) {
@@ -100,7 +95,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	}
 	else if(strncmp(fs, "cd9660", 6) == 0)
 		snprintf(cmd, plen+mlen+x, "mount_cd9660 /dev/%s %s", part, path);
-	else if(strncmp(fs, "ext2fs", 5) == 0) {
+	else if(strncmp(fs, "ext2fs", 6) == 0) {
 		if (!command_exist("/bin/fuse-ext2")) {
 			msg("To mount ext2 file systems, please install this package: fusefs-ext2. Also kldload fuse.");
 			error = 1;
@@ -156,6 +151,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		}
 		submit(cmd, 0);
 		free(cmd);
+		on_toplevel_changed(); 		/* redraw everything */
 	}
 }
 
@@ -193,7 +189,8 @@ void unmountfs() {
 		}
 	}
 	submit(cmd, 0);
-		free(cmd);
+	free(cmd);
+	on_toplevel_changed(); 		/* redraw everything */
 }
 
 int vfs_usermount() {
