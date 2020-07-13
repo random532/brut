@@ -395,6 +395,11 @@ void ask_cb(GtkDialog *dialog, gint response_id, gpointer cmd) {
 	free(cmd);
 	gtk_widget_destroy(GTK_WIDGET (dialog));
 	/* XXX: redraw? */
+	on_toplevel_changed();
+	if(window_editor != NULL) {
+		gtk_widget_destroy(window_editor);
+		editor();
+	}
 }
 /* execute a command */
 /* return the result in a buffer */

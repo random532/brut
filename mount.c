@@ -53,7 +53,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	path = malloc(10);
 	memset(path, 0, 10);
 	if( strncmp(label, "/mnt", 4) == 0) 
-		strncpy(path, "/mnt", 4);
+		strncpy(path, label, 4);
 	else if( strncmp(label, "/media", 6) == 0)  
 		strncpy(path, label, 6);
 	else {
