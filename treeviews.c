@@ -1,8 +1,12 @@
-/* treeview functions */
 #include "disk.h"
 
+/* 
+ * In the main window there are two distinct treeviews.
+ * Only one at a time can exist.
+ * - treeview refers to the (over-)view of all geoms.
+ * - treeview1 refers to the view of one specific geom.
+ */
 
-/* XXX: the function names in this file are very confusing */
 
 GtkWidget *create_treeview() {
 	
@@ -250,7 +254,7 @@ int populate_treeview1( char * one_disk) {
 
 void treeview_add_rows(char *geombuf, char *disk) {
 
-	/* fill treeview1 subroutine */
+	/* treeview1 subroutine */
 	
 char *ptr;
 
