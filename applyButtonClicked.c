@@ -397,7 +397,7 @@ char *gpart_filesystem( char *cmd) {
 		
 		/* check whether mkntfs is installed */
 		if (!command_exist("/sbin/mkntfs")) {
-			msg("To make ntfs file systems, please install this package: mkntfs");
+			msg("To make ntfs file systems, please install this package: fusefs-ntfs.");
 			free((void *) gpartition);
 			free((void *) gf);
 			return NULL;

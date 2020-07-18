@@ -88,7 +88,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		
 		/* see if ntfs-3g is installed */
 		if (!command_exist("/bin/ntfs-3g")) {
-			msg("To mount ntfs file systems, please install this package: ntfs-3g. Also kldload fuse.");
+			msg("To mount ntfs file systems, please install this package: fusefs-ntfs. Also kldload fuse.");
 			error = 1;
 		}
 		snprintf(cmd, plen+mlen+x, "ntfs-3g /dev/%s %s", part, path);
@@ -150,9 +150,9 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 			}
 		}
 		submit(cmd, 0);
-		free(cmd);
 		on_toplevel_changed(); 		/* redraw everything */
 	}
+	free(cmd);
 }
 
 void unmountfs() {

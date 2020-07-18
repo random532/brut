@@ -7,7 +7,6 @@
  * - treeview1 refers to the view of one specific geom.
  */
 
-
 GtkWidget *create_treeview() {
 	
 	/* create a treeview with columns, no rows */
