@@ -34,8 +34,8 @@ lang en = {
 	.mrescan="Show Filesystems",
 	.mpassw="Enter your sudo password!",
 	.mexplain="This command needs higher privileges.",
-	.mhello1="Hello. I am Pikachu.. hehe",
-	.mhello="github.com/random532/xdisk"
+	.mhello1="Hello! Please report bugs here:",
+	.mhello="github.com/random532/xdisk/issues"
 };
 
 lang de = {
@@ -71,8 +71,8 @@ lang de = {
 	.mrescan="Zeige Dateisysteme",
 	.mpassw="Geben Sie Ihr Sudo Passwort ein!",
 	.mexplain="Dieser Befehl braucht mehr Berechtigungen.",
-	.mhello1="Hallo. Ich bin Pikachu.. hehe",
-	.mhello="github.com/random532/xdisk"
+	.mhello1="Hallo! Bitte melde Bugs hier:",
+	.mhello="github.com/random532/xdisk/issues"
 };
 
 void en_lang() {
