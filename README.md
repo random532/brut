@@ -25,7 +25,7 @@ gtk3 and sudo. "pkg install gtk3" is recommended.<br><br>
 4. Is it safe? <br>
 Start xdisk as regular user. For root commands, it has sudo(8) backend.<br>
 Password is piped to sudo via named pipe. You can change <br>
-sudo behavior by editing the file /usr/local/etc/sudoers.<br><br>
+sudo behavior by editing its configuration file /usr/local/etc/sudoers.<br><br>
 
 5. How do I install xdisk?<br>
 Install as a port:<br>
