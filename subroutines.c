@@ -442,7 +442,7 @@ int find_p(char *partition) {
 	len--;
 	
 	if( (partition[len] >= '0') && (partition[len] <= '9') )
-		slice = 0;
+		slice = 0;	/* slices are labeled with abcd.., not with numbers */
 
 	else
 		slice = 1;
@@ -455,6 +455,7 @@ int find_p(char *partition) {
 	}
 	else if( slice == 1 ) {
 		
+		/* can we do this more cleverly? */
 		if(partition[len] == 'a')
 			index=1;
 		else if(partition[len] == 'b')
@@ -483,8 +484,32 @@ int find_p(char *partition) {
 			index=13;
 		else if(partition[len] == 'n')
 			index=14;
+		else if(partition[len] == 'o')
+			index=15;
+		else if(partition[len] == 'p')
+			index=16;
+		else if(partition[len] == 'q')
+			index=17;
+		else if(partition[len] == 'r')
+			index=18;				
+		else if(partition[len] == 's')
+			index=19;
+		else if(partition[len] == 't')
+			index=20;
+		else if(partition[len] == 'u')
+			index=21;
+		else if(partition[len] == 'v')
+			index=22;
+		else if(partition[len] == 'w')
+			index=23;
+		else if(partition[len] == 'x')
+			index=24;
+		else if(partition[len] == 'y')
+			index=25;
+		else if(partition[len] == 'z')
+			index=26;
 		else  {/* unsupported */
-			printf("xdisk: warning: I only support partitions up to 'n'!\n");
+			printf("xdisk: warning: I only support partitions up to 'z'!\n");
 			index=0;
 		}
 		partition[len] = (char) 0;
@@ -527,7 +552,7 @@ int command_exist(char *cmd) {
 	char *exist = malloc(a+b+5);
 	snprintf(exist, a+b+1, "%s%s", localbase, cmd);
 
-	if (access(exist, X_OK) == 0) 
+	if (access(exist, X_OK) == 0) /* or check for file exists? */
 		return 1;
 	else
 		return 0;
@@ -569,7 +594,7 @@ void fsscan() {
 	todo = MOUNT;
 	/* this is abit odd */
 	char *cmd = malloc(10);
-	strncpy(cmd, "whoami", 7);
+	strncpy(cmd, "whoami", 7); /* random command to start sudo timeout */
 	window_pw(cmd);
 }
 void destroyme(GtkMenuItem *item, gpointer user_data) {

@@ -37,7 +37,7 @@ int confirm;
 	/* do we mount or gpart? Or something else? */
 #define MOUNT	0
 #define GPART	1
-#define FS 		3
+#define FS	3
 int todo;
 
 	/* keep track of disks and partitions */
@@ -47,16 +47,16 @@ char *all_partitions;
 char *slices_on_a_disk;
 
 	/* global gtk pointer  */
-GtkWidget	*window; 	/* main window */
-GtkWidget	*fixed;
+GtkWidget *window; 	/* main window */
+GtkWidget *fixed;
 GtkWidget *scrolled_window;
 GtkWidget *combo_toplevel;
-GtkWidget	*tree;		/* all disks are displayed here */
-GtkWidget	*tree1;		/* only one disk is displayed here */
-GtkTreeStore	*treestore;
-GtkTreeStore	*treestore1;	
-GtkCellRenderer     *cell;
-GtkCellRenderer		*cellr;
+GtkWidget *tree;		/* all disks are displayed here */
+GtkWidget *tree1;		/* only one disk is displayed here */
+GtkTreeStore *treestore;
+GtkTreeStore *treestore1;	
+GtkCellRenderer *cell;
+GtkCellRenderer *cellr;
 GtkWidget *menu;
 GtkWidget *window_editor;
 GtkWidget *thegrid;
@@ -218,11 +218,11 @@ char *gpart_filesystem(char *);
 char *gpart_bootcode(char *);
 
 /* treeviews.c */
-GtkWidget *disk_treeview();
-GtkWidget *make_treeview();
-int fill_treeview();
-int fill_treeview1(char *);
-void fill_tree(char *, char *);
+GtkWidget *create_treeview();
+GtkWidget *create_treeview1();
+int populate_treeview();
+int populate_treeview1(char *);
+void treeview_add_rows(char *, char *);
 char *selected_item(GtkWidget *, int);
 gboolean right_clicked(GtkWidget *, GdkEventButton *, gpointer); 
 

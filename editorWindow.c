@@ -7,7 +7,7 @@ void destroy_editor (GtkMenuItem *item, gpointer user_data) {
 void editor() {
 
 /* 
- * we want a window with a box,
+ * A window with a box,
  * the box contains a grid,
  * the grid has one column, and 18 or so rows
  */

@@ -93,7 +93,8 @@ void o_cb(GtkMenuItem *item, gpointer cmd) {
 	char *error = sudo_backend(cmd, passw);
 	if( error != NULL) /* we dont need that string really */
 		free(error);
-
+	
+	free(passw);
 	gtk_widget_destroy(su);
 	on_toplevel_changed();
 	if(window_editor != NULL) {

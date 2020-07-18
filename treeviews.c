@@ -1,7 +1,12 @@
 /* treeview functions */
 #include "disk.h"
 
-GtkWidget *disk_treeview() {
+
+/* XXX: the function names in this file are very confusing */
+
+GtkWidget *create_treeview() {
+	
+	/* create a treeview with columns, no rows */
 	
 	GtkWidget *disk_view = gtk_tree_view_new();
 	gtk_container_add(GTK_CONTAINER(scrolled_window), disk_view);	
@@ -42,9 +47,9 @@ GtkWidget *disk_treeview() {
 return disk_view;	
 }
 
-GtkWidget *make_treeview() {
+GtkWidget *create_treeview1() {
 
-	/* create a treeview with colums for a disk */
+	/* create a treeview with colums for a disk, no rows */
 	
 	GtkWidget *view = gtk_tree_view_new();
 	
@@ -91,7 +96,7 @@ GtkWidget *make_treeview() {
 return view;
 }
 
-int fill_treeview() {
+int populate_treeview() {
 	char buf[30]= "geom disk list";		
 	char line[150];
 	int size=150;	
@@ -188,7 +193,7 @@ int fill_treeview() {
 	return (1);
 }
 
-int fill_treeview1( char * one_disk) {
+int populate_treeview1( char * one_disk) {
 
 	/* clean up */
 	clean_up_pointers();
@@ -205,7 +210,7 @@ int fill_treeview1( char * one_disk) {
 	}
 		
 	/* fill in the tree	*/
-	fill_tree(geom_info, one_disk);
+	treeview_add_rows(geom_info, one_disk);
 	free(geom_info);
 	
 	/* we may have detected some slices */
@@ -223,7 +228,7 @@ int fill_treeview1( char * one_disk) {
 				}
 
 			/* fill in the tree	*/
-			fill_tree(geom_slice, slice);
+			treeview_add_rows(geom_slice, slice);
 			free(geom_slice);
 
 			/* scan for next slice */
@@ -243,8 +248,10 @@ int fill_treeview1( char * one_disk) {
 	return 1;
 }
 
-void fill_tree(char *geombuf, char *disk) {
+void treeview_add_rows(char *geombuf, char *disk) {
 
+	/* fill treeview1 subroutine */
+	
 char *ptr;
 
 /* 26 pointer */

@@ -26,14 +26,14 @@ void on_toplevel_changed() {
 	if(strncmp(string, l.overview, 25) == 0) {
 		/* display an overview of all disks */
 		free(string);
-		tree = disk_treeview();
-		fill_treeview();
+		tree = create_treeview();
+		populate_treeview();
 		gtk_widget_show(tree);
 	}
 	else {
 		/* display a particular disk */
-		tree1 = make_treeview();
-		fill_treeview1(string); /* do we need to check return value? */
+		tree1 = create_treeview1();
+		populate_treeview1(string); /* do we need to check return value? */
 		gtk_widget_show(tree1);
 		free(string);
 	}
