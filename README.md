@@ -39,7 +39,3 @@ run "pkg remove xdisk"<br><br>
 
 7. How do I mount/unmount?<br>
 Right-click on a partition. A popup menu will appear.<br><br>
-
-
-8. Why is this not an official port?<br>
-I want to test it more.<br>
