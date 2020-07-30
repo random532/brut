@@ -152,6 +152,7 @@ void create_text_entries();
 void create_text_size();
 void create_text_alignment();
 void grid_attach_all();
+void add_types( char *);
 
 /* on_combos_changed.c */
 void on_geom_changed();
@@ -159,6 +160,9 @@ void on_toplevel_changed();
 void on_fs_changed();
 void toplevel_entries();
 void on_bootcode_changed();
+void on_disks_changed();
+void on_partitions_changed();
+void on_scheme_changed();
 
 /* subroutines.c */
 char *get_disks();
@@ -187,6 +191,7 @@ void fsscan();
 void info_cb(GtkMenuItem *, gpointer);
 char *get_partition_type(char *);
 char *get_type(char *);
+char *get_scheme(const gchar *);
 
 /* root.c */
 char *sudo(char *, char *, int);
@@ -206,6 +211,10 @@ void redraw_cb (GtkMenuItem *, gpointer);
 
 /* applyButtonClicked.c */
 void on_edit_clicked (GtkMenuItem *, gpointer);
+const char *get_combo_box_disk(int);
+const char *get_combo_box_scheme();
+char *get_combo_box_partition(int);
+const char *get_combo_box_type(int);
 char *gpart_destroy(char *);
 char *gpart_create(char *);
 char *gpart_modify(char *);

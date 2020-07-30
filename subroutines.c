@@ -273,64 +273,57 @@ void clean_up_pointers() {
 
 char *what_file_system(char *partition) {
 
+	char *cmd;
+	char *error;
+	char *fs_type;
+	int len;
+	int size;
+	int ac;
+
 	if (partition == NULL)
 		return NULL;
-	int len = strlen(partition);
-	char *part = malloc(len + 30);
-	snprintf(part, len+30, "/dev/%s", partition);
-	char *cmd;
-	int size=30;
-	char *fs_type = malloc(size);
-
-	if( access(part, R_OK ) == 0 ) { /* read access on partition? */
-		cmd = realloc(part, len+50);
-		snprintf(cmd, len+50, "fstyp -u /dev/%s 2>/dev/null", partition);
-		FILE * fp = popen(cmd, "r");
-		if ( fp == NULL ) {
-			printf("could not execute popen() with %s\n", partition);	
-			free(cmd);
-			return NULL;
-		}
-		if ( fgets(fs_type, size, fp) == NULL) {
-			free(fs_type);
-			fs_type = NULL;
-		}
-		else {
-			len = strlen(fs_type);
-			fs_type[len-1] = '\0'; /* replace 0x0A */
-		}
-		pclose(fp);
-		free(cmd);
+	
+	size = 25;
+	fs_type = malloc(size);
+	memset(fs_type, 0, size);
+	
+	/* check read permissions */	
+	len = strlen(partition);
+	len = len +50;
+	cmd = malloc(len);
+	memset(cmd, 0, len);
+	snprintf(cmd, len, "/dev/%s", partition);
+	ac = access(cmd, R_OK);
+	
+	if( ac == 0 )  /* read access on device */
+		snprintf(cmd, len, "fstyp -u /dev/%s 2>/dev/null", partition);
+	else if(!pw_needed()) /* try as sudo if no password is needed */
+		snprintf(cmd, len, "sudo -S fstyp -u /dev/%s 2>/dev/null", partition);
+	else {
+		/* dont bother asking for sudo password */
+		strncpy(fs_type, "n/a", 4);
 		return fs_type;
 	}
-
-	/* try again with sudo */
-	else if( !pw_needed()) {
-		cmd = realloc(part, len+50);
-		snprintf(cmd, len+50, "sudo -S fstyp -u %s 2>/dev/null", part);
-		FILE * fp = popen(cmd, "r");
-		if ( fp == NULL ) {
-			printf("could not execute popen() with %s\n", partition);	
-			free(cmd);
-			return NULL;
-		}
-		if( fgets(fs_type, size, fp) == NULL) {
-			free(fs_type);
-			fs_type = NULL;
-		}
-		else {
-			len = strlen(fs_type);
-			fs_type[len-1] = '\0'; /* replace 0x0A */
-		}
-		pclose(fp);
+	
+	FILE * fp = popen(cmd, "r");
+	if ( fp == NULL ) {
+		printf("could not execute popen() with %s\n", partition);	
 		free(cmd);
-		return fs_type;
+		return NULL;
+	}
+	error = fgets(fs_type, size, fp);
+	pclose(fp);
+	
+	if(error == NULL) {
+		free(fs_type);
+		return NULL;
 	}
 	else {
-		/* dont bother elevating permissions */
-		strncpy(fs_type, "n/a", 4);
-		free(part);
+		len = strlen(fs_type);
+		fs_type[len-1] = '\0'; /* replace 0x0A */
 	}
+		
+	free(cmd);
 	return fs_type;
 }
 
@@ -651,4 +644,26 @@ char *get_type( char *part) {
 	fgets(type, len+30, fp);
 	pclose(fp);
 	return type;
+}
+
+char *get_scheme(const gchar *gdisk) {
+	
+	char buf[CMDSIZE];
+	memset(buf, 0, CMDSIZE);
+	strncpy(buf, "gpart show ", 11);
+	strcat(buf, gdisk);
+	strncat(buf, " | awk 'NR==1{print $5}' ", 25); 
+	
+	FILE * fp = popen(buf, "r");
+	if (fp == NULL) {
+		msg("couldnt popen");
+		return NULL;
+	}
+	char *scheme = malloc(40);
+	fgets(scheme, 40, fp);
+	int error = pclose(fp);
+	if(error == 0)
+		return scheme;
+	else
+		return NULL;
 }

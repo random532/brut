@@ -83,7 +83,6 @@ void on_geom_changed() {
 	if(strcmp(string, "create") == 0) {
 		gtk_widget_show(GTK_WIDGET (combo_disks));
 		gtk_widget_show(GTK_WIDGET (combo_schemes));
-		gtk_widget_show(GTK_WIDGET (text_entries));
 	}
 
 	else if(strcmp(string, "destroy") == 0) {
@@ -91,9 +90,7 @@ void on_geom_changed() {
 	}
 	else if(strcmp(string, "add") == 0) {
 		gtk_widget_show(GTK_WIDGET (combo_disks));
-		gtk_widget_show(GTK_WIDGET (combo_types));
 		gtk_widget_show(GTK_WIDGET (text_size));
-		gtk_widget_show(GTK_WIDGET (text_label));
 		gtk_widget_show(GTK_WIDGET (text_alignment));
 	}
 	else if(strcmp(string, "delete") == 0) {
@@ -101,8 +98,6 @@ void on_geom_changed() {
 	}
 	else if(strcmp(string, "modify") == 0) {
 		gtk_widget_show(GTK_WIDGET (combo_partitions));
-		gtk_widget_show(GTK_WIDGET (combo_types));
-		gtk_widget_show(GTK_WIDGET (text_label));
 	}
 	else if(strcmp(string, "set") == 0) { 
 		gtk_widget_show(GTK_WIDGET (combo_partitions));
@@ -168,4 +163,87 @@ void on_bootcode_changed() {
 	else if(strcmp(string, "Disk") == 0) {
 		gtk_widget_show(GTK_WIDGET (combo_disks));
 	}
+}
+
+void on_disks_changed() {
+	
+	/* 
+	 * If "gpart add" then show only partition types that fit 
+	 * onto the scheme.
+	 */
+	 
+	 	const gchar *gdisk = get_combo_box_disk(0);
+	if( gdisk == NULL)
+		return;
+	char *string;
+	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom));
+	if(string == NULL)
+		return;
+	if( strncmp(string, "add", 3) != 0 )
+		return;	
+
+	char *scheme = get_scheme(gdisk);
+	if(scheme == NULL) {
+		msg("error fetching partitioning scheme. Closing editor window.");
+		gtk_widget_destroy(window_editor);
+		return;
+	}
+	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_types) );
+	add_types(scheme);
+	if(( strncmp(scheme, "GPT", 3) == 0 ) || ( strncmp(scheme, "BSD", 3) == 0 ) )
+		gtk_widget_show(GTK_WIDGET (text_label));
+	else
+		gtk_widget_hide(GTK_WIDGET (text_label) );
+	free(scheme);
+	gtk_widget_show(GTK_WIDGET (combo_types));
+}
+
+
+void on_partitions_changed() {
+	
+	/* 
+	 * If "gpart modify" then show only partition types that fit 
+	 * onto the scheme.
+	 */
+	  
+	char *string;
+	string = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom));
+	if(string == NULL)
+		return;
+	if( strncmp(string, "modify", 6) != 0 )
+		return;
+		
+	char *gpartition = get_combo_box_partition(0);
+	if(gpartition == NULL)
+		return;
+	find_p(gpartition);
+	char *scheme = get_scheme(gpartition);
+	if(scheme == NULL) {
+		msg("error fetching partitioning scheme. Closing editor window.");
+		gtk_widget_destroy(window_editor);
+		return;
+	}
+	free(gpartition);
+	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_types) );
+	add_types(scheme);
+	if(( strncmp(scheme, "GPT", 3) == 0 ) || ( strncmp(scheme, "BSD", 3) == 0 ) )
+		gtk_widget_show(GTK_WIDGET (text_label));
+	else
+		gtk_widget_hide(GTK_WIDGET (text_label) );
+	free(scheme);
+	gtk_widget_show(GTK_WIDGET (combo_types));
+	
+}
+
+void on_scheme_changed() {
+	
+	/**/
+	const gchar *gscheme = get_combo_box_scheme();
+	if (gscheme == NULL)
+		return;
+
+	if(strncmp(gscheme, "GPT", 3) == 0)
+		gtk_widget_show(text_entries);
+	else
+		gtk_widget_hide(text_entries);
 }

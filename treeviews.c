@@ -201,11 +201,9 @@ int populate_treeview1( char * one_disk) {
 	/* clean up */
 	clean_up_pointers();
 
-	/*  */
+	/* buffer with geom information */
 	char *geom_info;
-	char *geom_slice;
 
-	/* call geom with diskname */
 	geom_info = read_disk(one_disk);
 	if (geom_info == NULL ) {
 		printf("read_disk() failed.\n");
@@ -216,23 +214,23 @@ int populate_treeview1( char * one_disk) {
 	treeview_add_rows(geom_info, one_disk);
 	free(geom_info);
 	
-	/* we may have detected some slices */
-	char *slice, *brk, *brk1;
-
-	if(slices_on_a_disk != NULL) {
-		slice = strtok_r ( slices_on_a_disk, " ", &brk1);
-		while( slice != NULL ) {
+	/* we may have detected slices */
+	char *slice;
+	char *slice_info;
+	char *brk, *brk1;
 	
-			/* call geom with diskname */
-			geom_slice = read_disk(slice);
-			if (geom_slice == NULL ) {
-				printf("no slice found\n");
-				return 0;	
-				}
+	if(slices_on_a_disk) {
+		slice = strtok_r ( slices_on_a_disk, " ", &brk1);
+		while(slice) {
+	
+			slice_info = read_disk(slice);
+			if (slice_info == NULL ) {
+				printf("scanning a slice failed.\n");
+				return 0;
+			}
 
-			/* fill in the tree	*/
-			treeview_add_rows(geom_slice, slice);
-			free(geom_slice);
+			treeview_add_rows(slice_info, slice);
+			free(slice_info);
 
 			/* scan for next slice */
 			slice = strtok_r( NULL, " ", &brk1);
@@ -252,10 +250,16 @@ int populate_treeview1( char * one_disk) {
 }
 
 void treeview_add_rows(char *geombuf, char *disk) {
-
-	/* treeview1 subroutine */
 	
-char *ptr;
+	char *ptr;
+	int len;
+	char *free_space;
+
+	GtkTreeIter		parent; /* disk or slice */
+	GtkTreeIter		child;	/* partition */
+	GtkTreeIter		row_freespace;
+	char *sep;
+	char *next;
 
 /* 26 pointer */
 char *pname=	NULL;
@@ -285,12 +289,12 @@ char *pindex=	NULL;
 char *pfilesystem=NULL;
 char *pattribute=NULL;
 
+char *mountpoint=NULL;
 
-int len = strlen(geombuf);
-char *free_space;
+	len = strlen(geombuf);
 
-	/* strtok cannot handle 0x0A */
-int i=0;
+	/* replace newline with space characters for strtok */
+	int i=0;
 	while(i < len) {
 		if (geombuf[i] == '\n') {	
 			geombuf[i] = ' ';
@@ -298,145 +302,136 @@ int i=0;
 		i++;
 	}
 
-	GtkTreeIter		parent; /* disk or slice */
-	GtkTreeIter		child;	/* partition */
-	GtkTreeIter		row_freespace;
-
-	/* first column is disk name */
+	/* disk name */
 	gtk_tree_store_append(treestore1, &parent, NULL);
 	gtk_tree_store_set(treestore1, &parent, 0, disk, -1);
 
-	if(geombuf[0] == '\0')	/* no geom information available */
+	if(geombuf[0] == '\0')	/* no geom information */
 		return;
-
-	/* parse the geom buffer */
-	/* if we have a match */
-	/* write it to matching char * variable */
 	
-char *sep = " !"; //XXX: why !
-char *next = strtok_r(geombuf, sep, &ptr);
-
+	/* parse geom information */
+	
+	sep = " !"; //XXX: why !
+	next = strtok_r(geombuf, sep, &ptr);
 	next = strtok_r(NULL, sep, &ptr);
 	while (next != NULL) {
 		
 		if ( (strcmp(next, "name:") )== 0) {
 			pname = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "state:") )== 0) {
 			pstate = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "fwheads:") )== 0) {
 		/* skip */
-			}
+		}
 		else if ( (strcmp(next, "fwsectors:") )== 0) {
 		/* skip */
 		}
 		else if ( (strcmp(next, "entries:") )== 0) {
 			pentries = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "scheme:") )== 0) {
 			pscheme = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "modified:") )== 0) {
 			pmodified = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "Stripeoffset:") )== 0) {
 			pstripeoffset = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "Stripesize:") )== 0) {
 			pstripesize = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "Mode:") )== 0) {
 			pmode = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "rawuuid:") )== 0) {
 			prawuuid = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "rawtype:") )== 0) {
 			prawtype = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "length:") )== 0) {
 			plength = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "index:") )== 0) {
 			pindex = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "first:") )== 0) {
 			pfirst = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "last:") )== 0) {
 			plast = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "offset:") )== 0) {
 			poffset = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "label:") )== 0) {
 			plabel = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "efimedia:") )== 0) {
 			pefimedia = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "last:") )== 0) {
 			plast = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "attrib:") )== 0) {
 			pattribute = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "Name:") )== 0) {
 			pname_capital = strtok_r(NULL, sep, &ptr); 
-			}
+		}
 		else if ( (strcmp(next, "Mediasize:") )== 0) {
 			next = strtok_r(NULL, sep, &ptr);
 			pmediasize = strtok_r(NULL, sep, &ptr);
 			format_string(pmediasize);
-			}
+		}
 		else if ( (strcmp(next, "type:") )== 0) {
 			ptype = strtok_r(NULL, sep, &ptr);
 			if(strcmp(ptype, "freebsd") == 0) {
 				all_slices = add_to_list(pname_capital, all_slices);
 				slices_on_a_disk =add_to_list(pname_capital, slices_on_a_disk);
-					/* a slice */
-				}
 			}
+		}
 		else if ( (strcmp(next, "Sectorsize:") )== 0) {
 			psectorsize = strtok_r(NULL, sep, &ptr);
-			}
+		}
 		else if ( (strcmp(next, "end:") )== 0) {
 			next = strtok_r(NULL, sep, &ptr);
 			pend_old = pend;
 			pend = next;
-			}
+		}
 		else if ( (strcmp(next, "start:") )== 0) {
 			pstart = strtok_r(NULL, sep, &ptr);
-
 			/* start is the last entry of a provider(partition) */
-			/* so it is a good place to do some work */
 
-			/* tell user about free space in between partitions */
+			/* free space in between partitions */
 			free_space = check_free_space(pstart, pend_old, psectorsize);
 			if (free_space != NULL) {
 				gtk_tree_store_append(treestore1, &row_freespace, &parent);
 				gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
 				free(free_space);
-				}
+			}
 			
-			/* XXX: do we still need this?*/
-			/* add partition to all_partitions */
-			//all_partitions = add_to_list(pname_capital, all_partitions);
-			gtk_tree_store_append(treestore1, &child, &parent);
+			gtk_tree_store_append(treestore1, &child, &parent); // XXX: what is this?
 	
-			/* what file system? */
+			/* check for file system, and if it exists, check mountpoint */	
 			pfilesystem = what_file_system(pname_capital);
+			
 			if (pfilesystem != NULL) {
 				gtk_tree_store_set(treestore1, &child, 4, pfilesystem, -1);
-				char *mountpoint = is_mounted(pname_capital);
-				if(mountpoint != NULL)
-					gtk_tree_store_set(treestore1, &child, 5, mountpoint, -1);
-				free(mountpoint); 
+				
+				if(strncmp(ptype, "ntfs", 4) != 0)
+					mountpoint = is_mounted(pname_capital);
+					if(mountpoint != NULL) {
+						gtk_tree_store_set(treestore1, &child, 5, mountpoint, -1);
+						free(mountpoint);
+					}
 				free(pfilesystem);
 			}
 			
-			/* put the p.. variables in the tree */
+			/* finally, put all other variables in the tree */
 			gtk_tree_store_set(treestore1, &child, 1, pname_capital, 2, ptype, \
 								3, pmediasize, 9, pstart, 10, pend, 11, plength, \
 								12, poffset, 13, pstripesize, 14, psectorsize, \
@@ -458,15 +453,15 @@ char *next = strtok_r(geombuf, sep, &ptr);
 		next = strtok_r(NULL, sep, &ptr);
 	}
 
-	/* inform user about free space after last partition */
+	/* free space after last partition */
 	free_space = check_free_space(plast, pend, psectorsize);
-		if (free_space != NULL) {
-			gtk_tree_store_append(treestore1, &row_freespace, &parent);
-			gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
-			free(free_space);
-			}
+	if (free_space) {
+		gtk_tree_store_append(treestore1, &row_freespace, &parent);
+		gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
+		free(free_space);
+	}
 
-	/* parent or disk entries */
+	/* parent (disk) entries */
 	gtk_tree_store_set(treestore1, &parent, 0, disk, 2, pscheme, 3, pmediasize, 8, pstate, \
 						14, psectorsize, 15, pstripeoffset, -1);
 	if( (pfirst != NULL) && (plast != NULL) )
