@@ -1,7 +1,7 @@
 # $FreeBSD$
 
 PORTNAME=	xdisk
-DISTVERSION=	1.33
+DISTVERSION=	1.34
 CATEGORIES=	sysutils
 
 MAINTAINER=	georg.lastname@web.de
@@ -9,13 +9,13 @@ COMMENT=	GUI for editing hard drives (partition editor), uses gtk3
 
 LICENSE=	BSD2CLAUSE
 
-USE_GITHUB=	yes
-GH_ACCOUNT=	random532
+RUN_DEPENDS=	sudo>0:security/sudo
 
 USES=		gnome
 USE_GNOME=	gtk30
 
-RUN_DEPENDS=	sudo>0:security/sudo
+USE_GITHUB=	yes
+GH_ACCOUNT=	random532
 
 PLIST_FILES=	bin/xdisk
 
