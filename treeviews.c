@@ -414,7 +414,7 @@ char *mountpoint=NULL;
 				free(free_space);
 			}
 			
-			gtk_tree_store_append(treestore1, &child, &parent); // XXX: what is this?
+			gtk_tree_store_append(treestore1, &child, &parent);
 	
 			/* check for file system, and if it exists, check mountpoint */	
 			pfilesystem = what_file_system(pname_capital);
