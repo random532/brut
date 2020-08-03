@@ -347,7 +347,7 @@ int execute_cmd(char * cmd, int inform) {
 		}
 	if(inform == 1)
 		msg(info);
-	int suc = pclose(fp)/256;
+	int suc = pclose(fp); /* /256 */;
 		
 	return suc;
 }
@@ -400,18 +400,24 @@ char* command(char *cmd) {
 	
 	if(cmd == NULL)
 		return NULL;
-	int sz=150;
-	char buf[150];
-	char *ret = malloc(sz+2);
+	printf("cmd:%s\n", cmd);
+
+	char buf[CMDSIZE];
+	char *ret;
+	int sz;
+	
+	ret = malloc(sz+2);
 	if(ret == NULL)
 		return NULL;
+	memset(ret, 0, sz+2);
 
 	FILE * fp = popen(cmd, "r");
 	if (fp == NULL) {
 		msg("fopen failed");
 		return NULL;
 	}
-	while( fgets(buf, sizeof buf, fp)) {
+	while( fgets(buf, sz, fp)) {
+		printf("buffer:%s\n", buf);
 		strncat(ret, buf, sz);
 		sz = sz +150;
 		ret = realloc(ret, sz);

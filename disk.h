@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
+#include <errno.h>
 #include <math.h>
 #include <ctype.h>
 #include <fcntl.h>
@@ -128,6 +129,46 @@ typedef struct {
 
 lang l;
 
+typedef struct {
+
+char *next_partition;
+
+char *name;
+char *name_capital;
+char *mediasize;
+char *sectorsize;
+char *type;
+char *start;
+char *end;
+char *end_old;
+char *state;
+char *entries;
+char *scheme;
+char *first;
+char *last;
+char *modified;
+char *stripesize;
+char *stripeoffset;
+char *mode;
+char *efimedia;
+char *rawuuid;
+char *rawtype;
+char *length;
+char *offset;
+char *label;
+char *index;
+char *filesystem;
+char *attribute;
+char *mountpoint;
+
+char *consumer_mediasize;
+char *consumer_mode;
+char *consumer_sectorsize;
+
+} geom_data;
+
+geom_data g;
+
 	/* (most) functions */
 #ifndef FUNCTIONS_H_INCLUDED
 #define FUNCTIONS_H_INCLUDED
@@ -234,13 +275,17 @@ int populate_treeview1(char *);
 void treeview_add_rows(char *, char *);
 char *selected_item(GtkWidget *, int);
 gboolean right_clicked(GtkWidget *, GdkEventButton *, gpointer); 
+int buf_to_struct(char *);
+void g_zero();
 
 /* mount.c */
 char *is_mounted(char *);
+char *is_mounted_fuse(char *);
 void mountfs(GtkMenuItem *, gpointer);
 void unmountfs();
 int vfs_usermount();
 void usermount(char *, char *);
+int volume_cmp(char *, char *);
 
 /* mainWindow.c */
 /* int main() */

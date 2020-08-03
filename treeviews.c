@@ -198,43 +198,38 @@ int populate_treeview() {
 
 int populate_treeview1( char * one_disk) {
 
-	/* clean up */
 	clean_up_pointers();
+	char *geom;
 
-	/* buffer with geom information */
-	char *geom_info;
-
-	geom_info = read_disk(one_disk);
-	if (geom_info == NULL ) {
+	geom = read_disk(one_disk);
+	if(geom == NULL) {
 		printf("read_disk() failed.\n");
-		return 0;	
+		return (0);	
 	}
-		
-	/* fill in the tree	*/
-	treeview_add_rows(geom_info, one_disk);
-	free(geom_info);
-	
+
+	treeview_add_rows(geom, one_disk);
+	free(geom);
+
 	/* we may have detected slices */
 	char *slice;
-	char *slice_info;
 	char *brk, *brk1;
 	
 	if(slices_on_a_disk) {
 		slice = strtok_r ( slices_on_a_disk, " ", &brk1);
 		while(slice) {
-	
-			slice_info = read_disk(slice);
-			if (slice_info == NULL ) {
+
+			geom = read_disk(slice);
+			if (geom == NULL ) {
 				printf("scanning a slice failed.\n");
-				return 0;
+				return (0);
 			}
+			
+			treeview_add_rows(geom, slice);
+			free(geom);
 
-			treeview_add_rows(slice_info, slice);
-			free(slice_info);
-
-			/* scan for next slice */
+			/* next slice */
 			slice = strtok_r( NULL, " ", &brk1);
-		}			
+		}	
 
 		free(slices_on_a_disk);
 		slices_on_a_disk= NULL;
@@ -246,61 +241,17 @@ int populate_treeview1( char * one_disk) {
 	gtk_tree_view_set_enable_tree_lines (GTK_TREE_VIEW(tree1), TRUE);
 	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(tree1), GTK_TREE_VIEW_GRID_LINES_BOTH);
 
-	return 1;
+	return (1);
 }
 
 void treeview_add_rows(char *geombuf, char *disk) {
-	
-	char *ptr;
-	int len;
-	char *free_space;
 
+	char *free_space;
+	int entries;
+	
 	GtkTreeIter		parent; /* disk or slice */
 	GtkTreeIter		child;	/* partition */
 	GtkTreeIter		row_freespace;
-	char *sep;
-	char *next;
-
-/* 26 pointer */
-char *pname=	NULL;
-char *pname_capital=NULL;
-char *pmediasize=NULL;
-char *psectorsize=NULL;
-char *ptype=	NULL;
-char *pstart=	NULL;
-char *pend=	NULL;
-char *pend_old= NULL;
-char *pstate=	NULL;
-char *pentries=	NULL;
-char *pscheme=	NULL;
-char *pfirst=	NULL;
-char *plast=	NULL;
-char *pmodified= NULL;
-char *pstripesize=NULL;
-char *pstripeoffset=NULL;
-char *pmode=	NULL;
-char *pefimedia=NULL;
-char *prawuuid=	NULL;
-char *prawtype=	NULL;
-char *plength=	NULL;
-char *poffset=	NULL;
-char *plabel=	NULL;
-char *pindex=	NULL;
-char *pfilesystem=NULL;
-char *pattribute=NULL;
-
-char *mountpoint=NULL;
-
-	len = strlen(geombuf);
-
-	/* replace newline with space characters for strtok */
-	int i=0;
-	while(i < len) {
-		if (geombuf[i] == '\n') {	
-			geombuf[i] = ' ';
-		}
-		i++;
-	}
 
 	/* disk name */
 	gtk_tree_store_append(treestore1, &parent, NULL);
@@ -308,172 +259,111 @@ char *mountpoint=NULL;
 
 	if(geombuf[0] == '\0')	/* no geom information */
 		return;
+
+	/* replace newline with space characters */
+	int len= strlen(geombuf);
+	len = len - 1;
+	while(len >= 0) {
+		if (geombuf[len] == '\n') {	
+			geombuf[len] = ' ';
+		}
+		len--;
+	}
 	
-	/* parse geom information */
-	
-	sep = " !"; //XXX: why !
-	next = strtok_r(geombuf, sep, &ptr);
-	next = strtok_r(NULL, sep, &ptr);
-	while (next != NULL) {
-		
-		if ( (strcmp(next, "name:") )== 0) {
-			pname = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "state:") )== 0) {
-			pstate = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "fwheads:") )== 0) {
-		/* skip */
-		}
-		else if ( (strcmp(next, "fwsectors:") )== 0) {
-		/* skip */
-		}
-		else if ( (strcmp(next, "entries:") )== 0) {
-			pentries = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "scheme:") )== 0) {
-			pscheme = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "modified:") )== 0) {
-			pmodified = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "Stripeoffset:") )== 0) {
-			pstripeoffset = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "Stripesize:") )== 0) {
-			pstripesize = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "Mode:") )== 0) {
-			pmode = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "rawuuid:") )== 0) {
-			prawuuid = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "rawtype:") )== 0) {
-			prawtype = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "length:") )== 0) {
-			plength = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "index:") )== 0) {
-			pindex = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "first:") )== 0) {
-			pfirst = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "last:") )== 0) {
-			plast = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "offset:") )== 0) {
-			poffset = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "label:") )== 0) {
-			plabel = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "efimedia:") )== 0) {
-			pefimedia = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "last:") )== 0) {
-			plast = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "attrib:") )== 0) {
-			pattribute = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "Name:") )== 0) {
-			pname_capital = strtok_r(NULL, sep, &ptr); 
-		}
-		else if ( (strcmp(next, "Mediasize:") )== 0) {
-			next = strtok_r(NULL, sep, &ptr);
-			pmediasize = strtok_r(NULL, sep, &ptr);
-			format_string(pmediasize);
-		}
-		else if ( (strcmp(next, "type:") )== 0) {
-			ptype = strtok_r(NULL, sep, &ptr);
-			if(strcmp(ptype, "freebsd") == 0) {
-				all_slices = add_to_list(pname_capital, all_slices);
-				slices_on_a_disk =add_to_list(pname_capital, slices_on_a_disk);
-			}
-		}
-		else if ( (strcmp(next, "Sectorsize:") )== 0) {
-			psectorsize = strtok_r(NULL, sep, &ptr);
-		}
-		else if ( (strcmp(next, "end:") )== 0) {
-			next = strtok_r(NULL, sep, &ptr);
-			pend_old = pend;
-			pend = next;
-		}
-		else if ( (strcmp(next, "start:") )== 0) {
-			pstart = strtok_r(NULL, sep, &ptr);
-			/* start is the last entry of a provider(partition) */
-
-			/* free space in between partitions */
-			free_space = check_free_space(pstart, pend_old, psectorsize);
-			if (free_space != NULL) {
-				gtk_tree_store_append(treestore1, &row_freespace, &parent);
-				gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
-				free(free_space);
-			}
-			
-			gtk_tree_store_append(treestore1, &child, &parent);
-	
-			/* check for file system, and if it exists, check mountpoint */	
-			pfilesystem = what_file_system(pname_capital);
-			
-			if (pfilesystem != NULL) {
-				gtk_tree_store_set(treestore1, &child, 4, pfilesystem, -1);
-				
-				if(strncmp(ptype, "ntfs", 4) != 0)
-					mountpoint = is_mounted(pname_capital);
-					if(mountpoint != NULL) {
-						gtk_tree_store_set(treestore1, &child, 5, mountpoint, -1);
-						free(mountpoint);
-					}
-				free(pfilesystem);
-			}
-			
-			/* finally, put all other variables in the tree */
-			gtk_tree_store_set(treestore1, &child, 1, pname_capital, 2, ptype, \
-								3, pmediasize, 9, pstart, 10, pend, 11, plength, \
-								12, poffset, 13, pstripesize, 14, psectorsize, \
-								15, pstripeoffset, 16, pefimedia, 17, prawuuid, \
-								18, prawtype, -1);
-
-
-			if(pindex != NULL) /* be safe with these */
-				gtk_tree_store_set(treestore1, &child, 24, pindex, -1);
-			if(plabel != NULL)
-				gtk_tree_store_set(treestore1, &child, 6, plabel, -1);
-			if(pattribute!= NULL)
-				gtk_tree_store_set(treestore1, &child, 7, pattribute, -1);
-			pattribute= NULL;
-			if( pmode != NULL)
-				gtk_tree_store_set(treestore1, &child, 23, pmode, -1);
-		}
-
-		next = strtok_r(NULL, sep, &ptr);
+	g_zero();
+	entries = buf_to_struct(geombuf);
+	if(entries == 0) {
+		printf("error populating tree\n");
+		return;
 	}
 
-	/* free space after last partition */
-	free_space = check_free_space(plast, pend, psectorsize);
+	/*
+	* Now we have a structure with all entries.
+	* We write them to the treeview.
+	*/
+
+	/* parent (disk) entries */
+	gtk_tree_store_set(treestore1, &parent, 0, disk, 2, g.scheme, 8, g.state, 15, g.stripeoffset, -1);
+	if( (g.first != NULL) && (g.last != NULL) )
+		gtk_tree_store_set(treestore1, &parent, 19, g.first, 20, g.last, -1);
+	if( g.entries != NULL)
+		gtk_tree_store_set(treestore1, &parent, 21, g.entries, -1);
+	if( g.modified != NULL)
+		gtk_tree_store_set(treestore1, &parent, 22, g.modified, -1);
+	if( g.mode != NULL)
+		gtk_tree_store_set(treestore1, &parent, 23, g.mode, -1);
+	if( g.stripesize != NULL)
+		gtk_tree_store_set(treestore1, &parent, 13, g.stripesize, -1);
+
+	/* free space before first partition */
+	free_space = check_free_space(g.first, g.last, g.sectorsize);
 	if (free_space) {
 		gtk_tree_store_append(treestore1, &row_freespace, &parent);
 		gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
 		free(free_space);
 	}
 
-	/* parent (disk) entries */
-	gtk_tree_store_set(treestore1, &parent, 0, disk, 2, pscheme, 3, pmediasize, 8, pstate, \
-						14, psectorsize, 15, pstripeoffset, -1);
-	if( (pfirst != NULL) && (plast != NULL) )
-		gtk_tree_store_set(treestore1, &parent, 19, pfirst, 20, plast, -1);
-	if( pentries != NULL)
-		gtk_tree_store_set(treestore1, &parent, 21, pentries, -1);
-	if( pmodified != NULL)
-		gtk_tree_store_set(treestore1, &parent, 22, pmodified, -1);
-	if( pmode != NULL)
-		gtk_tree_store_set(treestore1, &parent, 23, pmode, -1);
-	if( pstripesize != NULL)
-		gtk_tree_store_set(treestore1, &parent, 13, pstripesize, -1);
+	/*
+	 *  loop through partitions.
+	 */
+	 
+	while(1) {
+
+		/* free space in between partitions */
+		free_space = check_free_space(g.start, g.end_old, g.sectorsize);
+		if (free_space != NULL) {
+			gtk_tree_store_append(treestore1, &row_freespace, &parent);
+			gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
+			free(free_space);
+		}
+		
+		gtk_tree_store_append(treestore1, &child, &parent);
+
+		gtk_tree_store_set(treestore1, &child, 1, g.name_capital, 2, g.type, \
+				3, g.mediasize, 9, g.start, 10, g.end, 11, g.length, 12, g.offset, \
+				13, g.stripesize, 14, g.sectorsize, 15, g.stripeoffset, \
+				16, g.efimedia, 17, g.rawuuid, 18, g.rawtype, -1);
+
+		if(g.index != NULL) /* be safe with these */
+			gtk_tree_store_set(treestore1, &child, 24, g.index, -1);
+		if(g.label != NULL)
+			gtk_tree_store_set(treestore1, &child, 6, g.label, -1);
+		if(g.attribute!= NULL)
+			gtk_tree_store_set(treestore1, &child, 7, g.attribute, -1);
+		g.attribute= NULL;
+		if( g.mode != NULL)
+			gtk_tree_store_set(treestore1, &child, 23, g.mode, -1);
+	
+		/* file system and mountpoint */	
+		if (g.filesystem != NULL) {
+			gtk_tree_store_set(treestore1, &child, 4, g.filesystem, -1);
+			free(g.filesystem);
+		
+			if(g.mountpoint != NULL) {
+				gtk_tree_store_set(treestore1, &child, 5, g.mountpoint, -1);
+				free(g.mountpoint);
+			}
+		}
+		
+	/*
+	 *  We wrote all entries.
+	 * Get the next partition.
+	 */
+	entries = buf_to_struct(g.next_partition);
+	if(entries == 0)
+		break;
+	}
+	
+	/* free space after last partition */
+	free_space = check_free_space(g.last, g.end, g.sectorsize);
+	if (free_space) {
+		gtk_tree_store_append(treestore1, &row_freespace, &parent);
+		gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
+		free(free_space);
+	}
+	/* Consumer information */
+		gtk_tree_store_set(treestore1, &parent, 3, g.consumer_mediasize, \
+						14, g.consumer_sectorsize, -1);
 }
 
 char *selected_item(GtkWidget *tview, int column) {
@@ -503,8 +393,12 @@ char *selected_item(GtkWidget *tview, int column) {
 
 gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) {
 	
+	char *part;
+	char *fs;
+	char *mnt;
+	
 	if( (event->type != GDK_BUTTON_PRESS) || (event->button != 3) ) 
-		return FALSE;  
+		return FALSE;
 
 	/* Where did he click? */
 	GtkTreePath *path;
@@ -519,13 +413,17 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 	gtk_tree_path_free(path);
 
 	/* a potential popup menu for mount options */
-	char *my = selected_item(tree1, 4); /* file system type */
-	char *part = selected_item(tree1, 1); /* partition */
-		if((my != NULL) && (part != NULL) ) {
+	fs = selected_item(tree1, 4); /* 4 = file system type */
+	part = selected_item(tree1, 1); /* 1 = partition */
+		if((fs != NULL) && (part != NULL) ) {
 			todo = MOUNT;
 			GtkWidget *pop_menu = gtk_menu_new();
 			
-			char *mnt = is_mounted(part);
+			if(strncmp(fs, "ntfs", 4) == 0 || strncmp(fs, "exfat", 5) == 0)
+				mnt = is_mounted_fuse(part);
+			else
+				mnt = is_mounted(part);
+				
 			if (mnt != NULL) {
 				
 				free(mnt);
@@ -537,7 +435,7 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 			else if (mnt == NULL) {
 				
 				/* XXX: NULL could be an error too! */
-				if(strncmp(my, "n/a", 3) == 0) {
+				if(strncmp(fs, "n/a", 3) == 0) {
 				/* "show file system" */		
 					GtkWidget *rescan = gtk_menu_item_new_with_label(l.mrescan);
 					gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), rescan);
@@ -574,3 +472,223 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 		}
 		return TRUE; /* right click finished */
 	}
+
+int buf_to_struct(char *buf) {
+
+	if(buf == NULL)
+		return(0);
+	
+	/* initialize all entries to zero */
+g.name = NULL;
+g.name_capital = NULL;
+g.mediasize = NULL;
+//g->sectorsize = NULL;
+g.type = NULL;
+g.start = NULL;
+if(g.end != NULL)
+	g.end_old = g.end;
+else
+	g.end_old = NULL;
+//g->end = NULL;
+g.state = NULL;
+g.entries = NULL;
+g.scheme = NULL;
+//g.first = NULL;
+//g->last = NULL;
+g.modified = NULL;
+g.stripesize = NULL;
+g.stripeoffset = NULL;
+g.mode = NULL;
+g.efimedia = NULL;
+g.rawuuid = NULL;
+g.rawtype = NULL;
+g.length = NULL;
+g.offset = NULL;
+g.label = NULL;
+g.index = NULL;
+g.filesystem = NULL;
+g.attribute = NULL;
+g.mountpoint = NULL;
+
+	/* parse buffer information */
+	char *ptr;
+	char *sep;
+	char *next;	
+	int entries;
+	
+	entries=0;
+	sep = " "; //!
+	next = strtok_r(buf, sep, &ptr);
+	next = strtok_r(NULL, sep, &ptr);
+	
+	while(next != NULL) {
+		
+		entries++;
+		if ( (strcmp(next, "name:") )== 0) {
+			g.name = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "state:") )== 0) {
+			g.state = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "fwheads:") )== 0) {
+		/* skip */
+		}
+		else if ( (strcmp(next, "fwsectors:") )== 0) {
+		/* skip */
+		}
+		else if ( (strcmp(next, "entries:") )== 0) {
+			g.entries = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "scheme:") )== 0) {
+			g.scheme = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "modified:") )== 0) {
+			g.modified = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "Stripeoffset:") )== 0) {
+			g.stripeoffset = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "Stripesize:") )== 0) {
+			g.stripesize = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "Mode:") )== 0) {
+			g.mode = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "rawuuid:") )== 0) {
+			g.rawuuid = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "rawtype:") )== 0) {
+			g.rawtype = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "length:") )== 0) {
+			g.length = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "index:") )== 0) {
+			g.index = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "first:") )== 0) {
+			g.first = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "last:") )== 0) {
+			g.last = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "offset:") )== 0) {
+			g.offset = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "label:") )== 0) {
+			g.label = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "efimedia:") )== 0) {
+			g.efimedia = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "last:") )== 0) {
+			g.last = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "attrib:") )== 0) {
+			g.attribute = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "Name:") )== 0) {
+			g.name_capital = strtok_r(NULL, sep, &ptr); 
+		}
+		else if ( (strcmp(next, "Mediasize:") )== 0) {
+			next = strtok_r(NULL, sep, &ptr);
+			g.mediasize = strtok_r(NULL, sep, &ptr);
+			format_string(g.mediasize);
+		}
+		else if ( (strcmp(next, "type:") )== 0) {
+			g.type = strtok_r(NULL, sep, &ptr);
+			if(strcmp(g.type, "freebsd") == 0) {
+				all_slices = add_to_list(g.name_capital, all_slices);
+				slices_on_a_disk =add_to_list(g.name_capital, slices_on_a_disk);
+			}
+		}
+		else if ( (strcmp(next, "Sectorsize:") )== 0) {
+			g.sectorsize = strtok_r(NULL, sep, &ptr);
+		}
+		else if ( (strcmp(next, "end:") )== 0) {
+			g.end = strtok_r(NULL, sep, &ptr);
+		}
+		else if(strncmp(next, "start:", 6) == 0) {
+			g.start = strtok_r(NULL, sep, &ptr);
+			/* 
+			 * start is the last entry of a provider(partition).
+			 * We read Consumer information and return.
+			 */
+			 
+			g.next_partition = g.start + strlen(g.start) +1 ;
+			if(strncmp(g.next_partition, "Consumer", 8) == 0) {
+				next = strtok_r(NULL, sep, &ptr);
+				while(next != NULL) {
+					if(strncmp(next, "Consumers:", 9) == 0) {
+						/* skip */
+					}
+					else if(strncmp(next, "Name:", 6) == 0) {
+						/* skip */
+					}
+					else if ( (strncmp(next, "Mediasize:", 10) )== 0) {
+						next = strtok_r(NULL, sep, &ptr);
+						g.consumer_mediasize = strtok_r(NULL, sep, &ptr);
+						format_string(g.consumer_mediasize);
+					}
+					else if(strncmp(next, "Sectorsize:", 11) == 0)
+						g.consumer_sectorsize = strtok_r(NULL, sep, &ptr);
+					else if(strncmp(next, "Mode:", 5) == 0)
+						g.consumer_mode = strtok_r(NULL, sep, &ptr);
+					next = strtok_r(NULL, sep, &ptr);
+				}
+				g.next_partition = NULL; /* end of buffer */
+			}
+
+			break;
+		}
+		next = strtok_r(NULL, sep, &ptr);
+	}
+	
+	if(entries != 0) {
+		/* check file system and mountpoint */	
+		g.filesystem = what_file_system(g.name_capital);
+		if(strncmp(g.type, "ntfs", 4) == 0 || strncmp(g.type, "exfat", 5) == 0) {
+			g.mountpoint = is_mounted_fuse(g.name_capital);
+		}
+		else
+			g.mountpoint = is_mounted(g.name_capital);
+	}
+
+	return (entries);
+}
+
+void g_zero() {
+	
+/* initialize all entries to zero */
+g.name = NULL;
+g.name_capital = NULL;
+g.mediasize = NULL;
+g.sectorsize = NULL;
+g.type = NULL;
+g.start = NULL;
+g.end = NULL;
+g.end_old = NULL;
+g.state = NULL;
+g.entries = NULL;
+g.scheme = NULL;
+g.first = NULL;
+g.last = NULL;
+g.modified = NULL;
+g.stripesize = NULL;
+g.stripeoffset = NULL;
+g.mode = NULL;
+g.efimedia = NULL;
+g.rawuuid = NULL;
+g.rawtype = NULL;
+g.length = NULL;
+g.offset = NULL;
+g.label = NULL;
+g.index = NULL;
+g.filesystem = NULL;
+g.attribute = NULL;
+g.mountpoint = NULL;	
+g.next_partition = NULL;
+g.consumer_mediasize = NULL;
+g.consumer_mode = NULL;
+g.consumer_sectorsize = NULL;
+}

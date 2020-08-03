@@ -33,6 +33,68 @@ char *is_mounted(char *part) {
 			return NULL;
 }
 
+char *is_mounted_fuse(char *partition) {
+
+/*
+ * This is surely not how things should
+ * be done.
+ */
+	
+	char buf[150];
+	int bufsize = 150;
+	int len=0;
+	int result = 0;
+	char *mountpoint = NULL;
+
+
+	if(!root() && pw_needed() == 1) {
+		printf("Note: fuse mountpoints not shown. Need higher privileges for that.\n");
+		char *empty = malloc(10);
+		strcpy(empty, "--");
+		return empty;
+	}
+
+	memset(buf, 0, bufsize);
+	char cmd[]= "mount | awk '/fuse/{print $3}'";
+
+	if (partition == NULL)
+		return NULL;
+
+	/* iterate through all mounted fuse file systems */
+	
+	FILE *fp = popen(cmd, "r");
+	if (fp == NULL) {
+		msg("fopen failed");
+		return NULL;
+	}
+	while( fgets(buf, sizeof buf, fp)) {
+
+		len = strlen(buf);
+		if(len == 0)
+			break;
+
+		buf[len-1] = '\0';
+		
+		/* compare the volume information with device */
+		result = volume_cmp(partition, buf);
+			
+			if(result == 0) {
+				mountpoint = malloc(len +1);
+				strncpy(mountpoint, buf, len);
+				/* zero terminate? */
+			}
+			else if(result == -1) {
+				/* abort */
+				mountpoint = malloc(10);
+				strcpy(mountpoint, "--");
+				break;
+			}
+	}
+	
+	pclose(fp);
+	return mountpoint;
+}
+
 void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	/* mount a partition */
 		
@@ -124,48 +186,54 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		msg("undocumented file system.");
 		error = 1;
 	}
-	free(path);
 	
-	if(!error) {
-		if(!root() )  {
-			if(vfs_usermount() == 1) {
-				if (execute_cmd(cmd, 0) == 0) {
-					free(cmd);
-					msg(l.mdone);
-					return;
-				}
-			}
-			/* try sudo */
-			if(pw_needed() ) {
-				window_pw(cmd);
-				return;
-			}
-			else {
-				/* no password needed */
-				cmd = sudo(cmd, "empty", 0);
-				if(cmd == NULL) {
-					printf("restart recommended..\n");
-					return;
-				}
-			}
-		}
-		submit(cmd, 0);
-		on_toplevel_changed(); 		/* redraw everything */
+	if(error) {
+		free(path);
+		free(cmd);
+		return;
 	}
-	free(cmd);
+
+	if(root()) {
+		submit(cmd, 1);
+		free(path);
+		free(cmd);
+	}
+	else if(vfs_usermount() == 1 && access(path, W_OK) == 0 && execute_cmd(cmd, 0) == 0) {
+		free(path);
+		free(cmd);
+		msg(l.mdone);
+		return;
+	}
+	else if(pw_needed()) {
+		window_pw(cmd);
+		free(path);
+		return;
+	}
+	else {
+		/* no password needed */
+		cmd = sudo(cmd, "empty", 0);
+		if(cmd == NULL) {
+			printf("restart recommended..\n");
+			return;
+		}
+		submit(cmd, 1);
+		free(path);
+	}
+
+	on_toplevel_changed(); 		/* redraw everything */
 }
 
 void unmountfs() {
 	/* unmount */
 	int success=0;
-	char *part = selected_item(tree1, 1); /* partition */
-	if(part == NULL)
+	char *fs = selected_item(tree1, 5); /* partition */
+	if(fs == NULL)
 		return;
 		
-	int len = strlen(part);
+	int len = strlen(fs);
 	char *cmd = malloc (len + 20);
 	memset(cmd, 0, len+20);
-	snprintf(cmd, len+20, "umount /dev/%s", part);
+	snprintf(cmd, len+20, "umount %s", fs);
 	if(!root()) {
 		if( (vfs_usermount() == 0) ) { 
 			if( execute_cmd(cmd, 0) == 0) {
@@ -209,4 +277,71 @@ int vfs_usermount() {
 		usermnt = 1;
 	pclose(fp);
 	return usermnt;
+}
+
+int volume_cmp(char *partition, char *mpoint) {
+	
+	/* 
+	 * Compare Volume information of the mountpoint
+	 * with the information of the device.
+	 * If they match, they are identical.
+	 */
+	
+	char *filename;
+	char *tmpfile1 = "/tmp/file1";
+	char *tmpfile2 = "/tmp/file2";
+	char cmd1[CMDSIZE];
+	char cmd2[CMDSIZE];
+	char buf1[CMDSIZE];
+	char buf2[CMDSIZE];
+	
+	int mlen;
+	int match=1;
+
+	if(mpoint == NULL || partition == NULL)
+		return -1;
+
+	memset(buf1, 0, CMDSIZE);
+	memset(buf2, 0, CMDSIZE);
+	
+	/* first read the info from mountpoint */
+	mlen = strlen(mpoint);
+	filename = malloc(50+mlen);
+	if(filename == NULL)
+		return -1;
+
+	sprintf(filename, "%s/System Volume Information/IndexerVolumeGuid", mpoint);
+/*	if(access(filename, R_OK) != 0) {
+		printf("%s: %s\n", filename,  strerror(errno));
+		free(filename);
+		return 1;
+	}
+*/
+
+	snprintf(cmd1, CMDSIZE, "sudo -S cat %s/System\\ Volume\\ Information/IndexerVolumeGuid >%s", mpoint, tmpfile1);
+	if(execute_cmd(cmd1, 0) != 0) {
+		printf("No System Volume Information on: %s -- Aborting.\n", mpoint);
+		free(filename);
+		return -1;
+	}
+
+	/* second read device */
+	snprintf(cmd2, CMDSIZE, "sudo -S ntfscat -fq /dev/%s System\\ Volume\\ Information/IndexerVolumeGuid | tail -n 1 >%s ", partition, tmpfile2);
+	if(execute_cmd(cmd2, 0) != 0) {
+		printf("No System Volume Information on device: /dev/%s -- Aborting.\n", partition);
+		free(filename);
+		return -1;
+	}
+
+	if(execute_cmd("diff /tmp/file1 /tmp/file2", 0) == 0)
+		match = 0;
+	//else
+	//	printf("/dev/%s is not mounted on: %s\n", partition, mpoint);
+
+	free(filename);
+	execute_cmd("sudo -S rm /tmp/file1 /tmp/file2", 0);
+	//remove(tmpfile1);
+	//remove(tmpfile2);
+	
+	return match;
 }
