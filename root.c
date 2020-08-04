@@ -196,7 +196,7 @@ char *sudo_backend(char *rcmd, char * password) {
 	sprintf(pw, "%s\n%d", password, EOF); /* newline and EOF? */
 	
 	/* create named pipe */
-	pwfile = "/tmp/qwzrfw";
+	pwfile = random_filename();
 	if (mkfifo(pwfile, 0660) != 0) {
 		printf("fifo error\n");
 		return NULL;

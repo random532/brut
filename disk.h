@@ -264,6 +264,7 @@ void info_cb(GtkMenuItem *, gpointer);
 char *get_partition_type(char *);
 char *get_type(char *);
 char *get_scheme(const gchar *);
+char *random_filename();
 
 /* root.c */
 char *sudo(char *, char *, int);

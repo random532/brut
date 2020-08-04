@@ -680,3 +680,20 @@ char *get_scheme(const gchar *gdisk) {
 	else
 		return NULL;
 }
+
+char *random_filename() {
+	
+	char *fname;
+	uint32_t number;
+	int len;
+
+	number = arc4random();
+	len = 20;
+	fname = malloc(len+1);
+	if(fname == NULL)
+		return NULL;
+	memset(fname, 0, len+1);
+	
+	snprintf(fname, len ,"%i", number);
+	return fname;
+}

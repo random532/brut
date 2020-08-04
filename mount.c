@@ -312,12 +312,9 @@ int volume_cmp(char *partition, char *mpoint) {
 	 */
 	
 	char *filename;
-	char *tmpfile1 = "/tmp/file1";
-	char *tmpfile2 = "/tmp/file2";
-	char cmd1[CMDSIZE];
-	char cmd2[CMDSIZE];
-	char buf1[CMDSIZE];
-	char buf2[CMDSIZE];
+	char *tmpfile1;
+	char *tmpfile2;
+	char cmd[CMDSIZE];
 	
 	int mlen;
 	int match=1;
@@ -325,45 +322,65 @@ int volume_cmp(char *partition, char *mpoint) {
 	if(mpoint == NULL || partition == NULL)
 		return -1;
 
-	memset(buf1, 0, CMDSIZE);
-	memset(buf2, 0, CMDSIZE);
-	
+
 	/* first read the info from mountpoint */
 	mlen = strlen(mpoint);
 	filename = malloc(50+mlen);
 	if(filename == NULL)
 		return -1;
 
+	/* Check for a volume information file. */
 	sprintf(filename, "%s/System Volume Information/IndexerVolumeGuid", mpoint);
-/*	if(access(filename, R_OK) != 0) {
-		printf("%s: %s\n", filename,  strerror(errno));
+	if(access(filename, R_OK) != 0) {
+		printf("volume_cmp():fuse:%s: %s\n", filename,  strerror(errno));
 		free(filename);
-		return 1;
+		return -1;
 	}
-*/
 
-	snprintf(cmd1, CMDSIZE, "sudo -S cat %s/System\\ Volume\\ Information/IndexerVolumeGuid >%s", mpoint, tmpfile1);
-	if(execute_cmd(cmd1, 0) != 0) {
+	free(filename);
+
+	/* Write both volume informations to tmp files */
+	tmpfile1 = random_filename();
+	tmpfile2 = random_filename();
+	if(tmpfile1 == NULL || tmpfile2 == NULL) {
+		printf("volume_cmp(): error in tmp files.\n");
+		free(filename);
+		return -1;
+	}
+	
+	while(strcmp(tmpfile1, tmpfile2) == 0) {
+		printf("volume_cmp(): Unlucky. Trying again.\n");
+		free(tmpfile2);
+		tmpfile2 = random_filename();
+	}
+
+	snprintf(cmd, CMDSIZE, "sudo -S cat %s/System\\ Volume\\ Information/IndexerVolumeGuid >/tmp/%s", mpoint, tmpfile1);
+	if(execute_cmd(cmd, 0) != 0) {
 		printf("No System Volume Information on: %s -- Aborting.\n", mpoint);
 		free(filename);
 		return -1;
 	}
 
 	/* second read device */
-	snprintf(cmd2, CMDSIZE, "sudo -S ntfscat -fq /dev/%s System\\ Volume\\ Information/IndexerVolumeGuid | tail -n 1 >%s ", partition, tmpfile2);
-	if(execute_cmd(cmd2, 0) != 0) {
+	snprintf(cmd, CMDSIZE, "sudo -S ntfscat -fq /dev/%s System\\ Volume\\ Information/IndexerVolumeGuid | tail -n 1 >/tmp/%s ", partition, tmpfile2);
+	if(execute_cmd(cmd, 0) != 0) {
 		printf("No System Volume Information on device: /dev/%s -- Aborting.\n", partition);
 		free(filename);
 		return -1;
 	}
 
-	if(execute_cmd("diff /tmp/file1 /tmp/file2", 0) == 0)
+	snprintf(cmd, CMDSIZE-1, "diff /tmp/%s /tmp/%s", tmpfile1, tmpfile2);
+	if(execute_cmd(cmd, 0) == 0)
 		match = 0;
 	//else
 	//	printf("/dev/%s is not mounted on: %s\n", partition, mpoint);
-
-	free(filename);
-	execute_cmd("sudo -S rm /tmp/file1 /tmp/file2", 0);
 	
+	snprintf(cmd, CMDSIZE-1, "sudo -S rm /tmp/%s /tmp/%s", tmpfile1, tmpfile2);
+	if(execute_cmd(cmd, 0) != 0)
+		printf("vol_cmp(): Cannot remove temporary files:/tmp%s, /tmp/%s\n", tmpfile1, tmpfile2);
+
+	free(tmpfile1);
+	free(tmpfile2);
+		
 	return match;
 }
