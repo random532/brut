@@ -22,30 +22,6 @@ char *sudo( char *cmd, char *passw, int pw) {
 	return rcmd;
 }
 
-int test_pw(char *passw) { /* deprecated */
-	
-	char buf[200];
-	memset(buf, 0, 200);
-	if( (passw == NULL) || (strlen(passw) > 100) )
-		return 0;
-
-	snprintf(buf, 200, "echo \"%s\" | sudo -S whoami 2>/dev/null", passw);
-	FILE * fp = popen(buf, "r");
-	if (fp == NULL)
-		return 0;
-	
-	fgets(buf, sizeof buf, fp);
-	if(strncmp(buf, "root", 4) == 0) {
-		pclose(fp);
-		return 1;
-	}
-	else {
-		pclose(fp);
-		msg(l.no_root);
-		return 0;
-	}
-}
-
 int pw_needed() {
 
 	int error;	

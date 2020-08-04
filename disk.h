@@ -23,7 +23,7 @@
 #define ENTRY_MAX 8
 
 	/* column header for 2 treeviews */
-#define COLUMNS  25
+#define COLUMNS  27
 char columns[COLUMNS][26];
 #define COL 11
 char column[COL][25];
@@ -160,6 +160,8 @@ char *index;
 char *filesystem;
 char *attribute;
 char *mountpoint;
+char *capacity;
+char *fslabel;
 
 char *consumer_mediasize;
 char *consumer_mode;
@@ -277,6 +279,8 @@ char *selected_item(GtkWidget *, int);
 gboolean right_clicked(GtkWidget *, GdkEventButton *, gpointer); 
 int buf_to_struct(char *);
 void g_zero();
+char *get_capacity(char *);
+char *get_label(char *, char *);
 
 /* mount.c */
 char *is_mounted(char *);

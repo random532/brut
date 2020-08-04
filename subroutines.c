@@ -400,32 +400,39 @@ char* command(char *cmd) {
 	
 	if(cmd == NULL)
 		return NULL;
-	printf("cmd:%s\n", cmd);
 
 	char buf[CMDSIZE];
 	char *ret;
-	int sz;
+	int size;
+	int len;
 	
-	ret = malloc(sz+2);
+	size = strlen(cmd);
+	ret = malloc(size+2);
 	if(ret == NULL)
 		return NULL;
-	memset(ret, 0, sz+2);
+
+	memset(buf, 0, CMDSIZE);
+	memset(ret, 0, size+2);
 
 	FILE * fp = popen(cmd, "r");
 	if (fp == NULL) {
 		msg("fopen failed");
 		return NULL;
 	}
-	while( fgets(buf, sz, fp)) {
-		printf("buffer:%s\n", buf);
-		strncat(ret, buf, sz);
-		sz = sz +150;
-		ret = realloc(ret, sz);
+	while( fgets(buf, CMDSIZE, fp)) {
+		len = strlen(buf);
+		strncat(ret, buf, size);
+		size = size + len;
+		ret = realloc(ret, size);
 		if(ret == NULL)
 			return NULL;
-		memset(buf, 0, 150);
+		memset(buf, 0, CMDSIZE);
 	}
 	pclose(fp);
+	
+	/* zero terminate */
+	len = strlen(ret);
+	ret[len-1] = '\0';
 	return ret;
 }
 

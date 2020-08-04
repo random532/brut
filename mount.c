@@ -42,23 +42,22 @@ char *is_mounted_fuse(char *partition) {
 	
 	char buf[150];
 	int bufsize = 150;
+	char cmd[]= "mount | awk '/fuse/{print $3}'";
 	int len=0;
 	int result = 0;
 	char *mountpoint = NULL;
 
+	if (partition == NULL)
+		return NULL;
 
 	if(!root() && pw_needed() == 1) {
-		printf("Note: fuse mountpoints not shown. Need higher privileges for that.\n");
+		printf("Note: fuse mountpoints unknown. Need higher privileges for that.\n");
 		char *empty = malloc(10);
 		strcpy(empty, "--");
 		return empty;
 	}
 
 	memset(buf, 0, bufsize);
-	char cmd[]= "mount | awk '/fuse/{print $3}'";
-
-	if (partition == NULL)
-		return NULL;
 
 	/* iterate through all mounted fuse file systems */
 	
@@ -72,7 +71,6 @@ char *is_mounted_fuse(char *partition) {
 		len = strlen(buf);
 		if(len == 0)
 			break;
-
 		buf[len-1] = '\0';
 		
 		/* compare the volume information with device */
@@ -81,7 +79,6 @@ char *is_mounted_fuse(char *partition) {
 			if(result == 0) {
 				mountpoint = malloc(len +1);
 				strncpy(mountpoint, buf, len);
-				/* zero terminate? */
 			}
 			else if(result == -1) {
 				/* abort */
@@ -103,7 +100,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	char * part = selected_item(tree1, 1);	/* partition */
 	int plen = strlen(part); /* is this really 0 terminated? */
 	int mlen = 0;
-	char * fs = selected_item(tree1, 4); 	/* file system type */
+	char * fs = selected_item(tree1, 5); 	/* file system type */
 	char *path;
 	char *cmd;
 	int success = 0;
@@ -202,12 +199,10 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		free(path);
 		free(cmd);
 		msg(l.mdone);
-		return;
 	}
 	else if(pw_needed()) {
 		window_pw(cmd);
 		free(path);
-		return;
 	}
 	else {
 		/* no password needed */
@@ -224,16 +219,22 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 }
 
 void unmountfs() {
-	/* unmount */
+	
+	char *m;	 /* mountpoint */
+	char *cmd;
+	int len;
 	int success=0;
-	char *fs = selected_item(tree1, 5); /* partition */
-	if(fs == NULL)
+	
+	
+	m = selected_item(tree1, 7);
+	if(m == NULL)
 		return;
 		
-	int len = strlen(fs);
-	char *cmd = malloc (len + 20);
+	len = strlen(m);
+	cmd = malloc (len + 20);
 	memset(cmd, 0, len+20);
-	snprintf(cmd, len+20, "umount %s", fs);
+	snprintf(cmd, len+20, "umount %s", m);
+	free(m);
 	if(!root()) {
 		if( (vfs_usermount() == 0) ) { 
 			if( execute_cmd(cmd, 0) == 0) {
