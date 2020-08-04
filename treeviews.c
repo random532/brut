@@ -96,7 +96,8 @@ GtkWidget *create_treeview1() {
                              GTK_SELECTION_SINGLE);
 
 	g_signal_connect(G_OBJECT (view), "button-press-event", G_CALLBACK(right_clicked), NULL);
-return view;
+	
+	return view;
 }
 
 int populate_treeview() {
@@ -123,11 +124,13 @@ int populate_treeview() {
 			i++;
 			
 		/* Evaluate the entries */
-		if (strncmp(&line[i], "Geom name:", 10) == 0){
+		if (strncmp(&line[i], "Geom name:", 10) == 0) {
+			
 			i = vari(line, size);	/* where the variable starts */
 			gtk_tree_store_append(treestore, &parent, NULL);
 			gtk_tree_store_set(treestore, &parent, 0, &line[i], -1);
-			child = parent; /* dirty, but usually there is only one provider */
+			child = parent;
+			
 		}
 		else if (strncmp(&line[i], "Providers", 9) == 0) {
 			/* skip */
@@ -193,6 +196,13 @@ int populate_treeview() {
 	gtk_tree_view_set_enable_tree_lines (GTK_TREE_VIEW(tree), TRUE);
 	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(tree), GTK_TREE_VIEW_GRID_LINES_BOTH);
 	
+	/* empty row at the end for style points */
+	gtk_tree_store_append(treestore, &parent, NULL);
+
+	/* needed to update scrollbars? */
+	gtk_widget_hide(scrolled_window);
+	gtk_widget_show(scrolled_window);
+
 	return (1);
 }
 
@@ -239,11 +249,15 @@ int populate_treeview1( char * one_disk) {
 		slices_on_a_disk= NULL;
 	}
 
-	/* be nice to Users */ //XXX: Move this to create treeview?
+	/* more options */
 	gtk_tree_view_expand_all(GTK_TREE_VIEW(tree1));
 	gtk_tree_view_set_enable_search (GTK_TREE_VIEW(tree1), TRUE);	
 	gtk_tree_view_set_enable_tree_lines (GTK_TREE_VIEW(tree1), TRUE);
 	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(tree1), GTK_TREE_VIEW_GRID_LINES_BOTH);
+
+	/* needed to update scrollbars? */
+	gtk_widget_hide(scrolled_window);
+	gtk_widget_show(scrolled_window);
 
 	return (1);
 }
@@ -259,7 +273,7 @@ void treeview_add_rows(char *geombuf, char *disk) {
 
 	/* disk name */
 	gtk_tree_store_append(treestore1, &parent, NULL);
-	gtk_tree_store_set(treestore1, &parent, 0, disk, -1);
+	gtk_tree_store_set(treestore1, &parent, POS_DISK, disk, -1);
 
 	if(geombuf[0] == '\0')	/* no geom information */
 		return;
@@ -287,21 +301,21 @@ void treeview_add_rows(char *geombuf, char *disk) {
 	*/
 
 	/* parent (disk) entries */
-	gtk_tree_store_set(treestore1, &parent, 0, disk, 2, g.scheme, 10, g.state, 17, g.stripeoffset, -1);
+	gtk_tree_store_set(treestore1, &parent, POS_DISK, disk, POS_TYPE, g.scheme, POS_STATE, g.state, POS_STRIPEOFFSET, g.stripeoffset, -1);
 	if( (g.first != NULL) && (g.last != NULL) )
-		gtk_tree_store_set(treestore1, &parent, 21, g.first, 22, g.last, -1);
+		gtk_tree_store_set(treestore1, &parent, POS_FIRST, g.first, POS_LAST, g.last, -1);
 	if( g.entries != NULL)
-		gtk_tree_store_set(treestore1, &parent, 23, g.entries, -1);
+		gtk_tree_store_set(treestore1, &parent, POS_ENTRIES, g.entries, -1);
 	if( g.modified != NULL)
-		gtk_tree_store_set(treestore1, &parent, 24, g.modified, -1);
+		gtk_tree_store_set(treestore1, &parent, POS_MODIFIED, g.modified, -1);
 	if( g.stripesize != NULL)
-		gtk_tree_store_set(treestore1, &parent, 15, g.stripesize, -1);
+		gtk_tree_store_set(treestore1, &parent, POS_STRIPESIZE, g.stripesize, -1);
 
 	/* free space before first partition */
 	free_space = check_free_space(g.first, g.last, g.sectorsize);
 	if (free_space) {
 		gtk_tree_store_append(treestore1, &row_freespace, &parent);
-		gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
+		gtk_tree_store_set(treestore1, &row_freespace, POS_PART, "-free-", POS_TYPE, free_space, -1);
 		free(free_space);
 	}
 
@@ -315,41 +329,41 @@ void treeview_add_rows(char *geombuf, char *disk) {
 		free_space = check_free_space(g.start, g.end_old, g.sectorsize);
 		if (free_space != NULL) {
 			gtk_tree_store_append(treestore1, &row_freespace, &parent);
-			gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
+			gtk_tree_store_set(treestore1, &row_freespace, POS_TYPE, "-free-", POS_SIZE, free_space, -1);
 			free(free_space);
 		}
 		
 		gtk_tree_store_append(treestore1, &child, &parent);
 
-		gtk_tree_store_set(treestore1, &child, 1, g.name_capital, 2, g.type, \
-				3, g.mediasize, 11, g.start, 12, g.end, 13, g.length, 14, g.offset, \
-				15, g.stripesize, 16, g.sectorsize, 17, g.stripeoffset, \
-				18, g.efimedia, 19, g.rawuuid, 20, g.rawtype, -1);
+		gtk_tree_store_set(treestore1, &child, POS_PART, g.name_capital, POS_TYPE, g.type, \
+				POS_SIZE, g.mediasize, POS_START, g.start, POS_END, g.end, POS_LEN, g.length, POS_OFFSET, g.offset, \
+				POS_STRIPESIZE, g.stripesize, POS_SECTORSIZE, g.sectorsize, POS_STRIPEOFFSET, g.stripeoffset, \
+				POS_EFIMEDIA, g.efimedia, POS_RAWUUID, g.rawuuid, POS_RAWTYPE, g.rawtype, -1);
 
 		if(g.index != NULL) /* be safe with these */
-			gtk_tree_store_set(treestore1, &child, 26, g.index, -1);
+			gtk_tree_store_set(treestore1, &child, POS_INDEX, g.index, -1);
 		if(g.label != NULL)
-			gtk_tree_store_set(treestore1, &child, 4, g.label, -1);
+			gtk_tree_store_set(treestore1, &child, POS_LABEL, g.label, -1);
 		if(g.attribute!= NULL)
-			gtk_tree_store_set(treestore1, &child, 9, g.attribute, -1);
+			gtk_tree_store_set(treestore1, &child, POS_ATTR, g.attribute, -1);
 		g.attribute= NULL;
 		if( g.mode != NULL)
-			gtk_tree_store_set(treestore1, &child, 25, g.mode, -1);
+			gtk_tree_store_set(treestore1, &child, POS_MODE, g.mode, -1);
 	
 		/* file system related entries */	
 		if (g.filesystem != NULL) {
-			gtk_tree_store_set(treestore1, &child, 5, g.filesystem, -1);
+			gtk_tree_store_set(treestore1, &child, POS_FS, g.filesystem, -1);
 			free(g.filesystem);
 		
 			if(g.fslabel != NULL) {
-				gtk_tree_store_set(treestore1, &child, 6, g.fslabel, -1);
+				gtk_tree_store_set(treestore1, &child, POS_FSLABEL, g.fslabel, -1);
 				free(g.fslabel);
 			}
 			if(g.mountpoint != NULL) {
-				gtk_tree_store_set(treestore1, &child, 7, g.mountpoint, -1);
+				gtk_tree_store_set(treestore1, &child, POS_MOUNTP, g.mountpoint, -1);
 				free(g.mountpoint);
 				if(g.capacity != NULL) {
-					gtk_tree_store_set(treestore1, &child, 8, g.capacity, -1);
+					gtk_tree_store_set(treestore1, &child, POS_CAPACITY, g.capacity, -1);
 					free(g.capacity);
 				}
 			}
@@ -368,14 +382,15 @@ void treeview_add_rows(char *geombuf, char *disk) {
 	free_space = check_free_space(g.last, g.end, g.sectorsize);
 	if (free_space) {
 		gtk_tree_store_append(treestore1, &row_freespace, &parent);
-		gtk_tree_store_set(treestore1, &row_freespace, 2, "-free-", 3, free_space, -1);
+		gtk_tree_store_set(treestore1, &row_freespace, POS_TYPE, "-free-", POS_SIZE, free_space, -1);
 		free(free_space);
 	}
 	/* Consumer information */
-	gtk_tree_store_set(treestore1, &parent, 3, g.consumer_mediasize, \
-				16, g.consumer_sectorsize, -1);
-	if( g.consumer_mode != NULL)
-		gtk_tree_store_set(treestore1, &parent, 25, g.consumer_mode, -1);
+	gtk_tree_store_set(treestore1, &parent, POS_SIZE, g.consumer_mediasize, \
+				POS_SECTORSIZE, g.consumer_sectorsize, -1);
+//	if( g.consumer_mode != NULL)
+//		gtk_tree_store_set(treestore1, &parent, POS_MODE, g.consumer_mode, -1);
+
 	// XXX: Sectorsize and stripesize belongs here
 
 	/* empty row at the end for style points */
@@ -384,7 +399,9 @@ void treeview_add_rows(char *geombuf, char *disk) {
 
 char *selected_item(GtkWidget *tview, int column) {
 	
-	/* get contents of the selected row in a treeview*/
+	/* 
+	 * Get the contents of the selected row/column.
+	 */
 	char *data = NULL;
 	if(tview != NULL) {
 		GtkTreeSelection *selected = gtk_tree_view_get_selection(GTK_TREE_VIEW (tview));
@@ -438,8 +455,8 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 	gtk_tree_path_free(path);
 
 	/* Mount or unmount? */
-	fs = selected_item(tree1, 5); /* 5 = file system type */
-	part = selected_item(tree1, 1); /* 1 = partition */
+	fs = selected_item(tree1, POS_FS);
+	part = selected_item(tree1, POS_PART);
 	if(fs == NULL)
 		return TRUE;
 	if(part == NULL)
@@ -533,7 +550,7 @@ else
 g.state = NULL;
 g.entries = NULL;
 g.scheme = NULL;
-g.modified = NULL;
+//g.modified = NULL;
 g.stripesize = NULL;
 g.stripeoffset = NULL;
 g.mode = NULL;

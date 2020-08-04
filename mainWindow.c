@@ -17,6 +17,7 @@ void scrolled() {
                                     GTK_POLICY_ALWAYS, GTK_POLICY_AUTOMATIC); 
 	gtk_box_pack_start(GTK_BOX(fixed), scrolled_window, FALSE, TRUE, 0);
 	gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
+	gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
 }
 
 void main_combo() {

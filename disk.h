@@ -28,18 +28,47 @@ char columns[COLUMNS][26];
 #define COL 11
 char column[COL][25];
 
+	/* do we mount or gpart? Or something else? */
+#define MOUNT	0
+#define GPART	1
+#define FS	3
+int todo;
+
+#define POS_DISK	0
+#define POS_PART	1
+#define POS_TYPE	2
+#define POS_SIZE	3
+#define POS_LABEL	4
+#define POS_FS		5
+#define POS_FSLABEL	6
+#define POS_MOUNTP	7
+#define POS_CAPACITY 8
+#define POS_ATTR	9
+#define POS_STATE	10
+#define POS_START	11
+#define POS_END		12
+#define POS_LEN		13
+#define POS_OFFSET	14
+#define POS_STRIPESIZE 15
+#define POS_SECTORSIZE 16
+#define POS_STRIPEOFFSET 17
+#define POS_EFIMEDIA 18
+#define POS_RAWUUID	19
+#define POS_RAWTYPE 20
+#define POS_FIRST	21
+#define POS_LAST	22
+#define POS_ENTRIES	23
+#define POS_MODIFIED 24
+#define POS_MODE	25
+#define POS_INDEX	26
+
+
 	/* font size */
 char fontsize[10];
 
 	/* ask for confirmation 
 	 * before issueing a command */
 int confirm;
-
-	/* do we mount or gpart? Or something else? */
-#define MOUNT	0
-#define GPART	1
-#define FS	3
-int todo;
 
 	/* keep track of disks and partitions */
 char *all_disks;

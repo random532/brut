@@ -96,14 +96,19 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	/* mount a partition */
 		
 	/* setup */
-	const gchar *label = gtk_menu_item_get_label(gmenu);
-	char * part = selected_item(tree1, 1);	/* partition */
-	int plen = strlen(part); /* is this really 0 terminated? */
-	int mlen = 0;
-	char * fs = selected_item(tree1, 5); 	/* file system type */
+	char * part;
+	const gchar *label;
+	char * fs;
 	char *path;
 	char *cmd;
 	int success = 0;
+	int plen;
+	int mlen = 0;
+	
+	label = gtk_menu_item_get_label(gmenu);
+	part = selected_item(tree1, POS_PART);
+	plen = strlen(part);
+	fs = selected_item(tree1, POS_FS);
 	
 	if( (part == NULL) || (fs == NULL) || (label == NULL) )
 		return;
@@ -226,7 +231,7 @@ void unmountfs() {
 	int success=0;
 	
 	
-	m = selected_item(tree1, 7);
+	m = selected_item(tree1, POS_MOUNTP);
 	if(m == NULL)
 		return;
 		
