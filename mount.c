@@ -98,7 +98,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	/* setup */
 	char * part;
 	const gchar *label;
-	char * fs;
+	char *fs;
 	char *path;
 	char *cmd;
 	int success = 0;

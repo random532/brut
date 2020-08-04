@@ -20,6 +20,14 @@ void scrolled() {
 	gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
 }
 
+void add_grid() {
+	grid = gtk_grid_new();
+	gtk_grid_insert_column(GTK_GRID(grid), 3);
+	gtk_box_pack_start(GTK_BOX(fixed), grid, FALSE, TRUE, 0);
+	gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
+	gtk_grid_set_column_spacing(GTK_GRID(grid), 6);
+}
+
 void main_combo() {
 	combo_toplevel = gtk_combo_box_text_new();
 		
@@ -90,17 +98,11 @@ int main(int argc, char *argv[]) {
 	add_menubar();
 
 	/* a grid */
-	grid = gtk_grid_new();
-	gtk_grid_insert_column(GTK_GRID(grid), 3);
-	gtk_box_pack_start(GTK_BOX(fixed), grid, FALSE, TRUE, 0);
-	gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
-	gtk_grid_set_column_spacing(GTK_GRID(grid), 6);
-
-//	GtkWidget *rand = gtk_label_new("RANDOM TEXT");
-//	gtk_box_pack_start(GTK_BOX(fixed), rand, FALSE, TRUE, 0);
+	add_grid();
 	
 	/*a window with scrollbars */
 	scrolled();
+
 	
 	/* a combo box that lets users chose whether to display */
 	/* an overview of all disks or contents of a specific disk */

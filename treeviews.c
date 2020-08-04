@@ -391,7 +391,6 @@ void treeview_add_rows(char *geombuf, char *disk) {
 //	if( g.consumer_mode != NULL)
 //		gtk_tree_store_set(treestore1, &parent, POS_MODE, g.consumer_mode, -1);
 
-	// XXX: Sectorsize and stripesize belongs here
 
 	/* empty row at the end for style points */
 	gtk_tree_store_append(treestore1, &parent, NULL);

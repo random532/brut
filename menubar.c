@@ -173,6 +173,8 @@ void add_menubar() {
 	g_signal_connect (item_msg_hide, "activate", G_CALLBACK (msg_hide), NULL);
 
 	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
+	gtk_box_reorder_child(GTK_BOX(fixed), menuBar, 0);
+	
 	gtk_widget_show (menuBar);
 	gtk_widget_show_all(window);
 }
