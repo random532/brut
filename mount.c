@@ -93,17 +93,19 @@ char *is_mounted_fuse(char *partition) {
 }
 
 void mountfs(GtkMenuItem *gmenu, gpointer gp) {
-	/* mount a partition */
+	
+	/*
+	 * Mount a partition.
+	 */
 		
-	/* setup */
-	char * part;
-	const gchar *label;
-	char *fs;
-	char *path;
-	char *cmd;
+	char *part;	/* Partition */
+	char *fs;	/* File system */
+	char *path;	/* Mount path */
+	char *cmd;	/* Mount command */
+	const gchar *label; /* Users choice of mountpoint */
 	int success = 0;
-	int plen;
-	int mlen = 0;
+	int plen;	/* Partition length */
+	int mlen = 0;	/* Mount path length (?) */
 	
 	label = gtk_menu_item_get_label(gmenu);
 	part = selected_item(tree1, POS_PART);
@@ -138,11 +140,16 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 			return;
 		}
 	}
-		int x = 50;
-		cmd = malloc(plen + mlen + x + 1);
-		memset(cmd, 0, plen + mlen + x + 1);
 	
-	/* file system type */
+	/* 
+	 * We have all we need.
+	 * So build the mount command.
+	 */
+	 
+	int x = 50;
+	cmd = malloc(plen + mlen + x + 1);
+	memset(cmd, 0, plen + mlen + x + 1);
+
 	int error = 0;
 	if(strncmp(fs, "ufs", 3) == 0) 
 		snprintf(cmd, plen+mlen+x, "mount /dev/%s %s", part, path);
@@ -195,6 +202,10 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		return;
 	}
 
+	/*
+	 *  Execute the mount command.
+	 */
+	 
 	if(root()) {
 		submit(cmd, 1);
 		free(path);
@@ -229,17 +240,20 @@ void unmountfs() {
 	char *cmd;
 	int len;
 	int success=0;
-	
-	
+
 	m = selected_item(tree1, POS_MOUNTP);
 	if(m == NULL)
 		return;
-		
+	
+	/* Build the unmount command. */	
 	len = strlen(m);
 	cmd = malloc (len + 20);
 	memset(cmd, 0, len+20);
 	snprintf(cmd, len+20, "umount %s", m);
 	free(m);
+
+	/* Execute the unmount command. */
+	
 	if(!root()) {
 		if( (vfs_usermount() == 0) ) { 
 			if( execute_cmd(cmd, 0) == 0) {
@@ -269,7 +283,11 @@ void unmountfs() {
 
 int vfs_usermount() {
 	
-	/* checks wether regular users are allowed to mount */
+	/* 
+	 * Checks wether regular users are allowed to mount.
+	 * There is no need to include /sys/sysctl.h
+	 */
+
 	int usermnt = 0;
 	char buf[30];
 	memset(buf, 0, 30);
@@ -346,8 +364,6 @@ int volume_cmp(char *partition, char *mpoint) {
 
 	free(filename);
 	execute_cmd("sudo -S rm /tmp/file1 /tmp/file2", 0);
-	//remove(tmpfile1);
-	//remove(tmpfile2);
 	
 	return match;
 }

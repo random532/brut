@@ -9,7 +9,11 @@
 
 GtkWidget *create_treeview() {
 	
-	/* create a treeview with columns, no rows */
+	/* 
+	 * Create a treeview with columns for the
+	 * disk overview.
+	 * Rows will be added later.
+	 */
 	
 	GtkWidget *disk_view = gtk_tree_view_new();
 	gtk_container_add(GTK_CONTAINER(scrolled_window), disk_view);	
@@ -19,7 +23,7 @@ GtkWidget *create_treeview() {
 	g_object_set(cellr, "editable", TRUE, NULL);
 	g_object_set(disk_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
-	/* add columns  */
+	/* Add columns  */
 	int cnt = 0;
 	while( (cnt <= COL) && (strlen(column[cnt]) >0 ) ) {
 	
@@ -38,12 +42,12 @@ GtkWidget *create_treeview() {
 
 		cnt++;
 	}	
-	/* treestore */
+	/* Treestore */
 	treestore = gtk_tree_store_new(COL, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
 									G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
 									G_TYPE_STRING, G_TYPE_STRING);
 	gtk_tree_view_set_model(GTK_TREE_VIEW(disk_view), GTK_TREE_MODEL(treestore));
-	g_object_unref(treestore); //destroy model automatically with view 
+	g_object_unref(treestore); /* Destroy model automatically with view. */ 
   	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(disk_view)),
                              GTK_SELECTION_SINGLE);
 
@@ -52,7 +56,10 @@ return disk_view;
 
 GtkWidget *create_treeview1() {
 
-	/* create a treeview with colums for a disk, no rows */
+	/* 
+	 * Create a treeview with columns for a disk.
+	 * Rows will be added later.
+	 */
 	
 	GtkWidget *view = gtk_tree_view_new();
 	
@@ -67,7 +74,7 @@ GtkWidget *create_treeview1() {
 	int cnt = 0;
 	while( (cnt < COLUMNS) && (strlen(columns[cnt]) >0 ) ) {
 	
-		/* first column */
+		/* First column */
 		char * col_title = columns[cnt];
 
 		GtkTreeViewColumn   * col = gtk_tree_view_column_new();
@@ -83,7 +90,7 @@ GtkWidget *create_treeview1() {
 		cnt++;
 		}
 
-	/* we always use strings */
+	/* We always use strings. */
 	treestore1 = gtk_tree_store_new(COLUMNS, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, 	G_TYPE_STRING, \
 		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
 		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING, \
@@ -91,7 +98,7 @@ GtkWidget *create_treeview1() {
 		G_TYPE_STRING, G_TYPE_STRING, G_TYPE_STRING);
 
 	gtk_tree_view_set_model(GTK_TREE_VIEW(view), GTK_TREE_MODEL(treestore1));
-	g_object_unref(treestore1); //destroy model automatically with view 
+	g_object_unref(treestore1); /* destroy model automatically with view. */
   	gtk_tree_selection_set_mode(gtk_tree_view_get_selection(GTK_TREE_VIEW(view)),
                              GTK_SELECTION_SINGLE);
 
@@ -101,29 +108,30 @@ GtkWidget *create_treeview1() {
 }
 
 int populate_treeview() {
+
 	char buf[30]= "geom disk list";		
 	char line[150];
 	int size=150;	
-	int i = 0;
+	int i = 0; /* Some char counter in a line */
 	
 	FILE * fp = popen(buf, "r");
 	if ( fp == NULL ) {
 		printf("could not execute geom disk list\n");	
-	return (0);
+		return (0);
 	}
 	
-	GtkTreeIter	parent;	/* geom */
-	GtkTreeIter	child;	/* provider */
+	GtkTreeIter	parent;	/* Geom */
+	GtkTreeIter	child;	/* Provider */
 	
-	/* get a line */
+	/* Get a line */
 	while( fgets(line, sizeof line, fp) ) {
 		
-		/* remove leading space characters */
+		/* Remove leading space characters. */
 		i = 0;
 		while(line[i] == ' ')
 			i++;
 			
-		/* Evaluate the entries */
+		/* Evaluate the entries. */
 		if (strncmp(&line[i], "Geom name:", 10) == 0) {
 			
 			i = vari(line, size);	/* where the variable starts */
@@ -133,10 +141,10 @@ int populate_treeview() {
 			
 		}
 		else if (strncmp(&line[i], "Providers", 9) == 0) {
-			/* skip */
+			/* Skip */
 		}
 		else if (strncmp(&line[i], "Mediasize", 9) == 0) {
-			/* only read whats inside the brackets */
+			/* Only read whats inside the brackets. */
 			i = vari(line, size);
 			while( (line[i] != '(') && (i < size ) )
 				i++;
@@ -180,8 +188,8 @@ int populate_treeview() {
 			i = vari(line, size);
 			gtk_tree_store_set(treestore, &child, 10, &line[i], -1);
 		}	
-		else if(line[i] == '2') {
-			/* additional providers get a new row */
+		else if(line[i] >= '2' && line[i] <= '9') {
+			/* Additional providers get a new row. */
 			gtk_tree_store_append(treestore, &child, &parent);
 			i = vari(line, size);
 			gtk_tree_store_set(treestore, &child, 0, &line[i], -1);
@@ -190,16 +198,16 @@ int populate_treeview() {
 	}
 	
 	pclose(fp);
-	/* be nice to Users */
+	/* Be nice to Users */
 	gtk_tree_view_expand_all(GTK_TREE_VIEW(tree));
 	gtk_tree_view_set_enable_search (GTK_TREE_VIEW(tree), TRUE);	
 	gtk_tree_view_set_enable_tree_lines (GTK_TREE_VIEW(tree), TRUE);
 	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(tree), GTK_TREE_VIEW_GRID_LINES_BOTH);
 	
-	/* empty row at the end for style points */
+	/* Empty row at the end for style points. */
 	gtk_tree_store_append(treestore, &parent, NULL);
 
-	/* needed to update scrollbars? */
+	/* Update scrollbars */
 	gtk_widget_hide(scrolled_window);
 	gtk_widget_show(scrolled_window);
 
@@ -249,13 +257,13 @@ int populate_treeview1( char * one_disk) {
 		slices_on_a_disk= NULL;
 	}
 
-	/* more options */
+	/* More options. */
 	gtk_tree_view_expand_all(GTK_TREE_VIEW(tree1));
 	gtk_tree_view_set_enable_search (GTK_TREE_VIEW(tree1), TRUE);	
 	gtk_tree_view_set_enable_tree_lines (GTK_TREE_VIEW(tree1), TRUE);
 	gtk_tree_view_set_grid_lines(GTK_TREE_VIEW(tree1), GTK_TREE_VIEW_GRID_LINES_BOTH);
 
-	/* needed to update scrollbars? */
+	/* Update scrollbars. */
 	gtk_widget_hide(scrolled_window);
 	gtk_widget_show(scrolled_window);
 
@@ -271,14 +279,14 @@ void treeview_add_rows(char *geombuf, char *disk) {
 	GtkTreeIter		child;	/* partition */
 	GtkTreeIter		row_freespace;
 
-	/* disk name */
+	/* a disk */
 	gtk_tree_store_append(treestore1, &parent, NULL);
 	gtk_tree_store_set(treestore1, &parent, POS_DISK, disk, -1);
 
-	if(geombuf[0] == '\0')	/* no geom information */
+	if(geombuf[0] == '\0')	/* No geom information. */
 		return;
 
-	/* replace newline with space characters */
+	/* Replace newline with space characters. */
 	int len= strlen(geombuf);
 	len = len - 1;
 	while(len >= 0) {
@@ -288,6 +296,7 @@ void treeview_add_rows(char *geombuf, char *disk) {
 		len--;
 	}
 	
+	/* read once before looping through the other partitions */
 	g_zero();
 	entries = buf_to_struct(geombuf);
 	if(entries == 0) {
@@ -333,6 +342,7 @@ void treeview_add_rows(char *geombuf, char *disk) {
 			free(free_space);
 		}
 		
+		/* a partition */
 		gtk_tree_store_append(treestore1, &child, &parent);
 
 		gtk_tree_store_set(treestore1, &child, POS_PART, g.name_capital, POS_TYPE, g.type, \
@@ -388,9 +398,8 @@ void treeview_add_rows(char *geombuf, char *disk) {
 	/* Consumer information */
 	gtk_tree_store_set(treestore1, &parent, POS_SIZE, g.consumer_mediasize, \
 				POS_SECTORSIZE, g.consumer_sectorsize, -1);
-//	if( g.consumer_mode != NULL)
-//		gtk_tree_store_set(treestore1, &parent, POS_MODE, g.consumer_mode, -1);
-
+	if( g.consumer_mode != NULL)
+		gtk_tree_store_set(treestore1, &parent, POS_MODE, g.consumer_mode, -1);
 
 	/* empty row at the end for style points */
 	gtk_tree_store_append(treestore1, &parent, NULL);
@@ -423,111 +432,15 @@ char *selected_item(GtkWidget *tview, int column) {
 	return NULL;
 }
 
-gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) {
-
-	/* 
-	 * If the user right-clicks on a row,
-	 * we may open a popup menu with mount options. 
-	 */
-	
-	char *part;
-	char *fs;
-	char *mountpoint;
-	
-	GtkWidget *mount;
-	GtkWidget *unmount;
-	GtkWidget *rescan;
-	
-	if( (event->type != GDK_BUTTON_PRESS) || (event->button != 3) ) 
-		return FALSE;
-
-	/* Where did he click? */
-	GtkTreePath *path;
-	GtkTreeViewColumn *column;
-	if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tree1), event->x, event->y, &path, &column, NULL, NULL))
-			return FALSE;
-
-	/* find and select the row that was clicked */
-	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree1));
-	gtk_tree_selection_unselect_all(selection);
-	gtk_tree_selection_select_path(selection, path);
-	gtk_tree_path_free(path);
-
-	/* Mount or unmount? */
-	fs = selected_item(tree1, POS_FS);
-	part = selected_item(tree1, POS_PART);
-	if(fs == NULL)
-		return TRUE;
-	if(part == NULL)
-		return TRUE;
-			
-	todo = MOUNT;
-	GtkWidget *pop_menu = gtk_menu_new();
-
-	if(strncmp(fs, "ntfs", 4) == 0 || strncmp(fs, "exfat", 5) == 0)
-		mountpoint = is_mounted_fuse(part);
-	else
-		mountpoint = is_mounted(part);
-
-	if (mountpoint != NULL) { /* "unmount" */
-				
-		free(mountpoint);
-		unmount = gtk_menu_item_new_with_label ("unmount");
-		gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), unmount);
-		g_signal_connect(unmount, "activate", G_CALLBACK(unmountfs), NULL);
-	}
-
-	else if (mountpoint == NULL) {
-		
-		/* XXX: NULL could be an error too! */
-		
-		if(strncmp(fs, "n/a", 3) == 0) {
-		/* "show file system" */		
-			rescan = gtk_menu_item_new_with_label(l.mrescan);
-			gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), rescan);
-			g_signal_connect(rescan, "activate", G_CALLBACK(fsscan), NULL);
-		}
-		else {
-			/* "mount" "mointpoints" */
-			mount = gtk_menu_item_new_with_label("mount");
-			gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), mount);
-		
-			GtkWidget *mount_sub = gtk_menu_new();
-			gtk_menu_item_set_submenu (GTK_MENU_ITEM (mount), mount_sub);
-
-			/* /mnt */
-			GtkWidget * mount_mnt = gtk_menu_item_new_with_label ("/mnt");
-			gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_mnt);
-
-			/* /media */
-			GtkWidget * mount_media = gtk_menu_item_new_with_label ("/media");
-			gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_media);
-
-			/* other */
-			GtkWidget * mount_other = gtk_menu_item_new_with_label (l.mother);
-			gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_other);
-			
-			g_signal_connect(mount_mnt, "activate", G_CALLBACK(mountfs), NULL);
-			g_signal_connect(mount_media, "activate", G_CALLBACK(mountfs), NULL);
-			g_signal_connect(mount_other, "activate", G_CALLBACK(mountfs), NULL);
-		}
-	}
-
-	free(part);
-	free(fs);
-	gtk_widget_show_all(pop_menu);
-	gtk_menu_popup_at_pointer( GTK_MENU (pop_menu), NULL);
-	return TRUE; /* right click finished */
-}
-
 int buf_to_struct(char *buf) {
 
 /*
  * Recieve a buffer with geom information.
  * Read it and set the pointers of struct geom_info.
  * Basically information for one row (partition).
+ * Return the number of entries read.
  */
-	
+
 	if(buf == NULL)
 		return(0);
 	
@@ -541,15 +454,9 @@ if(g.end != NULL)
 	g.end_old = g.end;
 else
 	g.end_old = NULL;
-/* let these survive as they belong to the parent(the disk) */
-//g->end = NULL; 
-//g->sectorsize = NULL;
-//g.first = NULL;
-//g->last = NULL;
 g.state = NULL;
 g.entries = NULL;
 g.scheme = NULL;
-//g.modified = NULL;
 g.stripesize = NULL;
 g.stripeoffset = NULL;
 g.mode = NULL;
@@ -565,6 +472,12 @@ g.attribute = NULL;
 g.mountpoint = NULL;
 g.capacity = NULL;
 g.fslabel = NULL;
+/* let these survive as they belong to the parent(the disk) */
+//g->end = NULL; 
+//g->sectorsize = NULL;
+//g.first = NULL;
+//g->last = NULL;
+//g.modified = NULL;
 
 	/* parse buffer information */
 	char *ptr;
@@ -734,7 +647,9 @@ g.fslabel = NULL;
 
 void g_zero() {
 	
-/* initialize all entries to zero */
+/* 
+ * Reset the global structure struct geom_info.
+ */
 g.name = NULL;
 g.name_capital = NULL;
 g.mediasize = NULL;
@@ -772,7 +687,12 @@ g.consumer_sectorsize = NULL;
 }
 
 char *get_capacity(char *mountpoint) {
-	
+
+	/* 
+	 * Get filesystem capacity.
+	 * Return NULL on errors.
+	 */
+	 
 	if(mountpoint == NULL)
 		return NULL;
 
@@ -782,7 +702,12 @@ char *get_capacity(char *mountpoint) {
 }
 
 char *get_label(char *partition, char *filesystem) {
-		
+
+	/* 
+	 * Get a filesystem label,
+	 * or NULL if no label exists.
+	 */
+
 	if(partition == NULL)
 		return NULL;
 
@@ -813,4 +738,101 @@ char *get_label(char *partition, char *filesystem) {
 	return label;
 		
 		
+}
+
+gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) {
+
+	/* 
+	 * If the user right-clicks on a row,
+	 * we may open a popup menu with mount options. 
+	 */
+	
+	char *part;
+	char *fs;
+	char *mountpoint;
+	
+	GtkWidget *mount;
+	GtkWidget *unmount;
+	GtkWidget *rescan;
+	
+	if( (event->type != GDK_BUTTON_PRESS) || (event->button != 3) ) 
+		return FALSE;
+
+	/* Where did he click? */
+	GtkTreePath *path;
+	GtkTreeViewColumn *column;
+	if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tree1), event->x, event->y, &path, &column, NULL, NULL))
+			return FALSE;
+
+	/* find and select the row that was clicked */
+	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree1));
+	gtk_tree_selection_unselect_all(selection);
+	gtk_tree_selection_select_path(selection, path);
+	gtk_tree_path_free(path);
+
+	/* Mount or unmount? */
+	fs = selected_item(tree1, POS_FS);
+	part = selected_item(tree1, POS_PART);
+	if(fs == NULL)
+		return TRUE;
+	if(part == NULL)
+		return TRUE;
+			
+	todo = MOUNT;
+	GtkWidget *pop_menu = gtk_menu_new();
+
+	if(strncmp(fs, "ntfs", 4) == 0 || strncmp(fs, "exfat", 5) == 0)
+		mountpoint = is_mounted_fuse(part);
+	else
+		mountpoint = is_mounted(part);
+
+	if (mountpoint != NULL) { /* "unmount" */
+				
+		free(mountpoint);
+		unmount = gtk_menu_item_new_with_label ("unmount");
+		gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), unmount);
+		g_signal_connect(unmount, "activate", G_CALLBACK(unmountfs), NULL);
+	}
+
+	else if (mountpoint == NULL) {
+		
+		/* XXX: NULL could be an error too! */
+		
+		if(strncmp(fs, "n/a", 3) == 0) {
+		/* "show file system" */		
+			rescan = gtk_menu_item_new_with_label(l.mrescan);
+			gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), rescan);
+			g_signal_connect(rescan, "activate", G_CALLBACK(fsscan), NULL);
+		}
+		else {
+			/* "mount" -> "mointpoints" */
+			mount = gtk_menu_item_new_with_label("mount");
+			gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), mount);
+		
+			GtkWidget *mount_sub = gtk_menu_new();
+			gtk_menu_item_set_submenu (GTK_MENU_ITEM (mount), mount_sub);
+
+			/* /mnt */
+			GtkWidget * mount_mnt = gtk_menu_item_new_with_label ("/mnt");
+			gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_mnt);
+
+			/* /media */
+			GtkWidget * mount_media = gtk_menu_item_new_with_label ("/media");
+			gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_media);
+
+			/* other */
+			GtkWidget * mount_other = gtk_menu_item_new_with_label (l.mother);
+			gtk_menu_shell_append (GTK_MENU_SHELL (mount_sub), mount_other);
+			
+			g_signal_connect(mount_mnt, "activate", G_CALLBACK(mountfs), NULL);
+			g_signal_connect(mount_media, "activate", G_CALLBACK(mountfs), NULL);
+			g_signal_connect(mount_other, "activate", G_CALLBACK(mountfs), NULL);
+		}
+	}
+
+	free(part);
+	free(fs);
+	gtk_widget_show_all(pop_menu);
+	gtk_menu_popup_at_pointer( GTK_MENU (pop_menu), NULL);
+	return TRUE; /* right click finished */
 }

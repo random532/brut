@@ -90,7 +90,7 @@ int main(int argc, char *argv[]) {
 	/* main window */
 	top_window();
 
-	/* a box */
+	/* a box with three entries: */
 	fixed = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	gtk_container_add (GTK_CONTAINER (window), fixed);
 
@@ -100,10 +100,9 @@ int main(int argc, char *argv[]) {
 	/* a grid */
 	add_grid();
 	
-	/*a window with scrollbars */
+	/* a window with scrollbars */
 	scrolled();
 
-	
 	/* a combo box that lets users chose whether to display */
 	/* an overview of all disks or contents of a specific disk */
 	main_combo();

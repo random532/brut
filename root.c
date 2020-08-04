@@ -41,9 +41,11 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 	/* "Cancel" button */
 	if(cmd != NULL)
 		free(cmd);
+
 	char *hash = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
 	gtk_entry_set_text(GTK_ENTRY (passbuf),  hash);
 	gtk_widget_destroy(su);
+
 	on_toplevel_changed();
 	if( (window_editor != NULL) && (todo != MOUNT )) {
 		gtk_widget_destroy(window_editor);
@@ -54,19 +56,24 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 void o_cb(GtkMenuItem *item, gpointer cmd) {
 		
 	/* "Okay" button */
-	const gchar *pass = gtk_entry_get_text(GTK_ENTRY (passbuf));
-	int len = strlen(pass);
+	const gchar *pass;
+	char *error;
+	char *passw;
+	int len;
+	
+	pass = gtk_entry_get_text(GTK_ENTRY (passbuf));
+	len = strlen(pass);
 	if( (len == 0) || (len > 100 ) ) {
 		msg(l.no_root);
 		goto bad;
 	}
 	
 	/* dont depend on gtk_entry text */
-	char *passw = malloc(len+10);
+	passw = malloc(len+10);
 	strncpy(passw, pass, len+1);
 	
 	/* test password */
-	char *error = sudo_backend(cmd, passw);
+	error = sudo_backend(cmd, passw);
 	if( error != NULL) /* we dont need that string really */
 		free(error);
 	
@@ -94,13 +101,15 @@ void window_pw(char *cmd) {
 	
 	/* this window asks for root password */
 	su = gtk_window_new(GTK_WINDOW_TOPLEVEL);
+	
 	gtk_window_set_title (GTK_WINDOW (su), "sudo password");
 	gtk_container_set_border_width (GTK_CONTAINER (su), 30);
 	gtk_window_set_default_size(GTK_WINDOW (su), 250, 100);
 	gtk_window_set_modal(GTK_WINDOW(su), TRUE);
+	
+	/* This will cause problems in Wayland */
 	gtk_window_set_transient_for(GTK_WINDOW(su), GTK_WINDOW(window)); 
 
-	/* position in on top */
 	gint x = 0, y = 0, width, height;
 	gtk_window_get_position (GTK_WINDOW(window), &x, &y);
 	gtk_window_get_size(GTK_WINDOW (window), &width, &height);
@@ -125,7 +134,6 @@ void window_pw(char *cmd) {
 	passbuf = gtk_entry_new_with_buffer (pass);
 
 	gtk_entry_set_visibility(GTK_ENTRY(passbuf), FALSE);
-	//gtk_entry_set_invisible_char(GTK_ENTRY(passbuf), 9679);
 	g_object_set(passbuf, "input-purpose", GTK_INPUT_PURPOSE_PASSWORD, NULL);
 	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(passbuf), TRUE, TRUE, 0);
 	g_signal_connect(passbuf, "activate", G_CALLBACK(o_cb), cmd);
@@ -156,31 +164,56 @@ void window_pw(char *cmd) {
 }
 
 char *sudo_backend(char *rcmd, char * password) {
-
+	
+	/*
+	 * The sudo backend.
+	 * 
+	 * We create a subprocess ("sudo xxx")
+	 * and feed it the password via a named pipe.
+	 * 
+	 * That's the only way to communicate a password to sudo,
+	 * as sudo has no command line option for the password.
+	 * Sudo fails to find anonymous pipes, and we don't want
+	 * sth like "echo password | sudo cmd".
+	 */
+	
+	char *pw;		/* Password */
+	char *pwfile;	/* Named pipe */
+	char *cmd;		/* The sudo command to execute */
+	char *buf;		/* Stdout of sudo command */
+	FILE *child;	/* The sudo command we execute */
+	char line[100]; /* a line for fgets() */
+	int cmdlen;		/**/
+	int buflen;		/**/
+	int len;		/* Bytes read */
+	int error;		/**/
+	int fd;			/* File descriptior of pipe */
+	int sudo_failed;	/* Whether sudo failed */
+	ssize_t written;	/* Bytes written to pipe */
+	
 	/* sudo password */
-	char *pw =malloc (strlen(password) +5);
+	pw = malloc (strlen(password) +5);
 	sprintf(pw, "%s\n%d", password, EOF); /* newline and EOF? */
 	
 	/* create named pipe */
-	char *pwfile = "/tmp/qwzrfw";
+	pwfile = "/tmp/qwzrfw";
 	if (mkfifo(pwfile, 0660) != 0) {
 		printf("fifo error\n");
 		return NULL;
 	}
 
 	/* run child process */
-	int cmdlen = strlen(rcmd) + strlen(pwfile) + 20;
-	char *cmd = malloc(cmdlen);
+	cmdlen = strlen(rcmd) + strlen(pwfile) + 20;
+	cmd = malloc(cmdlen);
 	snprintf(cmd, cmdlen, "sudo -p- -S %s <%s 2>&1", rcmd, pwfile);
-	FILE* child = popen(cmd, "r");
+	child = popen(cmd, "r");
 
 	/*write password to pipe and wait... */
-	int fd;	
 	if((fd = open(pwfile, O_WRONLY)) < 0) {
 		printf("open() O_WRONLY failed\n");
 		return NULL;
 	}
-	ssize_t written = write(fd, pw, strlen(password)+2 );
+	written = write(fd, pw, strlen(password)+2 );
 	if( written <= 0)
 		printf("write() error\n");
 	
@@ -188,14 +221,12 @@ char *sudo_backend(char *rcmd, char * password) {
 	close(fd);
 	
 	/* get stdout of child */
-	int buflen= 30; 
-	int len;
-	char *buf = malloc(buflen); 	
-	char line[100]; /* max line length */
+	buflen= 30; 
+	buf = malloc(buflen);
 	memset(line, 0, sizeof line);
 	memset(buf, 0, buflen);
 	
-	int sudo_failed = 0;
+	sudo_failed = 0;
 	
 	while(fgets(line, sizeof line, child) ) {
 		len = strlen(line);
@@ -213,7 +244,7 @@ char *sudo_backend(char *rcmd, char * password) {
 	}
 	
 	/* end child process */	
-	int error = pclose(child);
+	error = pclose(child);
 	
 	/* destroy pipe */
 	if (unlink(pwfile) != 0)
