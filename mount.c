@@ -35,61 +35,41 @@ char *is_mounted(char *part) {
 
 char *is_mounted_fuse(char *partition) {
 
-/*
- * This is surely not how things should
- * be done.
- */
-	
-	char buf[150];
-	int bufsize = 150;
-	char cmd[]= "mount | awk '/fuse/{print $3}'";
-	int len=0;
-	int result = 0;
-	char *mountpoint = NULL;
 
+	/*
+	 * Just check whether there is at least one fuse mount.
+	 * If so, return "--", else return NULL.
+	 */
+
+	char buf[150];
+	char *empty;
+	char cmd[]= "mount | awk '/fuse/{print $3}'";
+	char *mountpoint;
+	int len;
+	
 	if (partition == NULL)
 		return NULL;
 
-	if(!root() && pw_needed() == 1) {
-		printf("Note: fuse mountpoints unknown. Need higher privileges for that.\n");
-		char *empty = malloc(10);
-		strcpy(empty, "--");
-		return empty;
-	}
+	memset(buf, 0, sizeof buf);
+	mountpoint = NULL;
+	len = 0;
 
-	memset(buf, 0, bufsize);
-
-	/* iterate through all mounted fuse file systems */
-	
 	FILE *fp = popen(cmd, "r");
 	if (fp == NULL) {
 		msg("fopen failed");
 		return NULL;
 	}
-	while( fgets(buf, sizeof buf, fp)) {
-
-		len = strlen(buf);
-		if(len == 0)
-			break;
-		buf[len-1] = '\0';
-		
-		/* compare the volume information with device */
-		result = volume_cmp(partition, buf);
-			
-			if(result == 0) {
-				mountpoint = malloc(len +1);
-				strncpy(mountpoint, buf, len);
-			}
-			else if(result == -1) {
-				/* abort */
-				mountpoint = malloc(10);
-				strcpy(mountpoint, "--");
-				break;
-			}
-	}
 	
+	fgets(buf, sizeof buf, fp);
 	pclose(fp);
-	return mountpoint;
+
+	if(strncmp(buf, "/", 1) == 0) {
+			mountpoint = malloc(10);
+			strcpy(mountpoint, "--");
+			return mountpoint;
+	}
+	else
+		return NULL;
 }
 
 void mountfs(GtkMenuItem *gmenu, gpointer gp) {
@@ -301,86 +281,4 @@ int vfs_usermount() {
 		usermnt = 1;
 	pclose(fp);
 	return usermnt;
-}
-
-int volume_cmp(char *partition, char *mpoint) {
-	
-	/* 
-	 * Compare Volume information of the mountpoint
-	 * with the information of the device.
-	 * If they match, they are identical.
-	 */
-	
-	char *filename;
-	char *tmpfile1;
-	char *tmpfile2;
-	char cmd[CMDSIZE];
-	
-	int mlen;
-	int match=1;
-
-	if(mpoint == NULL || partition == NULL)
-		return -1;
-
-
-	/* first read the info from mountpoint */
-	mlen = strlen(mpoint);
-	filename = malloc(50+mlen);
-	if(filename == NULL)
-		return -1;
-
-	/* Check for a volume information file. */
-	sprintf(filename, "%s/System Volume Information/IndexerVolumeGuid", mpoint);
-	if(access(filename, R_OK) != 0) {
-		printf("volume_cmp():fuse:%s: %s\n", filename,  strerror(errno));
-		free(filename);
-		return -1;
-	}
-
-	free(filename);
-
-	/* Write both volume informations to tmp files */
-	tmpfile1 = random_filename();
-	tmpfile2 = random_filename();
-	if(tmpfile1 == NULL || tmpfile2 == NULL) {
-		printf("volume_cmp(): error in tmp files.\n");
-		free(filename);
-		return -1;
-	}
-	
-	while(strcmp(tmpfile1, tmpfile2) == 0) {
-		printf("volume_cmp(): Unlucky. Trying again.\n");
-		free(tmpfile2);
-		tmpfile2 = random_filename();
-	}
-
-	snprintf(cmd, CMDSIZE, "sudo -S cat %s/System\\ Volume\\ Information/IndexerVolumeGuid >/tmp/%s", mpoint, tmpfile1);
-	if(execute_cmd(cmd, 0) != 0) {
-		printf("No System Volume Information on: %s -- Aborting.\n", mpoint);
-		free(filename);
-		return -1;
-	}
-
-	/* second read device */
-	snprintf(cmd, CMDSIZE, "sudo -S ntfscat -fq /dev/%s System\\ Volume\\ Information/IndexerVolumeGuid | tail -n 1 >/tmp/%s ", partition, tmpfile2);
-	if(execute_cmd(cmd, 0) != 0) {
-		printf("No System Volume Information on device: /dev/%s -- Aborting.\n", partition);
-		free(filename);
-		return -1;
-	}
-
-	snprintf(cmd, CMDSIZE-1, "diff /tmp/%s /tmp/%s", tmpfile1, tmpfile2);
-	if(execute_cmd(cmd, 0) == 0)
-		match = 0;
-	//else
-	//	printf("/dev/%s is not mounted on: %s\n", partition, mpoint);
-	
-	snprintf(cmd, CMDSIZE-1, "sudo -S rm /tmp/%s /tmp/%s", tmpfile1, tmpfile2);
-	if(execute_cmd(cmd, 0) != 0)
-		printf("vol_cmp(): Cannot remove temporary files:/tmp%s, /tmp/%s\n", tmpfile1, tmpfile2);
-
-	free(tmpfile1);
-	free(tmpfile2);
-		
-	return match;
 }

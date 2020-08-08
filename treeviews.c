@@ -633,8 +633,9 @@ g.fslabel = NULL;
 		g.fslabel = get_label(g.name_capital, g.filesystem);
 
 	/* mountpoint */
-	if(strncmp(g.type, "ntfs", 4) == 0 || strncmp(g.type, "exfat", 5) == 0)
+	if(strncmp(g.type, "ntfs", 4) == 0 || strncmp(g.type, "exfat", 5) == 0) {
 		g.mountpoint = is_mounted_fuse(g.name_capital);
+	}
 	else
 		g.mountpoint = is_mounted(g.name_capital);
 
@@ -758,13 +759,12 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 	if( (event->type != GDK_BUTTON_PRESS) || (event->button != 3) ) 
 		return FALSE;
 
-	/* Where did he click? */
+	/* find and select the row that was clicked */
+
 	GtkTreePath *path;
 	GtkTreeViewColumn *column;
 	if (!gtk_tree_view_get_path_at_pos(GTK_TREE_VIEW(tree1), event->x, event->y, &path, &column, NULL, NULL))
 			return FALSE;
-
-	/* find and select the row that was clicked */
 	GtkTreeSelection *selection = gtk_tree_view_get_selection(GTK_TREE_VIEW(tree1));
 	gtk_tree_selection_unselect_all(selection);
 	gtk_tree_selection_select_path(selection, path);
@@ -777,17 +777,21 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 		return TRUE;
 	if(part == NULL)
 		return TRUE;
-			
-	todo = MOUNT;
-	GtkWidget *pop_menu = gtk_menu_new();
 
-	if(strncmp(fs, "ntfs", 4) == 0 || strncmp(fs, "exfat", 5) == 0)
-		mountpoint = is_mounted_fuse(part);
+	/* fuse is difficult to mount */
+	if(strncmp(fs, "ntfs", 4) == 0 || strncmp(fs, "exfat", 5) == 0) {
+		printf("mount/unmount of fuse based file systems is not supported.\n");
+		return TRUE;
+	}
 	else
 		mountpoint = is_mounted(part);
 
-	if (mountpoint != NULL) { /* "unmount" */
-				
+	/* Create the popup menu */
+	todo = MOUNT;
+	GtkWidget *pop_menu = gtk_menu_new();
+
+	if (mountpoint != NULL) {
+
 		free(mountpoint);
 		unmount = gtk_menu_item_new_with_label ("unmount");
 		gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), unmount);
@@ -795,8 +799,6 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 	}
 
 	else if (mountpoint == NULL) {
-		
-		/* XXX: NULL could be an error too! */
 		
 		if(strncmp(fs, "n/a", 3) == 0) {
 		/* "show file system" */		

@@ -413,7 +413,7 @@ char *gpart_filesystem( char *cmd) {
 			strncat(cmd, "-C ", 4);		
 		const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
 		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
-			strncat(cmd, " -l ", 4);
+			strncat(cmd, " -L ", 4);
 			strcat(cmd, glabel);
 			strncat(cmd, " ", 1);
 		}
@@ -422,7 +422,7 @@ char *gpart_filesystem( char *cmd) {
 	}
 	
 	free((void *) gpartition);
-	free((void *) gf); //XXX: ???
+	free((void *) gf);
 	return cmd;
 }
 
