@@ -28,7 +28,7 @@ Password is piped to sudo via named pipe. You can change <br>
 sudo behavior by editing its configuration file /usr/local/etc/sudoers.<br><br>
 
 5. How do I install xdisk?<br>
-Install as a port:<br>
+Install it as a port:<br>
 - Download ports/Makefile and ports/pkg-descr<br>
 - Run "make makesum" and "make install clean"<br>
 - (recommended: Run "dbus-uuidgen --ensure", for dbus)<br>
