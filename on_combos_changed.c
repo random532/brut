@@ -184,8 +184,9 @@ void on_disks_changed() {
 
 	char *scheme = get_scheme(gdisk);
 	if(scheme == NULL) {
-		msg("error fetching partitioning scheme. Closing editor window.");
-		gtk_widget_destroy(window_editor);
+		msg("Error fetching partitioning scheme. Weird.");
+		gtk_widget_destroy(thegrid);
+		editor();
 		return;
 	}
 	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_types) );
@@ -219,8 +220,9 @@ void on_partitions_changed() {
 	find_p(gpartition);
 	char *scheme = get_scheme(gpartition);
 	if(scheme == NULL) {
-		msg("error fetching partitioning scheme. Closing editor window.");
-		gtk_widget_destroy(window_editor);
+		msg("error fetching partitioning scheme.Weird.");
+		gtk_widget_destroy(thegrid);
+		editor();
 		return;
 	}
 	free(gpartition);

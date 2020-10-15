@@ -3,7 +3,7 @@
 void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 
 	todo = GPART;
-	char *cmd = malloc(CMDSIZE); /* the command we want to execute */
+	char *cmd = malloc(CMDSIZE); /* The shell command we want to execute. */
 	if(cmd == NULL) {
 		msg("malloc failed.");
 		return;
@@ -65,7 +65,7 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 	/* also redraw everything */
 end:	
 	on_toplevel_changed();
-	gtk_widget_destroy(window_editor);
+	gtk_widget_destroy(thegrid);
 	editor();
 }
 

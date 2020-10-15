@@ -107,7 +107,7 @@ void add_types( char *scheme) {
 		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "ebr");
 		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "fat16");	
 		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "fat32");
-		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "fat32lba");	// ?
+		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "fat32lba");
 		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "ntfs");
 		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "linux-data");
 		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_types), NULL, "linux-lvm");	
@@ -214,22 +214,29 @@ void create_text_alignment() {
 }
 
 void grid_attach_all() {
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_geom), 0, 0, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_bootcode), 0, 1, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_disks), 0, 2, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_partitions), 0, 3, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_schemes), 0, 4, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_types), 0, 5, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_bootoptions), 0, 6, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_filesystems), 0, 7, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_label), 0, 8, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_size), 0, 9, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_entries), 0, 10, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_alignment), 0, 11, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_soft), 0, 12, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_journal), 0, 13, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_fast), 0, 14, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_comp), 0, 15, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (gfile), 0, 16, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (edit_button), 0, 17, 1, 1);
+	
+	editor_sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
+	editor_label = gtk_label_new("      ");
+	//gtk_label_set_pattern(GTK_LABEL (editor_label), "_______");
+	
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (editor_sep), 0, 0, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (editor_label), 0, 1, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_geom), 0,	2, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_bootcode), 0,	3, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_disks), 0, 4, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_partitions), 0, 5, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_schemes), 0, 6, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_types), 0, 7, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_bootoptions), 0, 8, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (combo_filesystems), 0, 9, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_label), 0, 10, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_size), 0, 11, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_entries), 0, 12, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (text_alignment), 0, 13, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_soft), 0, 14, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_journal), 0, 15, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_fast), 0, 16, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_comp), 0, 17, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (gfile), 0, 18, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (edit_button), 0, 19, 1, 1);
 }

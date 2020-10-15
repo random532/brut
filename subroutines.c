@@ -353,12 +353,13 @@ int execute_cmd(char * cmd, int inform) {
 }
 
 	/* popup a message box */
-void msg(char * blah) {
-	GtkWidget * message = gtk_message_dialog_new(GTK_WINDOW (window_editor), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "%s", blah);
+void msg(char *blah) {
+	GtkWidget *message = gtk_message_dialog_new(GTK_WINDOW (window), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "%s", blah);
 	gtk_window_set_modal(GTK_WINDOW (message), TRUE);
-	gtk_window_set_transient_for(GTK_WINDOW(message), GTK_WINDOW(window)); 
+	gtk_window_set_transient_for(GTK_WINDOW (message), GTK_WINDOW(window));
 	gtk_widget_show(message);
 	g_signal_connect(message, "response", G_CALLBACK(on_response), NULL);
+
 }
 
 void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
@@ -367,8 +368,8 @@ void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 }
 
 	/* ask for comfirmation */
-void ask(char * cmd) {
-	GtkWidget *message = gtk_message_dialog_new(GTK_WINDOW (window_editor), GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", cmd);
+void ask(char *cmd) {
+	GtkWidget *message = gtk_message_dialog_new(GTK_WINDOW (window), GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", cmd);
 	//gtk_dialog_set_default_response (GTK_DIALOG (message), GTK_RESPONSE_YES);
 	
 	int len = strlen(cmd);
@@ -389,10 +390,9 @@ void ask_cb(GtkDialog *dialog, gint response_id, gpointer cmd) {
 	gtk_widget_destroy(GTK_WIDGET (dialog));
 	/* XXX: redraw? */
 	on_toplevel_changed();
-	if(window_editor != NULL) {
-		gtk_widget_destroy(window_editor);
-		editor();
-	}
+	gtk_widget_destroy(thegrid);
+	editor();
+
 }
 /* execute a command */
 /* return the result in a buffer */

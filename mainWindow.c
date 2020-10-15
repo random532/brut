@@ -2,7 +2,7 @@
 #include "disk.h"
 
 void top_window() {
-		/* main window */
+	/* main window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (window), "xdisk");
 	gtk_widget_set_size_request (window, 750, 380); /* width, height */
@@ -15,17 +15,9 @@ void scrolled() {
 	scrolled_window = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
                                     GTK_POLICY_ALWAYS, GTK_POLICY_AUTOMATIC); 
-	gtk_box_pack_start(GTK_BOX(fixed), scrolled_window, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(box), scrolled_window, FALSE, TRUE, 0);
 	gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
 	gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
-}
-
-void add_grid() {
-	grid = gtk_grid_new();
-	gtk_grid_insert_column(GTK_GRID(grid), 3);
-	gtk_box_pack_start(GTK_BOX(fixed), grid, FALSE, TRUE, 0);
-	gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
-	gtk_grid_set_column_spacing(GTK_GRID(grid), 6);
 }
 
 void main_combo() {
@@ -40,6 +32,43 @@ void main_combo() {
 
 	/* add entries to the box */
 	toplevel_entries();
+}
+
+void add_grid() {
+	grid = gtk_grid_new();
+	gtk_grid_insert_column(GTK_GRID(grid), 3);
+	gtk_box_pack_start(GTK_BOX(fixed), grid, FALSE, TRUE, 0);
+	gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
+	gtk_grid_set_column_spacing(GTK_GRID(grid), 6);
+	
+	/*
+	 * This grid has three entries.
+	 * 1. a combo box that lets users chose whether to display
+	 * an overview of all disks, or contents of a specific disk.
+	 */
+	main_combo();
+
+	/* 2. Refresh button. */
+	b = gtk_button_new_with_mnemonic(l.mrefresh);
+	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (b), 1, 0, 1, 1);
+	g_signal_connect (b, "clicked", G_CALLBACK (redraw_cb), NULL);
+
+	/* 3. Editor button. 
+	GtkWidget *e = gtk_button_new_with_mnemonic(l.medit);
+	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (e), 2, 0, 1, 1);
+	g_signal_connect (e, "clicked", G_CALLBACK (editor_cb), NULL);
+	*/
+}
+
+void add_box() {
+	
+	box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+	gtk_container_add (GTK_CONTAINER (fixed), box);
+	/* A window with scrollbars. */
+	scrolled();
+	GtkWidget *s1 = gtk_separator_new(GTK_ORIENTATION_VERTICAL);
+	gtk_container_add(GTK_CONTAINER (box), s1);
+	
 }
 
 int main(int argc, char *argv[]) {
@@ -86,43 +115,29 @@ int main(int argc, char *argv[]) {
 	/* disable annoying bell */
 	g_object_set(gtk_settings_get_default(), "gtk-error-bell", FALSE, NULL);
 
-	
-	/* main window */
-	top_window();
 
-	/* a box with three entries: */
+	/*
+	 * Here we draw the main window.
+	 * The main window contains a box. 
+	 */
+	top_window();
 	fixed = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	gtk_container_add (GTK_CONTAINER (window), fixed);
 
-	/* menu bar */
+	/* The box has three entries. */
 	add_menubar();
-
-	/* a grid */
 	add_grid();
-	
-	/* a window with scrollbars */
-	scrolled();
+	add_box();
 
-	/* a combo box that lets users chose whether to display */
-	/* an overview of all disks or contents of a specific disk */
-	main_combo();
-
-	/* refresh button */
-	b = gtk_button_new_with_mnemonic(l.mrefresh);
-	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (b), 1, 0, 1, 1);
-	g_signal_connect (b, "clicked", G_CALLBACK (redraw_cb), NULL);
-
-	/* Editor button */
-	GtkWidget *e = gtk_button_new_with_mnemonic(l.medit);
-	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (e), 2, 0, 1, 1);
-	g_signal_connect (e, "clicked", G_CALLBACK (editor_cb), NULL);
-
-	/* populate scrolled window once */
+	/* Populate the scrolled window once. */
 	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);
 	
-	/*  let the user see everything */
+	/*  Let the user see everything. */
 	gtk_widget_show_all(window);
-	
+
+	/* At last, add the editor. */
+	editor();
+
 	/* and go! */
 	gtk_main();
 	return EXIT_SUCCESS;

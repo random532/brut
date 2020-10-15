@@ -79,6 +79,7 @@ char *slices_on_a_disk;
 	/* global gtk pointer  */
 GtkWidget *window; 	/* main window */
 GtkWidget *fixed;
+GtkWidget *box;
 GtkWidget *scrolled_window;
 GtkWidget *combo_toplevel;
 GtkWidget *tree;		/* all disks are displayed here */
@@ -88,7 +89,7 @@ GtkTreeStore *treestore1;
 GtkCellRenderer *cell;
 GtkCellRenderer *cellr;
 GtkWidget *menu;
-GtkWidget *window_editor;
+//GtkWidget *window_editor;
 GtkWidget *thegrid;
 GtkWidget *grid;
 GtkWidget * item_msg_hide;
@@ -98,6 +99,8 @@ GtkWidget *su;
 GtkWidget *passbuf;
 
 /* all items in the grid/editor window */
+GtkWidget *editor_sep;
+GtkWidget *editor_label;
 GtkWidget *combo_schemes;
 GtkWidget *combo_types;
 GtkWidget *combo_disks;
@@ -279,7 +282,6 @@ void hide_widgets();
 
 /* menubar.c */
 void add_menubar();
-void editor_cb (GtkMenuItem *, gpointer);
 void redraw_cb (GtkMenuItem *, gpointer);
 
 /* applyButtonClicked.c */

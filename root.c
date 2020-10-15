@@ -47,8 +47,8 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 	gtk_widget_destroy(su);
 
 	on_toplevel_changed();
-	if( (window_editor != NULL) && (todo != MOUNT )) {
-		gtk_widget_destroy(window_editor);
+	if(todo != MOUNT) {
+		gtk_widget_destroy(thegrid);
 		editor();
 	}
 }
@@ -80,10 +80,9 @@ void o_cb(GtkMenuItem *item, gpointer cmd) {
 	free(passw);
 	gtk_widget_destroy(su);
 	on_toplevel_changed();
-	if(window_editor != NULL) {
-		gtk_widget_destroy(window_editor);
-		editor();
-	}
+	gtk_widget_destroy(thegrid);
+	editor();
+
 	return;
 
 bad:	
@@ -91,8 +90,8 @@ bad:
 		free(cmd);
 	gtk_widget_destroy(su);
 	on_toplevel_changed();
-	if( (window_editor != NULL) && (todo != MOUNT) ){
-		gtk_widget_destroy(window_editor);
+	if(todo != MOUNT) {
+		gtk_widget_destroy(thegrid);
 		editor();
 	}
 }
