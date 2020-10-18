@@ -36,7 +36,7 @@ Install it as a port:<br>
 
 Or build as a standalone binary:<br>
 1. Download the source files (without the /ports folder). I will add a tarball in the future.
-2. Make sure you have installed gtk3.<br>
+2. Make sure you have gtk3 and sudo installed.<br>
 3. Run "make LOCALBASE=/usr/local"<br>
 4. Start the binary (./xdisk).<br><br>
 
