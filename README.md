@@ -34,6 +34,12 @@ Install it as a port:<br>
 - (recommended: Run "dbus-uuidgen --ensure", for dbus)<br>
 - Start it with xdisk :)<br><br>
 
+Or build as a standalone binary:<br>
+1. Download the source files (without the /ports folder). I will add a tarball in the future.
+2. Make sure you have installed gtk3.<br>
+3. Run "make LOCALBASE=/usr/local"<br>
+4. Start the binary (./xdisk).<br><br>
+
 6. How to uninstall?<br>
 run "pkg remove xdisk"<br><br>
 
