@@ -7,24 +7,38 @@ void redraw_cb (GtkMenuItem *item, gpointer user_data) {
 	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);
 	gtk_widget_destroy(thegrid);
 	editor();
+	gtk_text_buffer_set_text(logs, "          ", 10);
 }
 
 void change_lang_de (GtkMenuItem *item, gpointer user_data) {
 
-	int lang=LANG_DE;
-	update_column_lang(lang);
-	update_menubar_lang(lang);
+	int la=LANG_DE;
+	update_column_lang(la);
+	update_menubar_lang(la);	
 	redraw_cb(item, user_data);
 	gtk_button_set_label(GTK_BUTTON (b) ,l.mrefresh);
+	
+	/* Update tabs. */
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
+	on_tabs_changed(NULL, NULL);
 }
 
 void change_lang_en (GtkMenuItem *item, gpointer user_data) {
 
-	int lang=LANG_EN;	
-	update_column_lang(lang);
-	update_menubar_lang(lang);
+	int la=LANG_EN;
+	update_column_lang(la);
+	update_menubar_lang(la);
+
 	redraw_cb(item, user_data);
 	gtk_button_set_label(GTK_BUTTON (b) ,l.mrefresh);
+	
+	/* Update tabs. */
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
+	on_tabs_changed(NULL, NULL);
 }
 
 void font_inc (GtkMenuItem *item, gpointer user_data) {    
@@ -69,15 +83,11 @@ void add_menubar() {
     gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
 
 	/* App - Refresh */
-	GtkWidget * app_refresh = gtk_menu_item_new_with_mnemonic (l.mrefresh);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_refresh);
+//	GtkWidget * app_refresh = gtk_menu_item_new_with_mnemonic (l.mrefresh);
+//	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_refresh);
 
-	/* App - Info */
-	GtkWidget * app_info = gtk_menu_item_new_with_mnemonic ("Info");
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_info);
-
-	GtkWidget *sep = gtk_separator_menu_item_new();
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), sep);
+//	GtkWidget *sep = gtk_separator_menu_item_new();
+//	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), sep);
 	
 	/* App - Quit */
 	GtkWidget *app_quit = gtk_menu_item_new_with_mnemonic (l.mquit);
@@ -121,38 +131,15 @@ void add_menubar() {
 	GtkWidget * item_fontdec = gtk_menu_item_new_with_mnemonic (l.mfontdec);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_font_sub), item_fontdec);
 
-	/* show messages */
-	GtkWidget * item_msg = gtk_menu_item_new_with_mnemonic (l.mmsg);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_msg);
-
-	/* message submenu */
-	GtkWidget *menu_msg_sub = gtk_menu_new();
-	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_msg), menu_msg_sub);
-
-	/* message -show */
-	item_msg_show = gtk_menu_item_new_with_mnemonic (l.mshow);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_show);
-
-	/* message - hide */
-	item_msg_hide = gtk_menu_item_new_with_mnemonic (l.mhide);
-	gtk_menu_shell_append (GTK_MENU_SHELL (menu_msg_sub), item_msg_hide);
-
-
-	if(confirm == 1)
-		msg_show (GTK_MENU_ITEM(item_msg_show), NULL);
-	else
-		msg_hide (GTK_MENU_ITEM(item_msg_hide), NULL);
 
 	/*  callback functions */
 	g_signal_connect_swapped (app_quit, "activate", G_CALLBACK(gtk_main_quit), NULL);
-   	g_signal_connect (app_refresh, "activate", G_CALLBACK (redraw_cb), NULL);
-   	g_signal_connect (app_info, "activate", G_CALLBACK (info_cb), NULL);
+//   	g_signal_connect (app_refresh, "activate", G_CALLBACK (redraw_cb), NULL);
 	g_signal_connect (item_lang_de, "activate", G_CALLBACK (change_lang_de), NULL);
 	g_signal_connect (item_lang_en, "activate", G_CALLBACK (change_lang_en), NULL);
 	g_signal_connect (item_fontinc, "activate", G_CALLBACK (font_inc), NULL);
 	g_signal_connect (item_fontdec, "activate", G_CALLBACK (font_dec), NULL);
-	g_signal_connect (item_msg_show, "activate", G_CALLBACK (msg_show), NULL);
-	g_signal_connect (item_msg_hide, "activate", G_CALLBACK (msg_hide), NULL);
+
 
 	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
 	gtk_box_reorder_child(GTK_BOX(fixed), menuBar, 0);

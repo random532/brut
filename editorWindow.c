@@ -1,5 +1,8 @@
 #include "disk.h"
 
+void on_ask_clicked(GtkToggleButton *item, gpointer user_data) {
+	confirm = gtk_toggle_button_get_active(item);
+}
 
 void editor() {
 
@@ -28,19 +31,17 @@ void editor() {
 	create_text_alignment();
 	create_text_size();
 
-	/* Toggle buttons */
-	toggle_soft = gtk_check_button_new_with_label("Softupdates");
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_soft), TRUE);
-	toggle_journal = gtk_check_button_new_with_label("Journaling");
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_journal), TRUE);
-	toggle_fast = gtk_check_button_new_with_label("fast");
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_fast), TRUE);
-	toggle_comp = gtk_check_button_new_with_label("enable-compression");
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_comp), TRUE);
+	/* file system toggle buttons */
+	create_toggle_buttons();
 
 	/* File chooser */
 	gfile = gtk_file_chooser_button_new( "bootcode", GTK_FILE_CHOOSER_ACTION_OPEN);
 
+	/* Ask for confirmation toggle button */
+	toggle_ask = gtk_check_button_new_with_label(l.mmsg);
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_ask), confirm);
+	g_signal_connect (toggle_ask, "toggled", G_CALLBACK (on_ask_clicked), NULL);
+	
 	/* apply button */
 	edit_button = gtk_button_new_with_mnemonic(l.apply);
 	g_signal_connect (edit_button, "clicked", G_CALLBACK (on_edit_clicked), NULL);
@@ -54,6 +55,7 @@ void editor() {
 	gtk_widget_show(GTK_WIDGET (editor_sep));
 	gtk_widget_show(GTK_WIDGET (editor_label));
 	gtk_widget_show(GTK_WIDGET (combo_geom));
+	gtk_widget_show(GTK_WIDGET (toggle_ask));
 	gtk_widget_show(GTK_WIDGET(edit_button));
 }
 

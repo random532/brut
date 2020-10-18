@@ -213,6 +213,17 @@ void create_text_alignment() {
 	gtk_entry_set_placeholder_text (GTK_ENTRY(text_alignment), "alignment (optional)");
 }
 
+void create_toggle_buttons() {
+	toggle_soft = gtk_check_button_new_with_label("Softupdates");
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_soft), TRUE);
+	toggle_journal = gtk_check_button_new_with_label("Journaling");
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_journal), TRUE);
+	toggle_fast = gtk_check_button_new_with_label("fast");
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_fast), TRUE);
+	toggle_comp = gtk_check_button_new_with_label("enable-compression");
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_comp), TRUE);
+}
+
 void grid_attach_all() {
 	
 	editor_sep = gtk_separator_new(GTK_ORIENTATION_HORIZONTAL);
@@ -238,5 +249,6 @@ void grid_attach_all() {
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_fast), 0, 16, 1, 1);
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_comp), 0, 17, 1, 1);
 	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (gfile), 0, 18, 1, 1);
-	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (edit_button), 0, 19, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (toggle_ask), 0, 19, 1, 1);
+	gtk_grid_attach(GTK_GRID (thegrid), GTK_WIDGET (edit_button), 0, 20, 1, 1);
 }

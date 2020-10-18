@@ -1,7 +1,7 @@
 #include "disk.h"
 
 /* 
- * In the main window there are two distinct treeviews.
+ * In the disk tab there are two distinct treeviews.
  * Only one at a time can exist.
  * - treeview refers to the (over-)view of all geoms.
  * - treeview1 refers to the view of one specific geom.

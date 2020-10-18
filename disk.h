@@ -1,6 +1,7 @@
 /*TODO:
- * - test everything
- * - get feedback
+ * - User Modify.
+ * - globaler language pointer?
+ * - Remove some global pointer, or move them into a structure?
  * */
  
 #include <stdio.h>
@@ -62,13 +63,28 @@ int todo;
 #define POS_MODE	25
 #define POS_INDEX	26
 
+/* User tab treeview column header */
+#define UCOL 16
+char usercol[UCOL][25];
+
+#define POS_UNAME		0
+#define POS_UPASSWORD	1
+#define POS_UGROUPID	2
+#define POS_USERID		3
+#define POS_UCLASS		4
+#define POS_UNKNOWN2	5
+#define POS_UNKNOWN3	6
+#define POS_UDESC		7
+#define POS_UHOME		8
+#define POS_USHELL		9
+
 
 	/* font size */
 char fontsize[10];
 
 	/* ask for confirmation 
 	 * before issueing a command */
-int confirm;
+gboolean confirm;
 
 	/* keep track of disks and partitions */
 char *all_disks;
@@ -80,6 +96,23 @@ char *slices_on_a_disk;
 GtkWidget *window; 	/* main window */
 GtkWidget *fixed;
 GtkWidget *box;
+GtkWidget *textbox;
+GtkWidget *logwindow;
+GtkTextBuffer *logs;
+GtkWidget *abox;
+
+GtkWidget *userbox;
+
+GtkWidget *groupbox;
+GtkWidget *groupconfirm;
+
+GtkWidget *tabs;
+GtkWidget *tab1;
+GtkWidget *tab2;
+GtkWidget *tab3;
+GtkWidget *tab4;
+GtkWidget *tab5;
+
 GtkWidget *scrolled_window;
 GtkWidget *combo_toplevel;
 GtkWidget *tree;		/* all disks are displayed here */
@@ -118,6 +151,7 @@ GtkWidget *toggle_soft;
 GtkWidget *toggle_journal;
 GtkWidget *toggle_fast;
 GtkWidget *toggle_comp;
+GtkWidget *toggle_ask;
 GtkWidget *gfile;
 
 /* strings */
@@ -132,12 +166,13 @@ typedef struct {
 	char mrefresh[20];
 	char mlanguage[20];
 	char mmsg[25];
-	char mshow[20];
+	char mshow[20]; //XXX: Obsolete?
 	char mhide[20];
 	char mfont[20];
 	char mfontinc[25];
 	char mfontdec[25];
 	char medit[25];
+	char mabort[15];
 
 	/* hints */
 	char no_root[35];
@@ -155,8 +190,38 @@ typedef struct {
 	char mrescan[30];
 	char mpassw[50];
 	char mexplain[60];
-	char mhello[60];
-	char mhello1[60];
+
+	/* Group options. */
+	char gname[10];
+	char gid[10];
+	char gmember[15];
+	char gpassword[20];
+	
+	char gnew[20];
+	char gdel[20];
+	char gadd[20];
+	char gremove[20];
+	
+	char ginfodel[35];
+	char ginfocreate[35];
+	char ginfoadduser1[25];
+	char ginfoadduser2[25];
+	char ginforemuser1[25];
+	char ginforemuser2[25];
+	char ginfoclick[50];
+
+	/* User tab menu options */
+	char uadd[20];
+	char uedit[20];
+	char uremove[20];
+
+	/* About */
+	char about[200];
+
+	/* Tab names. */
+	char tabgroup[10];
+	char tababout[10];
+	char tabuser[10];
 } lang;
 
 lang l;
@@ -226,6 +291,7 @@ void create_text_label();
 void create_text_entries();
 void create_text_size();
 void create_text_alignment();
+void create_toggle_buttons();
 void grid_attach_all();
 void add_types( char *);
 
@@ -263,7 +329,6 @@ int root();
 int command_exist(char *);
 int submit(char *, int);
 void fsscan();
-void info_cb(GtkMenuItem *, gpointer);
 char *get_partition_type(char *);
 char *get_type(char *);
 char *get_scheme(const gchar *);
@@ -328,6 +393,17 @@ int volume_cmp(char *, char *);
 void top_window();
 void scrolled();
 void main_combo();
+void on_tabs_changed(GtkMenuItem *item, gpointer user_data);
+
+/* about.c */
+void about();
+
+/* groups.c */
+void groups();
+void execute_me(char *);
+
+/* user.c */
+void users();
 
 lang en;
 lang de;

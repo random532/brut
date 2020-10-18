@@ -10,13 +10,14 @@ lang en = {
 	.mquit="_Quit",
 	.mrefresh="_Refresh",
 	.mlanguage="_Language",
-	.mmsg="_Ask for Confirmation",
+	.mmsg="ask for confirmation",
 	.mshow="_Yes",
 	.mhide="_No",
 	.mfont="_Font size",
 	.mfontinc="_Increase",
 	.mfontdec="_Decrease",
 	.medit="_Editor",
+	.mabort="Cancel",
 
 	/* hints */
 	.no_root="not Root! Sorry.",
@@ -34,8 +35,41 @@ lang en = {
 	.mrescan="Show Filesystems",
 	.mpassw="Enter your sudo password!",
 	.mexplain="This command needs higher privileges.",
-	.mhello1="Hello! Please report bugs here:",
-	.mhello="github.com/random532/xdisk/issues"
+
+	/* groups */
+	.gname="Name",
+	.gpassword="Password",
+	.gmember="Members",
+	.gid="ID",
+	
+	.gnew="New group",
+	.gdel="Delete group",
+	.gadd="Add user",
+	.gremove="Remove user",
+
+	.ginfodel="Delete this group?",
+	.ginfocreate="Create new group?",
+	.ginfoadduser1="Add user:",
+	.ginfoadduser2="To this group?",
+	.ginforemuser1="Remove user:",
+	.ginforemuser2="From this group?",
+	.ginfoclick="Right click on a group!",
+	
+	/* User tab menu */
+	.uadd="Add",
+	.uedit="Modify",
+	.uremove="Remove",
+
+	/* About */
+	.about="Hello.\nThis program makes use of GTK (GIMP Toolkit). See: www.gtk.org\n\n\
+For bugs, questions, feedback, open an issue here: github.com/random532/xdisk/issues\n\
+The author.\n",
+
+	/* Tabs */
+	.tababout="About",
+	.tabgroup="Groups",
+	.tabuser="User"
+
 };
 
 lang de = {
@@ -47,13 +81,14 @@ lang de = {
 	.mquit="_Beenden",
 	.mrefresh="_Aktualisieren",
 	.mlanguage="_Sprache",
-	.mmsg="_Immer nachfragen",
+	.mmsg="Nachfragen",
 	.mshow="_Ja",
 	.mhide="_Nein",
 	.mfont="_Schriftgröße",
 	.mfontinc="ver_größern",
 	.mfontdec="ver_kleinern",
 	.medit="_Editor",
+	.mabort="Abbrechen",
 
 	/* hints */
 	.no_root="Du bist kein Root. Sorry.",
@@ -71,8 +106,40 @@ lang de = {
 	.mrescan="Zeige Dateisysteme",
 	.mpassw="Geben Sie Ihr Sudo Passwort ein!",
 	.mexplain="Dieser Befehl braucht mehr Berechtigungen.",
-	.mhello1="Hallo! Bitte melde Bugs hier:",
-	.mhello="github.com/random532/xdisk/issues"
+	
+	/* groups */
+	.gname="Name",
+	.gpassword="Passwort",
+	.gmember="Teilnehmer",
+	.gid="ID",
+
+	.gnew="Neue Gruppe",
+	.gdel="Lösche Gruppe",
+	.gadd="User dazu",
+	.gremove="User rausnehmen",
+	
+	.ginfodel="Diese Gruppe löschen?",
+	.ginfocreate="Neue Gruppe erstellen?",
+	.ginfoadduser1="Adde den Benutzer:",
+	.ginfoadduser2="Zur dieser Gruppe?",
+	.ginforemuser1="Entferne den Benutzer:",
+	.ginforemuser2="Von dieser Gruppe?",
+	.ginfoclick="Rechtsclick auf eine Gruppe!",
+
+	/* User tab menu */
+	.uadd="Neu",
+	.uedit="Ändern",
+	.uremove="Entfernen",
+
+	/* About */
+	.about="Hallo.\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\n\
+Bei Bugs, Fragen, Problemen, öffne ein Problemreport: github.com/random532/xdisk/issues\n\
+Der Autor.\n",
+
+	/* Tabs */
+	.tababout="Über",
+	.tabgroup="Gruppen",
+	.tabuser="Benutzer"
 };
 
 void en_lang() {
@@ -119,6 +186,20 @@ void en_lang() {
 	strncpy(column[9], "Stripesize", 15);
 	strncpy(column[10], "Stripeoffset", 15);
 	/*  lunid lun ... */
+	
+	/* User tab treeview. */
+	strcpy(usercol[POS_UNAME], "Name");
+	strcpy(usercol[POS_UPASSWORD],"PW");
+	strcpy(usercol[POS_UCLASS], "Class");
+	strcpy(usercol[POS_UGROUPID], "GroupID");
+	strcpy(usercol[POS_USERID], "UserID");
+	strcpy(usercol[POS_UNKNOWN2], "--");
+	strcpy(usercol[POS_UNKNOWN3], "--");
+	strcpy(usercol[POS_UDESC], "Full Name");
+	strcpy(usercol[POS_UHOME], "Home directory");
+	strcpy(usercol[POS_USHELL], "Login Shell");
+
+
 }
 
 void de_lang() {
@@ -163,14 +244,28 @@ void de_lang() {
 	strncpy(column[8], "fwheads", 10);	
 	strncpy(column[9], "Stripesize", 15);
 	strncpy(column[10], "Stripeoffset", 15);
+	
+
+	/* User tab treeview. */
+	strcpy(usercol[POS_UNAME], "Name");
+	strcpy(usercol[POS_UPASSWORD],"PW");
+	strcpy(usercol[POS_UCLASS], "Login-Klasse");
+	strcpy(usercol[POS_UGROUPID], "GruppenID");
+	strcpy(usercol[POS_USERID], "UserID");
+	strcpy(usercol[POS_UNKNOWN2], "--");
+	strcpy(usercol[POS_UNKNOWN3], "--");
+	strcpy(usercol[POS_UDESC], "Ganzer Name");
+	strcpy(usercol[POS_UHOME], "Heimatverzeichnis");
+	strcpy(usercol[POS_USHELL], "Shell");
+
 }
 
-void update_column_lang(int lang) {
+void update_column_lang(int la) {
 
 	/* first update arrays */
-	if (lang == LANG_DE)
+	if (la == LANG_DE)
 		de_lang();
-	else if (lang == LANG_EN)
+	else if (la == LANG_EN)
 		en_lang();
 
 	/* second update columns */
@@ -191,7 +286,7 @@ void update_column_lang(int lang) {
 	}
 }
 
-void update_menubar_lang(int lang) {
+void update_menubar_lang(int la) {
 	gtk_widget_destroy(menu);
 	add_menubar();
 }

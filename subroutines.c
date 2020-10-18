@@ -354,12 +354,15 @@ int execute_cmd(char * cmd, int inform) {
 
 	/* popup a message box */
 void msg(char *blah) {
-	GtkWidget *message = gtk_message_dialog_new(GTK_WINDOW (window), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "%s", blah);
+	
+	int len = strlen(blah);
+	gtk_text_buffer_set_text(logs, blah, len);
+	/* GtkWidget *message = gtk_message_dialog_new(GTK_WINDOW (window), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "%s", blah);
 	gtk_window_set_modal(GTK_WINDOW (message), TRUE);
 	gtk_window_set_transient_for(GTK_WINDOW (message), GTK_WINDOW(window));
 	gtk_widget_show(message);
 	g_signal_connect(message, "response", G_CALLBACK(on_response), NULL);
-
+	*/
 }
 
 void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
@@ -605,38 +608,6 @@ void fsscan() {
 }
 void destroyme(GtkMenuItem *item, gpointer user_data) {
 	gtk_widget_destroy(user_data);
-}
-void info_cb(GtkMenuItem *item, gpointer user_data) {
-	GtkWidget *hello = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (hello), "Hello  World");
-	gtk_container_set_border_width (GTK_CONTAINER (hello), 30);
-	gtk_window_set_default_size(GTK_WINDOW (hello), 250, 100);
-	gtk_window_set_modal(GTK_WINDOW(hello), TRUE);
-	gtk_window_set_transient_for(GTK_WINDOW(hello), GTK_WINDOW(window)); 
-	
-	gint x = 0, y = 0, width, height;
-	gtk_window_get_position (GTK_WINDOW(window), &x, &y);
-	gtk_window_get_size(GTK_WINDOW (window), &width, &height);
-	x = x +150;
-	y = y + 50;
-	gtk_window_move( GTK_WINDOW(hello), x, y);
-	
-	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-	gtk_container_add (GTK_CONTAINER (hello), box);
-	GtkWidget *agrid = gtk_grid_new();
-	gtk_grid_insert_column(GTK_GRID(agrid), 3);
-	gtk_box_pack_end(GTK_BOX(box), agrid, TRUE, TRUE, 0);
-	gtk_grid_set_column_homogeneous(GTK_GRID(agrid), FALSE);
-	gtk_grid_set_column_spacing(GTK_GRID(agrid), 5);
-	GtkWidget *label1 = gtk_label_new(l.mhello);
-	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label1), TRUE, TRUE, 0);	
-	GtkWidget *label = gtk_label_new(l.mhello1);
-	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label), TRUE, TRUE, 0);
-
-	GtkWidget *c = gtk_button_new_with_mnemonic("_Ok");
-	gtk_grid_attach(GTK_GRID (agrid), GTK_WIDGET (c), 1, 0, 1, 1);
-	g_signal_connect (c, "clicked", G_CALLBACK(destroyme), hello);
-	gtk_widget_show_all(hello);
 }
 
 char *get_type( char *part) {
