@@ -1,6 +1,7 @@
 /*TODO:
  * - User Modify.
- * - Remove some global pointer, or move them into a structure?
+ * - Remove some global pointers.
+ * -Doublecheck all buffers that handle user input.
  * */
  
 #include <stdio.h>

@@ -1,7 +1,6 @@
 /* Group tab */
 #include "disk.h"
 
-
 void execute_me(char *cmd) {
 	
 	if(!root() )  { /* try sudo */
@@ -385,9 +384,9 @@ GtkWidget *group_treeview() {
 	/* Empty row at the end for style points. */
 	gtk_tree_store_append(t, &parent, NULL);
 
-/* scrollbars? */
+	/* scrollbars? */
 
-return gtv;
+	return gtv;
 }
 
 void groups() {

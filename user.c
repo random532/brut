@@ -33,7 +33,6 @@ void add_cb (GtkButton *item, gpointer a) {
 		else {
 			sprintf(cmd, "echo \"%s\" | sudo pw useradd -h 0 -n %s", gpass, gname);
 		}
-		
 
 		if(strlen(ghome) != 0) {
 			strcat(cmd, " -d ");
@@ -55,10 +54,8 @@ void add_cb (GtkButton *item, gpointer a) {
 
 void delete_ok (GtkButton *item, gpointer cmd) {
 
-	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 ) {
+	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 )
 		execute_me(cmd);
-	}
-
 	on_tabs_changed(NULL, NULL);
 }
 
@@ -184,9 +181,9 @@ gboolean uclick(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
 	gtk_tree_selection_select_path(selection, path);
 	gtk_tree_path_free(path);
 
-	char *username = selected_item(gtv, 0);
-	if(username == NULL)
-		return TRUE;
+	//char *username = selected_item(gtv, 0);
+	//if(username == NULL)
+	//	return TRUE;
 
 	/* Create the popup menu. */
 	GtkWidget *pop_menu = gtk_menu_new();
