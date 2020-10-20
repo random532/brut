@@ -59,6 +59,7 @@ lang en = {
 	.uadd="Add",
 	.uedit="Modify",
 	.uremove="Remove",
+	.uremove1="Delete this user, including home directory?",
 
 	/* About */
 	.about="Hello.\nThis program makes use of GTK (GIMP Toolkit). See: www.gtk.org\n\n\
@@ -126,12 +127,13 @@ lang de = {
 	.ginforemuser2="Von dieser Gruppe?",
 	.ginfoclick="Rechtsclick auf eine Gruppe!",
 
-	/* User tab menu */
+	/* User tab */
 	.uadd="Neu",
 	.uedit="Ändern",
 	.uremove="Entfernen",
+	.uremove1="Benutzer entfernen (inklusive Heimatverzeichnis)?",
 
-	/* About */
+	/* About tab */
 	.about="Hallo.\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\n\
 Bei Bugs, Fragen, Problemen, öffne ein Problemreport: github.com/random532/xdisk/issues\n\
 Der Autor.\n",

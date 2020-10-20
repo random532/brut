@@ -1,21 +1,18 @@
 /* User tab */
 #include "disk.h"
 
-typedef struct {
+struct {
 	GtkWidget *uname;
 	GtkWidget *ushell;
 	GtkWidget *uhome;
 	GtkWidget *uclass;
 	GtkWidget *upassw;
 	GtkWidget *ufullname;
-} ua;
-
-ua useradd_entries;
+} useradd_entries;
 
 void add_cb (GtkButton *item, gpointer a) {
 	
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0) {
-
 
 		const gchar *gname = gtk_entry_get_text(GTK_ENTRY (useradd_entries.uname));
 		const gchar *ghome = gtk_entry_get_text(GTK_ENTRY (useradd_entries.uhome));
@@ -68,12 +65,13 @@ void delete_ok (GtkButton *item, gpointer cmd) {
 void del_user (GtkMenuItem *item, gpointer userview) {
 
 	char *user = selected_item(userview, 0);
-
+	
 	char *cmd = malloc(strlen(user) + 40);
 	if(cmd == NULL)
 		return;
 	sprintf(cmd, "echo \"y\" | sudo rmuser -y %s", user);
 
+	/* GUI elements */
 	gtk_widget_destroy(userbox);
 	userbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 	gtk_box_pack_start(GTK_BOX (tab3), userbox, FALSE, FALSE, 0);
@@ -85,7 +83,7 @@ void del_user (GtkMenuItem *item, gpointer userview) {
 	gtk_grid_set_column_spacing(GTK_GRID(g), 20);
 
 
-	gtk_grid_attach(GTK_GRID (g), gtk_label_new("Delete this user, including home directory?"), 0, 0, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), gtk_label_new(l.uremove1), 0, 0, 1, 1);
 	gtk_grid_attach(GTK_GRID (g), gtk_label_new(user), 0, 1, 1, 1);
 
 	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
@@ -100,7 +98,11 @@ void del_user (GtkMenuItem *item, gpointer userview) {
 }
 
 void add_user (GtkMenuItem *item, gpointer userview) {
-	
+
+	/* 
+	 * GUI elements for adding a user.
+	 */
+
 	gtk_widget_destroy(userbox);
 	userbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 	gtk_box_pack_start(GTK_BOX (tab3), userbox, FALSE, FALSE, 0);
@@ -228,7 +230,7 @@ GtkWidget *user_treeview() {
 	gtk_container_add(GTK_CONTAINER(scrollw), userview);	
 	GtkCellRenderer *c = gtk_cell_renderer_text_new();
 
-	g_object_set(c, "font", fontsize, NULL);
+	g_object_set(c, "font", opt.fontsize, NULL);
 	g_object_set(userview, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
 

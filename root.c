@@ -141,7 +141,7 @@ void window_pw(char *cmd) {
 	GtkWidget *label2 = gtk_label_new(l.mpassw);
 	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label2), TRUE, TRUE, 0);
 	
-	if(confirm == 1) {
+	if(opt.confirm == TRUE) {
 		GtkWidget *label1 = gtk_label_new(cmd);
 		gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(label1), TRUE, TRUE, 0);	
 	}

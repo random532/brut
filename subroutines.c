@@ -219,16 +219,16 @@ else {
 return free_megabytes;
 }
 
-void change_fontsize(int what) {
+void change_fontsize(int increase) {
 
-	long fsize = strtol(fontsize, NULL, 0);
+	long fsize = strtol(opt.fontsize, NULL, 0);
    
-	if( (what == 1) && (fsize < 15 ) )  	/* 1 increase, 0 decrease */ 
+	if( (increase == TRUE) && (fsize < 15 ) )
 		fsize = fsize +1;
-	if ((what == 0) && (fsize > 7) )
+	if ((increase == FALSE) && (fsize > 7) ) /* decrease */
 		fsize = fsize -1;
 
-	sprintf(fontsize,"%ld", fsize);	
+	sprintf(opt.fontsize,"%ld", fsize);
 	on_toplevel_changed();
 }
 

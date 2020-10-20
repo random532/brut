@@ -282,7 +282,7 @@ GtkWidget *group_treeview() {
 	gtk_container_add(GTK_CONTAINER(scrollw), gtv);	
 	GtkCellRenderer *c = gtk_cell_renderer_text_new();
 
-	g_object_set(c, "font", fontsize, NULL);
+	g_object_set(c, "font", opt.fontsize, NULL);
 	g_object_set(c, "editable", FALSE, NULL);
 	g_object_set(gtv, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 	

@@ -1,8 +1,11 @@
 #include "disk.h"
 
 char *is_mounted(char *part) {
-	/* execute mount w/o arguments */
-	/* return Mountpoint or NULL */
+
+	/*
+	 * Execute mount w/o arguments.
+	 * Return Mountpoint or NULL.
+	 */
 		
 	if (part == NULL)
 		return NULL;
@@ -34,7 +37,6 @@ char *is_mounted(char *part) {
 }
 
 char *is_mounted_fuse(char *partition) {
-
 
 	/*
 	 * Just check whether there is at least one fuse mount.
@@ -137,7 +139,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		snprintf(cmd, plen+mlen+x, "mount -t msdosfs /dev/%s %s", part, path);
 	else if(strncmp(fs, "ntfs", 4) == 0) {
 		
-		/* see if ntfs-3g is installed */
+		/* see if ntfs-3g is installed. XXX: Never reached. */
 		if (!command_exist("/bin/ntfs-3g")) {
 			msg("To mount ntfs file systems, please install this package: fusefs-ntfs. Also kldload fuse.");
 			error = 1;

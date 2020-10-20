@@ -19,7 +19,7 @@ GtkWidget *create_treeview() {
 	gtk_container_add(GTK_CONTAINER(scrolled_window), disk_view);	
 	cellr = gtk_cell_renderer_text_new();
 
-	g_object_set(cellr, "font", fontsize, NULL);
+	g_object_set(cellr, "font", opt.fontsize, NULL);
 	g_object_set(cellr, "editable", TRUE, NULL);
 	g_object_set(disk_view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 
@@ -66,7 +66,7 @@ GtkWidget *create_treeview1() {
 	gtk_container_add(GTK_CONTAINER(scrolled_window), view);	
 	cell = gtk_cell_renderer_text_new();
 	
-	g_object_set(cell, "font", fontsize, NULL);
+	g_object_set(cell, "font", opt.fontsize, NULL);
 	//g_object_set(cell,"editable", TRUE, NULL);
 	//gtk_tree_view_set_enable_search(view, TRUE);
 	g_object_set(view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
@@ -741,6 +741,19 @@ char *get_label(char *partition, char *filesystem) {
 		
 }
 
+gboolean fs_supported( char *fs) {
+
+	if(strncmp(fs, "ntfs", 4) == 0 || strncmp(fs, "exfat", 5) == 0) {
+		printf("mount/unmount of fuse based file systems is not supported yet.\n");
+		return FALSE;
+	}
+	else if(strncmp(fs, "zfs", 3) == 0) {
+		printf("mount/unmount of zfs is not supported yet.\n");
+		return FALSE;
+	}
+	return TRUE;
+}
+
 gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata) {
 
 	/* 
@@ -773,14 +786,16 @@ gboolean right_clicked(GtkWidget *btn, GdkEventButton *event, gpointer userdata)
 	/* Mount or unmount? */
 	fs = selected_item(tree1, POS_FS);
 	part = selected_item(tree1, POS_PART);
+	
 	if(fs == NULL)
 		return TRUE;
 	if(part == NULL)
 		return TRUE;
 
 	/* fuse is difficult to mount */
-	if(strncmp(fs, "ntfs", 4) == 0 || strncmp(fs, "exfat", 5) == 0) {
-		printf("mount/unmount of fuse based file systems is not supported.\n");
+	if(fs_supported(fs) == FALSE) {
+		free(fs);
+		free(part);
 		return TRUE;
 	}
 	else

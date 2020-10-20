@@ -1,7 +1,7 @@
 #include "disk.h"
 
 void on_ask_clicked(GtkToggleButton *item, gpointer user_data) {
-	confirm = gtk_toggle_button_get_active(item);
+	opt.confirm = gtk_toggle_button_get_active(item);
 }
 
 void editor() {
@@ -39,7 +39,7 @@ void editor() {
 
 	/* Ask for confirmation toggle button */
 	toggle_ask = gtk_check_button_new_with_label(l.mmsg);
-	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_ask), confirm);
+	gtk_toggle_button_set_active( GTK_TOGGLE_BUTTON (toggle_ask), opt.confirm);
 	g_signal_connect (toggle_ask, "toggled", G_CALLBACK (on_ask_clicked), NULL);
 	
 	/* apply button */
@@ -60,20 +60,20 @@ void editor() {
 }
 
 void hide_widgets() {
-gtk_widget_hide(GTK_WIDGET (combo_schemes) );
-gtk_widget_hide(GTK_WIDGET (combo_disks) );
-gtk_widget_hide(GTK_WIDGET (combo_types) );
-gtk_widget_hide(GTK_WIDGET (combo_partitions) );
-gtk_widget_hide(GTK_WIDGET (combo_filesystems) );
-gtk_widget_hide(GTK_WIDGET (combo_bootoptions) );
-gtk_widget_hide(GTK_WIDGET (combo_bootcode) );
-gtk_widget_hide(GTK_WIDGET (text_entries) );
-gtk_widget_hide(GTK_WIDGET (text_label) );
-gtk_widget_hide(GTK_WIDGET (text_size) );
-gtk_widget_hide(GTK_WIDGET (text_alignment) );
-gtk_widget_hide(GTK_WIDGET (toggle_soft) );
-gtk_widget_hide(GTK_WIDGET (toggle_journal) );
-gtk_widget_hide(GTK_WIDGET (toggle_fast) );
-gtk_widget_hide(GTK_WIDGET (toggle_comp) );
-gtk_widget_hide(GTK_WIDGET (gfile) );
+gtk_widget_hide(GTK_WIDGET (combo_schemes));
+gtk_widget_hide(GTK_WIDGET (combo_disks));
+gtk_widget_hide(GTK_WIDGET (combo_types));
+gtk_widget_hide(GTK_WIDGET (combo_partitions));
+gtk_widget_hide(GTK_WIDGET (combo_filesystems));
+gtk_widget_hide(GTK_WIDGET (combo_bootoptions));
+gtk_widget_hide(GTK_WIDGET (combo_bootcode));
+gtk_widget_hide(GTK_WIDGET (text_entries));
+gtk_widget_hide(GTK_WIDGET (text_label));
+gtk_widget_hide(GTK_WIDGET (text_size));
+gtk_widget_hide(GTK_WIDGET (text_alignment));
+gtk_widget_hide(GTK_WIDGET (toggle_soft));
+gtk_widget_hide(GTK_WIDGET (toggle_journal));
+gtk_widget_hide(GTK_WIDGET (toggle_fast));
+gtk_widget_hide(GTK_WIDGET (toggle_comp));
+gtk_widget_hide(GTK_WIDGET (gfile));
 }

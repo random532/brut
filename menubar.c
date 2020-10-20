@@ -10,12 +10,11 @@ void redraw_cb (GtkMenuItem *item, gpointer user_data) {
 	gtk_text_buffer_set_text(logs, "          ", 10);
 }
 
-void change_lang_de (GtkMenuItem *item, gpointer user_data) {
+void update_lang() {
 
-	int la=LANG_DE;
-	update_column_lang(la);
-	update_menubar_lang(la);	
-	redraw_cb(item, user_data);
+	update_column_lang(opt.language);
+	update_menubar_lang(opt.language);	
+	redraw_cb(NULL, NULL);
 	gtk_button_set_label(GTK_BUTTON (b) ,l.mrefresh);
 	
 	/* Update tabs. */
@@ -23,52 +22,28 @@ void change_lang_de (GtkMenuItem *item, gpointer user_data) {
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
 	on_tabs_changed(NULL, NULL);
+}
+
+void change_lang_de (GtkMenuItem *item, gpointer la) {
+	
+	opt.language=LANG_DE;
+	update_lang();
 }
 
 void change_lang_en (GtkMenuItem *item, gpointer user_data) {
 
-	int la=LANG_EN;
-	update_column_lang(la);
-	update_menubar_lang(la);
-
-	redraw_cb(item, user_data);
-	gtk_button_set_label(GTK_BUTTON (b) ,l.mrefresh);
-	
-	/* Update tabs. */
-	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
-	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
-	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
-	on_tabs_changed(NULL, NULL);
+	opt.language=LANG_EN;
+	update_lang();
 }
 
 void font_inc (GtkMenuItem *item, gpointer user_data) {    
 	int what = 1; /* 1 increase, 0 decrease */    	
-	change_fontsize(what);
+	change_fontsize(1);
 }
 
 void font_dec (GtkMenuItem *item, gpointer user_data) {    
 	int what = 0; /* 1 increase, 0 decrease */    	
 	change_fontsize(what);
-}
-
-void msg_show (GtkMenuItem *item, gpointer user_data) {    
-
-	confirm = 1;
-	char buf[35];
-	strcpy(buf, l.mshow);
-	strcat(buf, "  (x)");
-	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_show), buf);
-	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_hide), l.mhide);
-}
-
-void msg_hide (GtkMenuItem *item, gpointer user_data) {    
-
-	confirm = 0;
-	char buf[35];
-	strcpy(buf, l.mhide);
-	strcat(buf, "  (x)");
-	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_hide), buf);
-	gtk_menu_item_set_label(GTK_MENU_ITEM(item_msg_show), l.mshow);
 }
 
 void add_menubar() {

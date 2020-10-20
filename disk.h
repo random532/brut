@@ -1,6 +1,5 @@
 /*TODO:
  * - User Modify.
- * - globaler language pointer?
  * - Remove some global pointer, or move them into a structure?
  * */
  
@@ -28,12 +27,6 @@
 char columns[COLUMNS][26];
 #define COL 11
 char column[COL][25];
-
-	/* do we mount or gpart? Or something else? */
-#define MOUNT	0
-#define GPART	1
-#define FS	3
-int todo;
 
 #define POS_DISK	0
 #define POS_PART	1
@@ -63,6 +56,12 @@ int todo;
 #define POS_MODE	25
 #define POS_INDEX	26
 
+	/* do we mount or gpart? Or something else? */
+#define MOUNT	0
+#define GPART	1
+#define FS	3
+int todo;
+
 /* User tab treeview column header */
 #define UCOL 16
 char usercol[UCOL][25];
@@ -79,12 +78,14 @@ char usercol[UCOL][25];
 #define POS_USHELL		9
 
 
-	/* font size */
-char fontsize[10];
+/* Options */
+struct {
 
-	/* ask for confirmation 
-	 * before issueing a command */
-gboolean confirm;
+	char fontsize[10];	/* font size */
+	int language;		/* language */
+	gboolean confirm;	/* ask for confirmation */
+		
+} opt;
 
 	/* keep track of disks and partitions */
 char *all_disks;
@@ -92,7 +93,7 @@ char *all_slices;
 char *all_partitions;
 char *slices_on_a_disk;
 
-	/* global gtk pointer  */
+	/* Global GUI elements  */
 GtkWidget *window; 	/* main window */
 GtkWidget *fixed;
 GtkWidget *box;
@@ -122,11 +123,8 @@ GtkTreeStore *treestore1;
 GtkCellRenderer *cell;
 GtkCellRenderer *cellr;
 GtkWidget *menu;
-//GtkWidget *window_editor;
 GtkWidget *thegrid;
 GtkWidget *grid;
-GtkWidget * item_msg_hide;
-GtkWidget * item_msg_show;
 GtkWidget *b;
 GtkWidget *su;
 GtkWidget *passbuf;
@@ -154,7 +152,7 @@ GtkWidget *toggle_comp;
 GtkWidget *toggle_ask;
 GtkWidget *gfile;
 
-/* strings */
+/* Strings for different languages. */
 typedef struct {
 	
 	char overview[85]; 
@@ -214,6 +212,7 @@ typedef struct {
 	char uadd[20];
 	char uedit[20];
 	char uremove[20];
+	char uremove1[60];
 
 	/* About */
 	char about[200];

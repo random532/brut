@@ -59,8 +59,8 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 		}
 	}
 
-	submit(cmd, confirm);
-	if(confirm != 1)	/* keep it until user makes his choice */
+	submit(cmd, opt.confirm);
+	if(opt.confirm == FALSE)	/* keep it until user makes his choice */
 		free(cmd);
 	/* also redraw everything */
 end:	
