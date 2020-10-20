@@ -199,8 +199,8 @@ gboolean uclick(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
 	g_signal_connect(delu, "activate", G_CALLBACK(del_user), gtv);
 
 	/* Modify a user. */
-	GtkWidget *editu = gtk_menu_item_new_with_label(l.uedit);
-	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), editu);
+//	GtkWidget *editu = gtk_menu_item_new_with_label(l.uedit);
+//	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), editu);
 
 	gtk_widget_show_all(pop_menu);
 	gtk_menu_popup_at_pointer( GTK_MENU (pop_menu), NULL);
