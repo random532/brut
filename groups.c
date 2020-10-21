@@ -149,7 +149,7 @@ void remuser (GtkMenuItem *item, gpointer gtv) {
 		printf("Error in groups.c: malloc() returned NULL.\n");
 		return;
 	}
-	sprintf(cmd, "pw groupmod %s -m %s", groupname, user);
+	sprintf(cmd, "pw groupmod %s -d %s", groupname, user);
 	
 	/* GUI elements. */
 	gtk_widget_destroy(groupconfirm);
