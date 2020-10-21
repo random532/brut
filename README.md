@@ -42,6 +42,3 @@ Or build as a standalone binary:<br>
 
 6. How to uninstall?<br>
 run "pkg remove xdisk"<br><br>
-
-7. How do I mount/unmount?<br>
-Right-click on a partition. A popup menu will appear.<br><br>
