@@ -11,12 +11,6 @@ FAQ
 1. What is xdisk?<br>
 xdisk is a partition editor for FreeBSD with a graphical user interface.<br><br>
 
-2. How does it look?<br>
-![](screenshot/scrot_1.png)
-![](screenshot/scrot_2.png)
-![](screenshot/scrot_3.png)
-![](screenshot/scrot_4.png)
-
 2. What can I do with it?<br>
 You can..<br>
    - inspect hard disks, memory cards, sd cards<br>
