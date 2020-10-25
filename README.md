@@ -49,4 +49,4 @@ Or build as a standalone binary:<br>
 4. Start the binary (./xdisk).<br><br>
 
 6. How to uninstall?<br>
-run "pkg remove xdisk"<br><br>
+run "pkg remove xdisk".<br><br>
