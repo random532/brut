@@ -17,7 +17,7 @@ void execute_me(char *cmd) {
 			}
 		}
 	}
-	submit(cmd, 0);
+	execute_cmd(cmd, 0);
 	free(cmd);
 }
 
