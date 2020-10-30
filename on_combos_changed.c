@@ -12,6 +12,7 @@ void on_toplevel_changed() {
 		//msg("Error! gtk_combo_box_text_get_active_text is empty!");
 		return;
 	}
+
 	/* we don't need these any more */
 	if(tree != NULL) {
 		gtk_widget_destroy(tree);
@@ -21,7 +22,7 @@ void on_toplevel_changed() {
 		gtk_widget_destroy(tree1);
 		tree1 = NULL;
 	}
-	
+
 	/* what did user select? */
 	if(strncmp(string, l.overview, 25) == 0) {
 		/* display an overview of all disks */

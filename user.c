@@ -14,6 +14,7 @@ void add_cb (GtkButton *item, gpointer a) {
 	
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0) {
 
+		/* Get the entries. */
 		const gchar *gname = gtk_entry_get_text(GTK_ENTRY (useradd_entries.uname));
 		const gchar *ghome = gtk_entry_get_text(GTK_ENTRY (useradd_entries.uhome));
 		const gchar *gshell = gtk_entry_get_text(GTK_ENTRY (useradd_entries.ushell));
@@ -24,31 +25,76 @@ void add_cb (GtkButton *item, gpointer a) {
 			on_tabs_changed(NULL, NULL);
 			return;
 		}
-			
+
+		/* Build the command. */
 		char *cmd = malloc(strlen(gshell) + strlen(gname) + strlen(ghome) + strlen(gclass) + strlen(gpass) + 60);
+		if(cmd == NULL) {
+			printf("add_cb: malloc() failed\n");
+			on_tabs_changed(NULL, NULL);
+			return;
+		}
 
-		if(strlen(gpass) == 0) {
+		if(strlen(gpass) == 0) /* Password. */
 			sprintf(cmd, "pw useradd -n %s", gname);
-		}
-		else {
+		else
 			sprintf(cmd, "echo \"%s\" | sudo pw useradd -h 0 -n %s", gpass, gname);
-		}
 
-		if(strlen(ghome) != 0) {
+		if(strlen(ghome) != 0) { /* Home directory. */
 			strcat(cmd, " -d ");
 			strcat(cmd, ghome);
 		}
-		if(strlen(gshell) != 0) {
+		if(strlen(gshell) != 0) { /* Shell. */
 			strcat(cmd, " -s ");
 			strcat(cmd, gshell);
 		}
-		if(strlen(gclass) != 0) {
+		if(strlen(gclass) != 0) {	/* Login class. */
 			strcat(cmd, " -L ");
 			strcat(cmd, gclass);
 		}
-		
 		execute_me(cmd);
 	}
+	on_tabs_changed(NULL, NULL);
+}
+
+void edit_ok (GtkButton *item, gpointer user) {
+
+	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0) {
+
+		/* Get the entries. */
+		const gchar *gname = gtk_entry_get_text(GTK_ENTRY (useradd_entries.uname));
+		const gchar *ghome = gtk_entry_get_text(GTK_ENTRY (useradd_entries.uhome));
+		const gchar *gshell = gtk_entry_get_text(GTK_ENTRY (useradd_entries.ushell));
+		const gchar *gclass = gtk_entry_get_text(GTK_ENTRY (useradd_entries.uclass));
+
+		/* Build the command. */
+		char *cmd = malloc(strlen(gshell) + strlen(gname) + strlen(ghome) + strlen(gclass) + 60);
+		if(cmd == NULL) {
+			printf("edit_cb: malloc() failed\n");
+			on_tabs_changed(NULL, NULL);
+			return;
+		}
+
+		sprintf(cmd, "pw usermod -n %s", user);
+		
+		if(strlen(gname) != 0) {	/* New user name. */
+			strcat(cmd, " -l ");
+			strcat(cmd, gname);
+		}
+		if(strlen(gclass) != 0) {	/* Login class. */
+			strcat(cmd, " -L ");
+			strcat(cmd, gclass);
+		}
+		if(strlen(ghome) != 0) { /* Home directory. */
+			strcat(cmd, " -d ");
+			strcat(cmd, ghome);
+		}
+		if(strlen(gshell) != 0) { /* Shell. */
+			strcat(cmd, " -s ");
+			strcat(cmd, gshell);
+		}
+		execute_me(cmd);
+	}
+
 	on_tabs_changed(NULL, NULL);
 }
 
@@ -110,42 +156,37 @@ void add_user (GtkMenuItem *item, gpointer userview) {
 	gtk_grid_set_column_homogeneous(GTK_GRID(g), FALSE);
 	gtk_grid_set_column_spacing(GTK_GRID(g), 20);
 
-	gtk_grid_attach(GTK_GRID (g), gtk_label_new(l.uadd), 0, 0, 1, 1);
-
 	
-	GtkEntryBuffer *buf = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf, 50); // XXX: hardcode length?
-	GtkWidget *e = gtk_entry_new_with_buffer (buf);
+	GtkWidget *e = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(e), 50); // XXX: hardcode length?
 	gtk_entry_set_placeholder_text (GTK_ENTRY(e), usercol[POS_UNAME]);
-	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e), 0, 1, 1, 1);
 
-	GtkEntryBuffer *buf1 = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf1, 50); // XXX: hardcode length?
-	GtkWidget *e1 = gtk_entry_new_with_buffer (buf1);
+	GtkWidget *e1 = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(e1), 50); // XXX: hardcode length?
 	gtk_entry_set_placeholder_text (GTK_ENTRY(e1), usercol[POS_UHOME]);
-	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e1), 0, 2, 1, 1);
 	
-	GtkEntryBuffer *buf2 = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf2, 50); // XXX: hardcode length?
-	GtkWidget *e2 = gtk_entry_new_with_buffer (buf2);
+	GtkWidget *e2 = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(e2), 50); // XXX: hardcode length?
 	gtk_entry_set_placeholder_text (GTK_ENTRY(e2), usercol[POS_USHELL]);
-	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e2), 0, 3, 1, 1);
 
-	GtkEntryBuffer *buf3 = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf3, 50); // XXX: hardcode length?
-	GtkWidget *e3 = gtk_entry_new_with_buffer (buf3);
+	GtkWidget *e3 = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(e3), 50); // XXX: hardcode length?
 	gtk_entry_set_placeholder_text (GTK_ENTRY(e3), usercol[POS_UCLASS]);
-	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e3), 0, 4, 1, 1);
 	
-	GtkEntryBuffer *buf4 = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf4, 50); // XXX: hardcode length?
-	GtkWidget *e4 = gtk_entry_new_with_buffer (buf4);
+	GtkWidget *e4 = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(e4), 50); // XXX: hardcode length?
 	gtk_entry_set_placeholder_text (GTK_ENTRY(e4), "pw");
-	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e4), 0, 5, 1, 1);
-
 
 	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
 	GtkWidget *c = gtk_button_new_with_mnemonic(l.mabort);
+
+
+	gtk_grid_attach(GTK_GRID (g), gtk_label_new(l.uadd), 0, 0, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e), 0, 1, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e1), 0, 2, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e2), 0, 3, 1, 1);	
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e3), 0, 4, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e4), 0, 5, 1, 1);
 	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (o), 1, 7, 1, 1);
 	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (c), 2, 7, 1, 1);
 
@@ -157,8 +198,81 @@ void add_user (GtkMenuItem *item, gpointer userview) {
 
 	g_signal_connect(G_OBJECT (o), "clicked", G_CALLBACK (add_cb), NULL);
 	g_signal_connect(G_OBJECT (c), "clicked", G_CALLBACK (add_cb), NULL);
-	
+
 	gtk_widget_show_all(userbox);
+}
+
+void edit_user (GtkMenuItem *item, gpointer userview) {
+
+	/* Assemble user data. */
+	char *user = selected_item(userview, POS_UNAME);
+	char *home = selected_item(userview, POS_UHOME);
+	char *shell = selected_item(userview, POS_USHELL);
+	char *class = selected_item(userview, POS_UCLASS);
+
+	/* 
+	 * Create the GUI Elements with user data.
+	 */
+
+	GtkWidget *g = gtk_grid_new();
+	gtk_grid_insert_column(GTK_GRID(g), 5);
+	gtk_grid_set_column_homogeneous(GTK_GRID(g), FALSE);
+	gtk_grid_set_column_spacing(GTK_GRID(g), 20);
+
+	/* User name. */
+	GtkWidget *e = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(e), 50); // XXX: hardcoded?
+	gtk_entry_set_placeholder_text (GTK_ENTRY(e), usercol[POS_UNAME]);
+
+	/* Shell. */
+	GtkWidget *e1 = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(e1), 50); // XXX: hardcoded?
+	gtk_entry_set_placeholder_text (GTK_ENTRY(e1), usercol[POS_USHELL]);
+
+	/* Class. */
+	GtkWidget *e2 = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(e2), 50); // XXX: hardcoded?
+	gtk_entry_set_placeholder_text (GTK_ENTRY(e2), usercol[POS_UCLASS]);
+
+	/* Home directory. */
+	GtkWidget *e3 = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(e3), 50); // XXX: hardcoded?
+	gtk_entry_set_placeholder_text (GTK_ENTRY(e3), usercol[POS_UHOME]);
+
+	
+	useradd_entries.uname = e;
+	useradd_entries.ushell = e1;
+	useradd_entries.uclass = e2;
+	useradd_entries.uhome = e3;
+
+	
+	/* Two buttons. */
+	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
+	GtkWidget *c = gtk_button_new_with_mnemonic(l.mabort);
+	g_signal_connect(G_OBJECT (o), "clicked", G_CALLBACK (edit_ok), user);
+	g_signal_connect(G_OBJECT (c), "clicked", G_CALLBACK (edit_ok), user);
+
+	gtk_grid_attach(GTK_GRID (g), gtk_label_new(l.uedit), 1, 0, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), gtk_label_new(user), 0, 1, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), gtk_label_new(shell), 0, 4, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), gtk_label_new(class), 0, 3, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), gtk_label_new(home), 0, 5, 1, 1);
+	
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e), 1, 1, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e1), 1, 4, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e2), 1, 3, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (e3), 1, 5, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (o), 2, 6, 1, 1);
+	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (c), 3, 6, 1, 1);
+
+
+	/* Update GUI. */
+	gtk_widget_destroy(userbox);
+	userbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
+	gtk_box_pack_start(GTK_BOX (tab3), userbox, FALSE, FALSE, 0);
+	gtk_box_pack_start(GTK_BOX(userbox), g, FALSE, TRUE, 0);
+	gtk_widget_show_all(userbox);
+
 }
 
 gboolean uclick(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
@@ -187,20 +301,18 @@ gboolean uclick(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
 
 	/* Create the popup menu. */
 	GtkWidget *pop_menu = gtk_menu_new();
-	
-	/* Create new user. */
+
 	GtkWidget *newu = gtk_menu_item_new_with_label (l.uadd);
-	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), newu);
-	g_signal_connect(newu, "activate", G_CALLBACK(add_user), gtv);
-
-	/* Delete a user. */
 	GtkWidget *delu = gtk_menu_item_new_with_label(l.uremove);
+	GtkWidget *editu = gtk_menu_item_new_with_label(l.uedit);
+	
+	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), newu);
 	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), delu);
+	gtk_menu_shell_append(GTK_MENU_SHELL (pop_menu), editu);
+	
+	g_signal_connect(newu, "activate", G_CALLBACK(add_user), gtv);
 	g_signal_connect(delu, "activate", G_CALLBACK(del_user), gtv);
-
-	/* Modify a user. */
-//	GtkWidget *editu = gtk_menu_item_new_with_label(l.uedit);
-//	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), editu);
+	g_signal_connect(editu, "activate", G_CALLBACK(edit_user), gtv);
 
 	gtk_widget_show_all(pop_menu);
 	gtk_menu_popup_at_pointer( GTK_MENU (pop_menu), NULL);

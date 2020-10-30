@@ -12,11 +12,8 @@ void redraw_cb (GtkMenuItem *item, gpointer user_data) {
 
 void update_lang() {
 
-	update_column_lang(opt.language);
-	update_menubar_lang(opt.language);	
-	redraw_cb(NULL, NULL);
-	gtk_button_set_label(GTK_BUTTON (b) ,l.mrefresh);
-	
+	update_menubar_lang();	
+
 	/* Update tabs. */
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
@@ -26,14 +23,20 @@ void update_lang() {
 
 void change_lang_de (GtkMenuItem *item, gpointer la) {
 	
-	opt.language=LANG_DE;
-	update_lang();
+	if(opt.language != LANG_DE) {
+		opt.language = LANG_DE;
+		de_lang();
+		update_lang();
+	}
 }
 
 void change_lang_en (GtkMenuItem *item, gpointer user_data) {
 
-	opt.language=LANG_EN;
-	update_lang();
+	if(opt.language != LANG_EN) {
+		opt.language = LANG_EN;
+		en_lang();
+		update_lang();
+	}
 }
 
 void font_inc (GtkMenuItem *item, gpointer user_data) {    

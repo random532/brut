@@ -65,15 +65,16 @@ void del_group (GtkMenuItem *item, gpointer gtv) {
 	/* GUI elements. */
 	gtk_widget_destroy(groupconfirm);
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
-
-	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfodel));
-	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(groupname));
 
 	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
 	GtkWidget *c = gtk_button_new_with_mnemonic(l.mabort);
+	
+	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
+	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfodel));
+	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(groupname));
 	gtk_container_add(GTK_CONTAINER (groupconfirm), o);
 	gtk_container_add(GTK_CONTAINER (groupconfirm), c);
+	
 	g_signal_connect(G_OBJECT (o), "clicked", G_CALLBACK (button_pressed_cb), cmd);
 	g_signal_connect(G_OBJECT (c), "clicked", G_CALLBACK (button_pressed_cb), cmd);
 	
@@ -85,20 +86,21 @@ void new_group (GtkMenuItem *item, gpointer user_data) {
 	/* GUI elements. */
 	gtk_widget_destroy(groupconfirm);
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
+
+	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);	
 	
-	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfocreate));
-	
-	GtkEntryBuffer *buf = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (buf, 50); // XXX: hardcode length?
-	GtkWidget *e = gtk_entry_new_with_buffer (buf);
+	GtkWidget *e = gtk_entry_new();
+	gtk_entry_set_max_length(GTK_ENTRY(e), 50); // XXX: hardcoded?
 	gtk_entry_set_placeholder_text (GTK_ENTRY(e), "Name");
-	gtk_container_add(GTK_CONTAINER (groupconfirm), e);
 
 	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
 	GtkWidget *c = gtk_button_new_with_mnemonic(l.mabort);
+
+	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfocreate));
 	gtk_container_add(GTK_CONTAINER (groupconfirm), o);
 	gtk_container_add(GTK_CONTAINER (groupconfirm), c);
+	gtk_container_add(GTK_CONTAINER (groupconfirm), e);
+
 	g_signal_connect(G_OBJECT (o), "clicked", G_CALLBACK (new_group_cb), e);
 	g_signal_connect(G_OBJECT (c), "clicked", G_CALLBACK (new_group_cb), NULL);
 	
@@ -123,15 +125,18 @@ void adduser (GtkMenuItem *item, gpointer gtv) {
 	/* GUI elements. */
 	gtk_widget_destroy(groupconfirm);
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	
+	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
+	GtkWidget *c = gtk_button_new_with_mnemonic(l.mabort);
+	
 	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfoadduser1));
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(user));	
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfoadduser2));
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(groupname));
-	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
-	GtkWidget *c = gtk_button_new_with_mnemonic(l.mabort);
 	gtk_container_add(GTK_CONTAINER (groupconfirm), o);
 	gtk_container_add(GTK_CONTAINER (groupconfirm), c);
+	
 	g_signal_connect(G_OBJECT (c), "clicked", G_CALLBACK (button_pressed_cb), cmd);
 	g_signal_connect(G_OBJECT (o), "clicked", G_CALLBACK (button_pressed_cb), cmd);
 	gtk_widget_show_all(groupconfirm);
@@ -154,15 +159,18 @@ void remuser (GtkMenuItem *item, gpointer gtv) {
 	/* GUI elements. */
 	gtk_widget_destroy(groupconfirm);
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+
+	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
+	GtkWidget *c = gtk_button_new_with_mnemonic("No");
+
 	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginforemuser1));
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(user));	
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginforemuser2));
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(groupname));
-	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
-	GtkWidget *c = gtk_button_new_with_mnemonic("No");
 	gtk_container_add(GTK_CONTAINER (groupconfirm), o);
 	gtk_container_add(GTK_CONTAINER (groupconfirm), c);
+
 	g_signal_connect(G_OBJECT (c), "clicked", G_CALLBACK (button_pressed_cb), cmd);
 	g_signal_connect(G_OBJECT (o), "clicked", G_CALLBACK (button_pressed_cb), cmd);
 	gtk_widget_show_all(groupconfirm);
@@ -195,19 +203,22 @@ gboolean click(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
 	/* Create the popup menu. */
 	GtkWidget *pop_menu = gtk_menu_new();
 	
-	/* Create new group. */
+
 	GtkWidget *newg = gtk_menu_item_new_with_label (l.gnew);
+	GtkWidget *delg = gtk_menu_item_new_with_label(l.gdel);
+	GtkWidget *addg = gtk_menu_item_new_with_label(l.gadd);
+		
 	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), newg);
+	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), delg);
+	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), addg);
+
+	g_signal_connect(delg, "activate", G_CALLBACK(del_group), gtv);
 	g_signal_connect(newg, "activate", G_CALLBACK(new_group), NULL);
 
-	/* Delete a group. */
-	GtkWidget *delg = gtk_menu_item_new_with_label(l.gdel);
-	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), delg);
-	g_signal_connect(delg, "activate", G_CALLBACK(del_group), gtv);
 
-	/* Add a user to group. */
-	GtkWidget *addg = gtk_menu_item_new_with_label(l.gadd);
-	gtk_menu_shell_append (GTK_MENU_SHELL (pop_menu), addg);
+	/*
+	 *  A submenu for 'Add user to group'.
+	 */
 
 	char *cmd = "pw user show -a | awk '{gsub(/\\:/, \" \"); print $1}'";
 	char buf[50];
@@ -218,7 +229,7 @@ gboolean click(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
 		GtkWidget *addg_sub = gtk_menu_new();
 		gtk_menu_item_set_submenu (GTK_MENU_ITEM (addg), addg_sub);
 		
-		/* Get a line */
+
 		while( fgets(buf, sizeof buf, fp) ) {
 			
 			int len = strlen(buf);
@@ -232,7 +243,10 @@ gboolean click(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
 		pclose(fp);
 	}
 	
-	/* Remove user from group. */
+	/* 
+	 * A potential submenu 'Remove user from group'. 
+	 */
+
 	char *users = selected_item(gtv, 3);
 	
 	if((users != NULL) && (strlen(users) > 1)) {

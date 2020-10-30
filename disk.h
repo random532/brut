@@ -101,14 +101,16 @@ GtkWidget *box;
 GtkWidget *textbox;
 GtkWidget *logwindow;
 GtkTextBuffer *logs;
-GtkWidget *abox;
 
+GtkWidget *diskbox;
+GtkWidget *abox;
 GtkWidget *userbox;
 
 GtkWidget *groupbox;
 GtkWidget *groupconfirm;
 
 GtkWidget *tabs;
+GtkWidget *tab0;
 GtkWidget *tab1;
 GtkWidget *tab2;
 GtkWidget *tab3;
@@ -216,7 +218,7 @@ typedef struct {
 	char uremove1[60];
 
 	/* About */
-	char about[200];
+	char about[250];
 
 	/* Tab names. */
 	char tabgroup[10];
@@ -275,8 +277,7 @@ geom_data g;
 /* lang.c */
 void en_lang();
 void de_lang();
-void update_column_lang(int );
-void update_menubar_lang(int);
+void update_menubar_lang();
 
 /* EditorGridEntries.c */
 void create_combo_geom();
@@ -391,8 +392,6 @@ int volume_cmp(char *, char *);
 /* mainWindow.c */
 /* int main() */
 void top_window();
-void scrolled();
-void main_combo();
 void on_tabs_changed(GtkMenuItem *item, gpointer user_data);
 
 /* about.c */
@@ -404,6 +403,11 @@ void execute_me(char *);
 
 /* user.c */
 void users();
+
+/* disk.c */
+void scrolled();
+void main_combo();
+void disk();
 
 lang en;
 lang de;

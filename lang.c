@@ -62,9 +62,9 @@ lang en = {
 	.uremove1="Delete this user, including home directory?",
 
 	/* About */
-	.about="Hello.\nThis program makes use of GTK (GIMP Toolkit). See: www.gtk.org\n\n\
+	.about="Hello.\n\nThis program makes use of GTK (GIMP Toolkit). See: www.gtk.org\n\
 For bugs, questions, feedback, open an issue here: github.com/random532/xdisk/issues\n\
-The author.\n",
+Have fun,\nBrut.\n",
 
 	/* Tabs */
 	.tababout="About",
@@ -134,9 +134,9 @@ lang de = {
 	.uremove1="Benutzer entfernen (inklusive Heimatverzeichnis)?",
 
 	/* About tab */
-	.about="Hallo.\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\n\
+	.about="Hallo.\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\
 Bei Bugs, Fragen, Problemen, öffne ein Problemreport: github.com/random532/xdisk/issues\n\
-Der Autor.\n",
+Viel Spass,\nBrut.\n",
 
 	/* Tabs */
 	.tababout="Über",
@@ -262,33 +262,7 @@ void de_lang() {
 
 }
 
-void update_column_lang(int la) {
-
-	/* first update arrays */
-	if (la == LANG_DE)
-		de_lang();
-	else if (la == LANG_EN)
-		en_lang();
-
-	/* second update columns */
-	int n =0;
-	if(tree != NULL) {
-		while(n < COL) {
-			GtkTreeViewColumn   *col = gtk_tree_view_get_column( GTK_TREE_VIEW(tree), n);
-			gtk_tree_view_column_set_title(col, column[n]);
-			n++;	
-		}
-	}
-	else if(tree1 != NULL) {
-		while(n <COLUMNS) {
-			GtkTreeViewColumn *col  = gtk_tree_view_get_column( GTK_TREE_VIEW(tree1), n);
-			gtk_tree_view_column_set_title(col, columns[n]);
-			n++;	
-		}
-	}
-}
-
-void update_menubar_lang(int la) {
+void update_menubar_lang() {
 	gtk_widget_destroy(menu);
 	add_menubar();
 }
