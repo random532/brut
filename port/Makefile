@@ -1,11 +1,11 @@
 # $FreeBSD$
 
 PORTNAME=	xdisk
-DISTVERSION=	1.38
+DISTVERSION=	1.39
 CATEGORIES=	sysutils
 
 MAINTAINER=	georg.lastname@web.de
-COMMENT=	GUI for editing hard drives (partition editor), uses gtk3
+COMMENT=	Disk editor, partition editor with graphical user interface
 
 LICENSE=	BSD2CLAUSE
 
