@@ -1,8 +1,15 @@
 /* Group tab */
 #include "disk.h"
 
+void redraw_groups() {
+		gtk_widget_destroy(groupbox);
+		groups();
+}
+
 void execute_me(char *cmd) {
 	
+	todo = USR;
+
 	if(!root() )  { /* try sudo */
 		if(pw_needed() ) {
 			window_pw(cmd);
@@ -17,7 +24,7 @@ void execute_me(char *cmd) {
 			}
 		}
 	}
-	execute_cmd(cmd, 0);
+	submit(cmd, 0);
 	free(cmd);
 }
 
@@ -25,7 +32,7 @@ void button_pressed_cb (GtkButton *item, gpointer cmd) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 ) {
 		execute_me(cmd);
-		on_tabs_changed(NULL, NULL);
+		redraw_groups();
 	}
 	else {
 		free(cmd);
@@ -411,7 +418,7 @@ void groups() {
 	
 	/* A treeview that contains all groups. */
 	GtkWidget *gtree = group_treeview();
-	
+
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
 	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
 	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfoclick));

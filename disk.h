@@ -60,7 +60,9 @@ char column[COL][25];
 	/* do we mount or gpart? Or something else? */
 #define MOUNT	0
 #define GPART	1
-#define FS	3
+#define FS		3
+#define USR 	4
+
 int todo;
 
 /* User tab treeview column header */
@@ -130,7 +132,7 @@ GtkWidget *thegrid;
 GtkWidget *grid;
 GtkWidget *b;
 GtkWidget *su;
-GtkWidget *passbuf;
+//GtkWidget *passbuf;
 
 /* all items in the grid/editor window */
 GtkWidget *editor_sep;

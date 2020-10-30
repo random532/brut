@@ -1,5 +1,64 @@
 #include "disk.h"
 
+GtkWidget *p;
+
+void update_view() {
+	/* Update the view. */
+	gint n = gtk_notebook_get_current_page(GTK_NOTEBOOK (tabs));
+	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (tabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (tabs), n));
+	
+	if(strcmp(tab, "Disks") == 0) {
+	
+		/* redraw_cb() can be called. */
+		/* but this is nicer. */
+		on_toplevel_changed();
+		gtk_widget_destroy(thegrid);
+		editor();
+	}
+		
+	else if(strcmp(tab, l.tabgroup) == 0) {
+		gtk_widget_destroy(groupbox);
+		groups();
+	}
+
+	else if(strcmp(tab, l.tababout) == 0) {
+		gtk_widget_destroy(abox);
+		about();
+	}
+
+	else if(strcmp(tab, l.tabuser) == 0) {
+		gtk_widget_destroy(userbox);
+		users();
+	}	
+}
+
+void inform_user(int error, int sudo_failed, char *buf) {
+
+	/* 
+	 * Either print an extended error message, 
+	 * or a short error message, 
+	 * or success. 
+	 */
+	 
+	if((todo == MOUNT) || (todo == FS)) {
+		if(error == 0)
+			msg(l.mdone);
+		else {
+			if(sudo_failed == 1 )
+				msg("sudo: Sorry, try again.");
+			else
+				msg(l.merror);
+		}
+	}
+	else if((todo == GPART) || (todo == USR)) {
+		if(sudo_failed == 1 )
+			msg("sudo: Sorry, try again.");
+		else
+			msg(buf);
+	}
+
+}
+
 char *sudo( char *cmd, char *passw, int pw) {
 
 	if( (cmd == NULL) || (strlen(cmd) == 0) )
@@ -39,64 +98,40 @@ int pw_needed() {
 void c_cb(GtkMenuItem *item, gpointer cmd) {
 	
 	/* "Cancel" button */
+
 	if(cmd != NULL)
 		free(cmd);
-
-	char *hash = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
-	gtk_entry_set_text(GTK_ENTRY (passbuf),  hash);
 	gtk_widget_destroy(su);
-
-	on_toplevel_changed();
-	if(todo != MOUNT) {
-		gtk_widget_destroy(thegrid);
-		editor();
-	}
+	update_view();
 }
 
 void o_cb(GtkMenuItem *item, gpointer cmd) {
 		
-	/* "Okay" button */
+	/* "Okay" clicked. */
+
 	const gchar *pass;
 	char *error;
-	char *passw;
-	int len;
 	
-	pass = gtk_entry_get_text(GTK_ENTRY (passbuf));
-	len = strlen(pass);
-	if( (len == 0) || (len > 100 ) ) {
+	pass = gtk_entry_get_text(GTK_ENTRY (p));
+	if( (strlen(pass) > 0) && (strlen(pass) < 100 ) ) {
+
+		/* test password */
+		error = sudo_backend(cmd, (char *) pass);
+		if( error != NULL)
+			free(error);
+	}
+	else
 		msg(l.no_root);
-		goto bad;
-	}
-	
-	/* dont depend on gtk_entry text */
-	passw = malloc(len+10);
-	strncpy(passw, pass, len+1);
-	
-	/* test password */
-	error = sudo_backend(cmd, passw);
-	if( error != NULL) /* we dont need that string really */
-		free(error);
-	
-	free(passw);
-	gtk_widget_destroy(su);
-	on_toplevel_changed();
-	gtk_widget_destroy(thegrid);
-	editor();
 
+	gtk_widget_destroy(su);
+	update_view();
 	return;
-
-bad:	
-	if(cmd != NULL)
-		free(cmd);
-	gtk_widget_destroy(su);
-	on_toplevel_changed();
-	if(todo != MOUNT) {
-		gtk_widget_destroy(thegrid);
-		editor();
-	}
 }
 
 void window_pw(char *cmd) {
+	
+	if((cmd == NULL) || (strlen(cmd) == 0) || (strlen(cmd) > 50))
+		return;
 	
 	/* this window asks for root password */
 	su = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -106,16 +141,16 @@ void window_pw(char *cmd) {
 	gtk_window_set_default_size(GTK_WINDOW (su), 250, 100);
 	gtk_window_set_modal(GTK_WINDOW(su), TRUE);
 	
-	/* This will cause problems in Wayland */
 	gtk_window_set_transient_for(GTK_WINDOW(su), GTK_WINDOW(window)); 
 
+	/* This won't work in Wayland. */
 	gint x = 0, y = 0, width, height;
 	gtk_window_get_position (GTK_WINDOW(window), &x, &y);
 	gtk_window_get_size(GTK_WINDOW (window), &width, &height);
 	x = x +150;
 	y = y + 50;
 	gtk_window_move( GTK_WINDOW(su), x, y);
-	
+
 	/* a box */
 	GtkWidget *box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	gtk_container_add (GTK_CONTAINER (su), box);
@@ -128,14 +163,13 @@ void window_pw(char *cmd) {
 	gtk_grid_set_column_spacing(GTK_GRID(agrid), 85);
 	
 	/* type your password in here */
-	GtkEntryBuffer *pass = gtk_entry_buffer_new (NULL, 0);
-	gtk_entry_buffer_set_max_length (pass, 40);
-	passbuf = gtk_entry_new_with_buffer (pass);
+	p = gtk_entry_new();
+	gtk_entry_set_max_length (GTK_ENTRY(p), 40);
 
-	gtk_entry_set_visibility(GTK_ENTRY(passbuf), FALSE);
-	g_object_set(passbuf, "input-purpose", GTK_INPUT_PURPOSE_PASSWORD, NULL);
-	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(passbuf), TRUE, TRUE, 0);
-	g_signal_connect(passbuf, "activate", G_CALLBACK(o_cb), cmd);
+	gtk_entry_set_visibility(GTK_ENTRY(p), FALSE);
+	g_object_set(p, "input-purpose", GTK_INPUT_PURPOSE_PASSWORD, NULL);
+	gtk_box_pack_end (GTK_BOX (box), GTK_WIDGET(p), TRUE, TRUE, 0);
+	g_signal_connect(p, "activate", G_CALLBACK(o_cb), cmd);
 	
 	/* some labels */
 	GtkWidget *label2 = gtk_label_new(l.mpassw);
@@ -159,7 +193,7 @@ void window_pw(char *cmd) {
 
 	/* and go! */
 	gtk_widget_show_all(GTK_WIDGET(su) );
-	gtk_widget_grab_focus(GTK_WIDGET(passbuf));
+	gtk_widget_grab_focus(GTK_WIDGET(p));
 }
 
 char *sudo_backend(char *rcmd, char * password) {
@@ -251,25 +285,9 @@ char *sudo_backend(char *rcmd, char * password) {
 		
 	free(pw);
 	free(cmd);
-	
+
 	/* inform user */
-	
-	if( (todo == MOUNT) || (todo == FS) ) {
-		if(error == 0)
-			msg(l.mdone);
-		else {
-			if(sudo_failed == 1 )
-				msg("sudo: Sorry, try again.");
-			else
-				msg(l.merror);
-		}
-	}
-	else if(todo == GPART) {
-		if(sudo_failed == 1 )
-			msg("sudo: Sorry, try again.");
-		else
-			msg(buf);
-	}
+	inform_user(error, sudo_failed, buf);
 
 	return buf;
 }

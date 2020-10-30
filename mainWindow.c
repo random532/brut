@@ -22,6 +22,7 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 	
 	if(tab == NULL)
 		return;
+
 	else if(strcmp(tab, "Disks") == 0) {
 		if(diskbox) {
 			gtk_widget_destroy(diskbox);
@@ -46,6 +47,9 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 			gtk_widget_destroy(userbox);
 		users();
 	}
+
+	/* Clean up debug info. */
+	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow)), "      ", 6);
 }
 
 void add_tabs() {
@@ -76,6 +80,24 @@ void add_tabs() {
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
 	
 	g_signal_connect_after(G_OBJECT (tabs), "switch-page", G_CALLBACK(on_tabs_changed), NULL);
+}
+
+void add_text(GtkWidget *t) {
+		
+	/* 
+	 * Some debug info text at the bottom of a tab.
+	 */
+
+	textbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	logwindow = gtk_text_view_new();
+	
+	gtk_container_add (GTK_CONTAINER (t), textbox);
+	gtk_container_add(GTK_CONTAINER (textbox), logwindow);
+	
+	gtk_text_view_set_editable(GTK_TEXT_VIEW(logwindow), FALSE);
+	//gtk_text_view_set_top_margin(GTK_TEXT_VIEW(logwindow), 10); 
+	logs = gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow));
+	gtk_text_buffer_set_text(logs, "      ", 6);
 }
 
 int main(int argc, char *argv[]) {
@@ -132,9 +154,12 @@ int main(int argc, char *argv[]) {
 	fixed = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	gtk_container_add (GTK_CONTAINER (window), fixed);
 
-	/* The box has a menu bar, and Tabs: */
+	/* The box contains 3 items:
+	 * a menu bar, Tabs, and a debug info.
+	 */
 	add_menubar();
 	add_tabs();
+	add_text(fixed);
 	
 	/*  Let the user see everything. */
 	gtk_widget_show_all(window);

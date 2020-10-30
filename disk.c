@@ -57,23 +57,6 @@ void add_box() {
 	
 }
 
-void add_text() {
-		
-	/* 
-	 * Some debug info text at the bottom af the first tab.
-	 */
-
-	textbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-	gtk_container_add (GTK_CONTAINER (diskbox), textbox);
-
-	logwindow = gtk_text_view_new();
-	gtk_container_add(GTK_CONTAINER (textbox), logwindow);
-	gtk_text_view_set_editable(GTK_TEXT_VIEW(logwindow), FALSE);
-	//gtk_text_view_set_top_margin(GTK_TEXT_VIEW(logwindow), 10); 
-	logs = gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow));
-	gtk_text_buffer_set_text(logs, "      ", 6);
-}
-
 void disk() {
 		
 	/* A top level container. */
@@ -83,7 +66,7 @@ void disk() {
 	/* It has three boxes. */
 	add_grid();
 	add_box();
-	add_text();
+//	add_text(diskbox);
 
 	/* Populate the scrolled window once. */
 	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);

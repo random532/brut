@@ -10,6 +10,12 @@ struct {
 	GtkWidget *ufullname;
 } useradd_entries;
 
+
+void redraw_user() {
+		gtk_widget_destroy(userbox);
+		users();
+}
+
 void add_cb (GtkButton *item, gpointer a) {
 	
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0) {
@@ -22,7 +28,7 @@ void add_cb (GtkButton *item, gpointer a) {
 		const gchar *gpass = gtk_entry_get_text(GTK_ENTRY (useradd_entries.upassw));
 		
 		if(strlen(gname) == 0) {
-			on_tabs_changed(NULL, NULL);
+			redraw_user();
 			return;
 		}
 
@@ -30,7 +36,7 @@ void add_cb (GtkButton *item, gpointer a) {
 		char *cmd = malloc(strlen(gshell) + strlen(gname) + strlen(ghome) + strlen(gclass) + strlen(gpass) + 60);
 		if(cmd == NULL) {
 			printf("add_cb: malloc() failed\n");
-			on_tabs_changed(NULL, NULL);
+			redraw_user();
 			return;
 		}
 
@@ -53,7 +59,7 @@ void add_cb (GtkButton *item, gpointer a) {
 		}
 		execute_me(cmd);
 	}
-	on_tabs_changed(NULL, NULL);
+	redraw_user();
 }
 
 void edit_ok (GtkButton *item, gpointer user) {
@@ -70,7 +76,7 @@ void edit_ok (GtkButton *item, gpointer user) {
 		char *cmd = malloc(strlen(gshell) + strlen(gname) + strlen(ghome) + strlen(gclass) + 60);
 		if(cmd == NULL) {
 			printf("edit_cb: malloc() failed\n");
-			on_tabs_changed(NULL, NULL);
+			redraw_user();
 			return;
 		}
 
@@ -95,14 +101,14 @@ void edit_ok (GtkButton *item, gpointer user) {
 		execute_me(cmd);
 	}
 
-	on_tabs_changed(NULL, NULL);
+	redraw_user();
 }
 
 void delete_ok (GtkButton *item, gpointer cmd) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 )
 		execute_me(cmd);
-	on_tabs_changed(NULL, NULL);
+	redraw_user();
 }
 
 void del_user (GtkMenuItem *item, gpointer userview) {

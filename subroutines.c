@@ -342,10 +342,12 @@ int execute_cmd(char * cmd, int inform) {
 		msg("couldnt popen");
 	
 	char info[200];
+	memset(info, 0, 200);
+
 	while( fgets(info, sizeof info, fp)) { /* pointless? */
 		
 		}
-	if(inform == 1)
+	if((inform == 1) && (strlen(info) != 0))
 		msg(info);
 	int suc = pclose(fp); /* /256 */;
 		
@@ -571,19 +573,21 @@ int submit(char *cmd, int conf) {
 	
 	int error = 0;
 	
-	if( todo == MOUNT) {
+	if((todo == MOUNT) || (todo == USR)) {
 		error = execute_cmd(cmd, 0);
 		if(error == 0)
 			msg(l.mdone);
 		else
 			msg(l.merror);
 	}
-	else if( todo == GPART) {
+	
+	else if(todo == GPART) {
 		if(conf == 1)
 			ask(cmd);
 		else
 			error = execute_cmd(cmd, 1);
 	}
+	
 	else if(todo == FS) {
 		if( conf == 1)
 			ask(cmd);
