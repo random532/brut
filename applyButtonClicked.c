@@ -372,14 +372,14 @@ char *gpart_filesystem( char *cmd) {
 	/* what did user chose? */
 
 	if(strncmp(gf, "ufs2", 4) == 0) {
-		strncat(cmd, "newfs ", 7);
+		strcat(cmd, "newfs -T ");
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_journal)) == TRUE)
 			strncat(cmd, "-J ", 4);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_soft)) == TRUE)
 			strncat(cmd, "-U ", 4);
 		const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
 		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
-			strncat(cmd, " -l ", 4);
+			strncat(cmd, " -L ", 4);
 			strcat(cmd, glabel);
 			strncat(cmd, " ", 1);
 		}
