@@ -1,6 +1,8 @@
 /* Group tab */
 #include "disk.h"
 
+GtkWidget *groupconfirm; /* a box positioned right next to the treeview. */
+
 void redraw_groups() {
 		gtk_widget_destroy(groupbox);
 		groups();

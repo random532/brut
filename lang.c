@@ -36,6 +36,16 @@ lang en = {
 	.mpassw="Enter your sudo password!",
 	.mexplain="This command needs higher privileges.",
 
+	/* Control Panel */
+	.ctitle="<b>Control Panel</b>",
+	.chardware="Hardware",
+	.cdisks="<a href=\" \"> disks</a>",
+	.caccount="Account Management",
+	.cuser="<a href=\" \"> User</a>",
+	.cgroups="<a href=\" \"> Groups</a>",
+	.ctime1="Clock, Date, Timezone",
+	.ctime2="<a href=\" \"> Time</a>",
+
 	/* groups */
 	.gname="Name",
 	.gpassword="Password",
@@ -67,9 +77,12 @@ For bugs, questions, feedback, open an issue here: github.com/random532/xdisk/is
 Have fun,\nBrut.\n",
 
 	/* Tabs */
+	.tabcontrol="Control",
+	.tabdisks="Disks",
 	.tababout="About",
 	.tabgroup="Groups",
-	.tabuser="User"
+	.tabuser="User",
+	.tabtime="Time"
 
 };
 
@@ -107,7 +120,17 @@ lang de = {
 	.mrescan="Zeige Dateisysteme",
 	.mpassw="Geben Sie Ihr Sudo Passwort ein!",
 	.mexplain="Dieser Befehl braucht mehr Berechtigungen.",
-	
+
+	/* Control Panel */
+	.ctitle="<b>Systemsteuerung</b>",
+	.chardware="Hardware",
+	.cdisks="<a href=\" \"> Disks</a>",
+	.caccount="Account Management",
+	.cuser="<a href=\" \"> Benutzer</a>",
+	.cgroups="<a href=\" \"> Gruppen</a>",
+	.ctime1="Uhrzeit, Datum, Zeitzone",
+	.ctime2="<a href=\" \"> Zeit</a>",
+
 	/* groups */
 	.gname="Name",
 	.gpassword="Passwort",
@@ -134,14 +157,17 @@ lang de = {
 	.uremove1="Benutzer entfernen (inklusive Heimatverzeichnis)?",
 
 	/* About tab */
-	.about="Hallo.\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\
+	.about="Hallo.\n\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\
 Bei Bugs, Fragen, Problemen, öffne ein Problemreport: github.com/random532/xdisk/issues\n\
 Viel Spass,\nBrut.\n",
 
 	/* Tabs */
+	.tabcontrol="System",
+	.tabdisks="Disks",
 	.tababout="Über",
 	.tabgroup="Gruppen",
-	.tabuser="Benutzer"
+	.tabuser="Benutzer",
+	.tabtime="Uhrzeit"
 };
 
 void en_lang() {

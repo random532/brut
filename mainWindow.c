@@ -4,7 +4,7 @@
 void top_window() {
 	/* main window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (window), "Lazy Admin");
+	gtk_window_set_title (GTK_WINDOW (window), "Best Admin ever");
 	gtk_widget_set_size_request (window, 800, 450); /* width, height */
 	gtk_window_set_position (GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
@@ -23,7 +23,13 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 	if(tab == NULL)
 		return;
 
-	else if(strcmp(tab, "Disks") == 0) {
+	else if(strcmp(tab, l.tabcontrol) == 0) {
+		if(controlbox)
+			gtk_widget_destroy(controlbox);
+		control();
+	}
+	
+	else if(strcmp(tab, l.tabdisks) == 0) {
 		if(diskbox) {
 			gtk_widget_destroy(diskbox);
 			tree = NULL;
@@ -47,6 +53,13 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 			gtk_widget_destroy(userbox);
 		users();
 	}
+	
+	else if(strcmp(tab, l.tabtime) == 0) {
+		if(timebox)
+			gtk_widget_destroy(timebox);
+		timetab();
+	}
+	
 
 	/* Clean up debug info. */
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow)), "      ", 6);
@@ -54,7 +67,10 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 
 void add_tabs() {
 	
-	/* Add (empty) tabs to the main window. */
+	/* 
+	 * Add tabs to the main window. 
+	 * The tabs are empty for now.
+	 */
 	
 	tabs = gtk_notebook_new();
 	gtk_notebook_set_show_border(GTK_NOTEBOOK (tabs), FALSE);
@@ -64,19 +80,19 @@ void add_tabs() {
 	tab1 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab2 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-	//tab4 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tab4 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab5 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	
 	gtk_container_set_border_width(GTK_CONTAINER (tab1), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab2), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab3), 10);
-	//gtk_container_set_border_width(GTK_CONTAINER (tab4), 10);
+	gtk_container_set_border_width(GTK_CONTAINER (tab4), 10);
 
-	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab0, gtk_label_new("Control"));
-	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab1, gtk_label_new("Disks"));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab0, gtk_label_new(l.tabcontrol));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab1, gtk_label_new(l.tabdisks));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
-	//gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab4, gtk_label_new("Empty"));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab4, gtk_label_new(l.tabtime));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
 	
 	g_signal_connect_after(G_OBJECT (tabs), "switch-page", G_CALLBACK(on_tabs_changed), NULL);
@@ -88,16 +104,14 @@ void add_text(GtkWidget *t) {
 	 * Some debug info text at the bottom of a tab.
 	 */
 
-	textbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+	GtkWidget *textbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	logwindow = gtk_text_view_new();
 	
 	gtk_container_add (GTK_CONTAINER (t), textbox);
 	gtk_container_add(GTK_CONTAINER (textbox), logwindow);
 	
 	gtk_text_view_set_editable(GTK_TEXT_VIEW(logwindow), FALSE);
-	//gtk_text_view_set_top_margin(GTK_TEXT_VIEW(logwindow), 10); 
-	logs = gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow));
-	gtk_text_buffer_set_text(logs, "      ", 6);
+	gtk_text_buffer_set_text(GTK_TEXT_BUFFER (gtk_text_view_get_buffer(GTK_TEXT_VIEW(logwindow))), "      ", 6);
 }
 
 int main(int argc, char *argv[]) {

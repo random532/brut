@@ -1,9 +1,8 @@
-/*TODO:
- * - User Modify.
- * - Remove some global pointers.
+/*
+ * TODO:
  * -Doublecheck all buffers that handle user input.
- * */
- 
+ */
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -99,18 +98,12 @@ char *slices_on_a_disk;
 	/* Global GUI elements  */
 GtkWidget *window; 	/* main window */
 GtkWidget *fixed;
-GtkWidget *box;
-GtkWidget *textbox;
+
+/* More toplevel widgets */
+GtkWidget *menu;
 GtkWidget *logwindow;
-GtkTextBuffer *logs;
 
-GtkWidget *diskbox;
-GtkWidget *abox;
-GtkWidget *userbox;
-
-GtkWidget *groupbox;
-GtkWidget *groupconfirm;
-
+/* All tabs */
 GtkWidget *tabs;
 GtkWidget *tab0;
 GtkWidget *tab1;
@@ -119,6 +112,16 @@ GtkWidget *tab3;
 GtkWidget *tab4;
 GtkWidget *tab5;
 
+/* Each tab has one box that serves as a reference point. */
+GtkWidget *controlbox;	/* Control */
+GtkWidget *diskbox; 	/* Disks */
+GtkWidget *abox;		/* About */
+GtkWidget *userbox;		/* User */
+GtkWidget *groupbox;	/* Groups */
+GtkWidget *timebox;		/* Time */
+
+/* More disk related widgets */
+GtkWidget *box;
 GtkWidget *scrolled_window;
 GtkWidget *combo_toplevel;
 GtkWidget *tree;		/* all disks are displayed here */
@@ -127,12 +130,11 @@ GtkTreeStore *treestore;
 GtkTreeStore *treestore1;	
 GtkCellRenderer *cell;
 GtkCellRenderer *cellr;
-GtkWidget *menu;
+
 GtkWidget *thegrid;
 GtkWidget *grid;
 GtkWidget *b;
 GtkWidget *su;
-//GtkWidget *passbuf;
 
 /* all items in the grid/editor window */
 GtkWidget *editor_sep;
@@ -194,7 +196,17 @@ typedef struct {
 	char mpassw[50];
 	char mexplain[60];
 
-	/* Group options. */
+	/* Control panel */
+	char ctitle[30];
+	char chardware[20];
+	char cdisks[30];
+	char caccount[30];
+	char cuser[30];
+	char cgroups[30];
+	char ctime1[40];
+	char ctime2[30];
+	
+	/* Group options */
 	char gname[10];
 	char gid[10];
 	char gmember[15];
@@ -223,11 +235,13 @@ typedef struct {
 	char about[250];
 
 	/* Tab names. */
+	char tabcontrol[10];
+	char tabdisks[10];
 	char tabgroup[10];
 	char tababout[10];
 	char tabuser[10];
+	char tabtime[10];
 } lang;
-
 lang l;
 
 typedef struct {
@@ -269,7 +283,6 @@ char *consumer_mode;
 char *consumer_sectorsize;
 
 } geom_data;
-
 geom_data g;
 
 	/* (most) functions */
@@ -410,6 +423,9 @@ void users();
 void scrolled();
 void main_combo();
 void disk();
+
+void control();		/* control.c */
+void timetab();		/* time.c */
 
 lang en;
 lang de;

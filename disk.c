@@ -63,10 +63,9 @@ void disk() {
 	diskbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 	gtk_container_add (GTK_CONTAINER (tab1), diskbox);
 
-	/* It has three boxes. */
+	/* It has two boxes. */
 	add_grid();
 	add_box();
-//	add_text(diskbox);
 
 	/* Populate the scrolled window once. */
 	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);

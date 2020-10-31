@@ -7,7 +7,7 @@ void redraw_cb (GtkMenuItem *item, gpointer user_data) {
 	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);
 	gtk_widget_destroy(thegrid);
 	editor();
-	gtk_text_buffer_set_text(logs, "          ", 10);
+	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logwindow))), "          ", 10);
 }
 
 void update_lang() {
@@ -15,9 +15,13 @@ void update_lang() {
 	update_menubar_lang();	
 
 	/* Update tabs. */
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab0, gtk_label_new(l.tabcontrol));
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab1, gtk_label_new(l.tabdisks));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab4, gtk_label_new(l.tabtime));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
+
 	on_tabs_changed(NULL, NULL);
 }
 

@@ -197,7 +197,7 @@ void window_pw(char *cmd) {
 }
 
 char *sudo_backend(char *rcmd, char * password) {
-	
+
 	/*
 	 * The sudo backend.
 	 * 

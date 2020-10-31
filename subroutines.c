@@ -229,7 +229,7 @@ void change_fontsize(int increase) {
 		fsize = fsize -1;
 
 	sprintf(opt.fontsize,"%ld", fsize);
-	on_toplevel_changed();
+	on_tabs_changed(NULL, NULL);
 }
 
 /* add a string to an existing string */
@@ -357,14 +357,10 @@ int execute_cmd(char * cmd, int inform) {
 	/* popup a message box */
 void msg(char *blah) {
 	
+
 	int len = strlen(blah);
-	gtk_text_buffer_set_text(logs, blah, len);
-	/* GtkWidget *message = gtk_message_dialog_new(GTK_WINDOW (window), GTK_DIALOG_MODAL, GTK_MESSAGE_INFO, GTK_BUTTONS_OK, "%s", blah);
-	gtk_window_set_modal(GTK_WINDOW (message), TRUE);
-	gtk_window_set_transient_for(GTK_WINDOW (message), GTK_WINDOW(window));
-	gtk_widget_show(message);
-	g_signal_connect(message, "response", G_CALLBACK(on_response), NULL);
-	*/
+	if(len > 0)
+		gtk_text_buffer_set_text(GTK_TEXT_BUFFER (gtk_text_view_get_buffer(GTK_TEXT_VIEW(logwindow))), blah, len);
 }
 
 void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
