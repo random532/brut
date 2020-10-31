@@ -14,6 +14,7 @@ xdisk is a partition editor for FreeBSD with a graphical user interface.<br><br>
 2. How does it look?<br>
 
 Screenshots in wayland/hikari:
+![](screenshot/grim8.png)
 ![](screenshot/grim1.png)
 ![](screenshot/grim4.png)
 
