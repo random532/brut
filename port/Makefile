@@ -1,11 +1,11 @@
 # $FreeBSD$
 
 PORTNAME=	xdisk
-DISTVERSION=	1.39
+DISTVERSION=	1.40
 CATEGORIES=	sysutils
 
 MAINTAINER=	georg.lastname@web.de
-COMMENT=	Disk editor, partition editor with graphical user interface
+COMMENT=	Partition editor with GUI, manage groups/user
 
 LICENSE=	BSD2CLAUSE
 
