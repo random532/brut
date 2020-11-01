@@ -245,6 +245,7 @@ typedef struct {
 	char tsecond[10];
 	char ttimezone[20];
 	char ttitle[30];
+	char ttooltip[40];
 
 	/* About */
 	char about[250];
