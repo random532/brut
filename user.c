@@ -208,7 +208,7 @@ void add_user (GtkMenuItem *item, gpointer userview) {
 	gtk_widget_show_all(userbox);
 }
 
-void edit_user (GtkMenuItem *item, gpointer userview) {
+void edit_user(GtkMenuItem *item, gpointer userview) {
 
 	/* Assemble user data. */
 	char *user = selected_item(userview, POS_UNAME);
@@ -216,10 +216,9 @@ void edit_user (GtkMenuItem *item, gpointer userview) {
 	char *shell = selected_item(userview, POS_USHELL);
 	char *class = selected_item(userview, POS_UCLASS);
 
-	/* 
-	 * Create the GUI Elements with user data.
-	 */
+	/* GUI elements */
 
+	/* A grid */
 	GtkWidget *g = gtk_grid_new();
 	gtk_grid_insert_column(GTK_GRID(g), 5);
 	gtk_grid_set_column_homogeneous(GTK_GRID(g), FALSE);
@@ -245,19 +244,19 @@ void edit_user (GtkMenuItem *item, gpointer userview) {
 	gtk_entry_set_max_length(GTK_ENTRY(e3), 50); // XXX: hardcoded?
 	gtk_entry_set_placeholder_text (GTK_ENTRY(e3), usercol[POS_UHOME]);
 
-	
+	/* Be visible to callback functions. */
 	useradd_entries.uname = e;
 	useradd_entries.ushell = e1;
 	useradd_entries.uclass = e2;
 	useradd_entries.uhome = e3;
 
-	
 	/* Two buttons. */
 	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
 	GtkWidget *c = gtk_button_new_with_mnemonic(l.mabort);
 	g_signal_connect(G_OBJECT (o), "clicked", G_CALLBACK (edit_ok), user);
 	g_signal_connect(G_OBJECT (c), "clicked", G_CALLBACK (edit_ok), user);
 
+	/* Attach everything. */
 	gtk_grid_attach(GTK_GRID (g), gtk_label_new(l.uedit), 1, 0, 1, 1);
 	gtk_grid_attach(GTK_GRID (g), gtk_label_new(user), 0, 1, 1, 1);
 	gtk_grid_attach(GTK_GRID (g), gtk_label_new(shell), 0, 4, 1, 1);
@@ -271,14 +270,12 @@ void edit_user (GtkMenuItem *item, gpointer userview) {
 	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (o), 2, 6, 1, 1);
 	gtk_grid_attach(GTK_GRID (g), GTK_WIDGET (c), 3, 6, 1, 1);
 
-
-	/* Update GUI. */
+	/* Destroy the treeview, and show our new stuff. */
 	gtk_widget_destroy(userbox);
 	userbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 	gtk_box_pack_start(GTK_BOX (tab3), userbox, FALSE, FALSE, 0);
 	gtk_box_pack_start(GTK_BOX(userbox), g, FALSE, TRUE, 0);
 	gtk_widget_show_all(userbox);
-
 }
 
 gboolean uclick(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
@@ -426,7 +423,7 @@ void users() {
 	gtk_container_add (GTK_CONTAINER (tab3), userbox);
 	
 	/* A treeview that contains all users. */
-	GtkWidget *utree = user_treeview();
+	user_treeview();
 
 	gtk_widget_show_all(userbox);
 }
