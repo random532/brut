@@ -10,13 +10,12 @@ struct {
 	GtkWidget *ufullname;
 } useradd_entries;
 
-
 void redraw_user() {
 		gtk_widget_destroy(userbox);
 		users();
 }
 
-void add_cb (GtkButton *item, gpointer a) {
+void add_cb(GtkButton *item, gpointer a) {
 	
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0) {
 
@@ -62,7 +61,7 @@ void add_cb (GtkButton *item, gpointer a) {
 	redraw_user();
 }
 
-void edit_ok (GtkButton *item, gpointer user) {
+void edit_ok(GtkButton *item, gpointer user) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0) {
 
@@ -104,7 +103,7 @@ void edit_ok (GtkButton *item, gpointer user) {
 	redraw_user();
 }
 
-void delete_ok (GtkButton *item, gpointer cmd) {
+void delete_ok(GtkButton *item, gpointer cmd) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 )
 		execute_me(cmd, USR);
@@ -146,7 +145,7 @@ void del_user (GtkMenuItem *item, gpointer userview) {
 	gtk_widget_show_all(userbox);
 }
 
-void add_user (GtkMenuItem *item, gpointer userview) {
+void add_user(GtkMenuItem *item, gpointer userview) {
 
 	/* 
 	 * GUI elements for adding a user.
@@ -405,7 +404,7 @@ GtkWidget *user_treeview() {
 		}
 		
 		gtk_tree_store_set(t, &iter, cnt, line, -1);
-			
+
 		if(cnt == 9) {
 			gtk_tree_store_append(t, &iter, NULL);
 			cnt = 0;
