@@ -82,6 +82,7 @@ lang en = {
 	.tsecond="second",
 	.ttimezone="Timezone",
 	.ttitle="Clock, Date, Timezone",
+	.ttooltip="Takes effect after next logout/login",
 
 	/* About */
 	.about="Hello.\n\nThis program makes use of GTK (GIMP Toolkit). See: www.gtk.org\n\
@@ -179,6 +180,7 @@ lang de = {
 	.tsecond="Sekunde",
 	.ttimezone="Zeitzone",
 	.ttitle="Uhrzeit, Datum, Zeitzone",
+	.ttooltip="Erfordert logout/login",
 
 	/* About tab */
 	.about="Hallo.\n\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\
