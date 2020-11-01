@@ -8,6 +8,14 @@ void redraw_groups() {
 		groups();
 }
 
+void redraw_groupconfirm() {
+		gtk_widget_destroy(groupconfirm);
+		groupconfirm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
+		gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
+		gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfoclick));
+		gtk_widget_show_all(groupconfirm);
+}
+
 void execute_me(char *cmd, int what) {
 	
 	todo = what;
@@ -30,20 +38,19 @@ void execute_me(char *cmd, int what) {
 	free(cmd);
 }
 
-void button_pressed_cb (GtkButton *item, gpointer cmd) {
+void button_pressed_cb(GtkButton *item, gpointer cmd) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 ) {
 		execute_me(cmd, USR);
 		redraw_groups();
 	}
-	else {
+	else { /* Cancel clicked */
 		free(cmd);
-		gtk_widget_destroy(groupconfirm);
-		groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+		redraw_groupconfirm();	
 	}
 }
 
-void new_group_cb (GtkButton *item, gpointer e) {
+void new_group_cb(GtkButton *item, gpointer e) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 ) {
 		
@@ -52,13 +59,13 @@ void new_group_cb (GtkButton *item, gpointer e) {
 		char *cmd = malloc(len +20);
 		sprintf(cmd, "pw groupadd %s", newname);
 		execute_me(cmd, USR);
+		redraw_groups();
 	}
-
-	gtk_widget_destroy(groupconfirm);
-	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	else /* Cancel clicked */
+		redraw_groupconfirm();
 }
 
-void del_group (GtkMenuItem *item, gpointer gtv) {
+void del_group(GtkMenuItem *item, gpointer gtv) {
 	
 	char *groupname = selected_item(gtv, 0);
 	int len = strlen(groupname);
@@ -90,7 +97,7 @@ void del_group (GtkMenuItem *item, gpointer gtv) {
 	gtk_widget_show_all(groupconfirm);
 }
 
-void new_group (GtkMenuItem *item, gpointer user_data) {
+void new_group(GtkMenuItem *item, gpointer user_data) {
 
 	/* GUI elements. */
 	gtk_widget_destroy(groupconfirm);
@@ -116,7 +123,7 @@ void new_group (GtkMenuItem *item, gpointer user_data) {
 	gtk_widget_show_all(groupconfirm);
 }
 
-void adduser (GtkMenuItem *item, gpointer gtv) {
+void adduser(GtkMenuItem *item, gpointer gtv) {
 	
 	const char *user = gtk_menu_item_get_label(item);
 	char *groupname = selected_item(gtv, 0);
@@ -270,7 +277,7 @@ gboolean click(GtkWidget *gtv, GdkEventButton *event, gpointer userdata) {
 		sprintf(cmd2, "echo %s | awk '{gsub(/\\,/, \"\\n\"); printf}'", users);
 		char buffer[100];
 	
-		FILE * f = popen(cmd2, "r");
+		FILE *f = popen(cmd2, "r");
 
 		while( fgets(buffer, sizeof buffer, fp) ) {
 			int l = strlen(buffer);
@@ -421,8 +428,6 @@ void groups() {
 	/* A treeview that contains all groups. */
 	GtkWidget *gtree = group_treeview();
 
-	groupconfirm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
-	gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfoclick));
-	gtk_widget_show_all(groupbox);
+	/* A window that asks for confirmation. */
+	redraw_groupconfirm();
 }
