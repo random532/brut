@@ -24,15 +24,16 @@
 
 char *get_current_time() {
 
-	FILE * fp = popen("date +%Y:%m:%d:%H:%M:%S", "r");
-	if (fp == NULL)
+	FILE *fp = popen("date +%Y:%m:%d:%H:%M:%S", "r");
+	if (fp == NULL) {
 		msg("couldnt popen");
+		return NULL;
+	}
 	
 	char *info = malloc(100);
 	if(info == NULL)
 		return NULL;
 	memset(info, 0, 100);
-
 	fgets(info, 100, fp);
 
 	if(info[0] == '\0') {
@@ -47,7 +48,7 @@ char *get_current_time() {
 void write_time_to_widgets() {
 
 	char *thetime;
-	char *sep =":";
+	char *sep = ":";
 	char *brk;
 	char *snippet;
 
@@ -92,7 +93,6 @@ gint timeup_cb(gpointer data) {
 		return FALSE;
 	}
 
-
 	write_time_to_widgets();
 	return TRUE;
 }
@@ -100,7 +100,7 @@ gint timeup_cb(gpointer data) {
 char *get_timezone() {
 
 	time_t currtime= time(NULL);
-	struct tm* t = localtime(&currtime);
+	struct tm *t = localtime(&currtime);
 	
 	if(t != NULL)
 		return t->tm_zone;
@@ -194,9 +194,10 @@ void region_changed() {
 	sprintf(cmd, "ls /usr/share/zoneinfo/%s", string);
 
 	FILE * fp = popen(cmd, "r");
-	if (fp == NULL)
+	if (fp == NULL) {
 		msg("couldnt popen");
-	
+		return;
+	}
 	char info[200];
 	memset(info, 0, 200);
 
@@ -216,9 +217,10 @@ void region_changed() {
 void fill_region() {
 
 	FILE * fp = popen("ls /usr/share/zoneinfo", "r");
-	if (fp == NULL)
+	if (fp == NULL) {
 		msg("couldnt popen");
-	
+		return;
+	}
 	char info[200];
 	memset(info, 0, 200);
 
@@ -229,9 +231,7 @@ void fill_region() {
 			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (gregion), NULL, info);
 		}
 	}
-
 	pclose(fp);
-
 }
 
 void add_time() {
@@ -247,7 +247,6 @@ void add_time() {
 	gtk_grid_set_column_spacing(GTK_GRID(gtime), 5);
 	gtk_box_pack_start(GTK_BOX(timebox), gtime, FALSE, FALSE, 0);
 
-	
 	/* Grid entries */
 
 	/* First row */
@@ -335,7 +334,6 @@ void add_timezone() {
 
 	gtk_container_add(GTK_CONTAINER (timebox), gtk_separator_new(GTK_ORIENTATION_HORIZONTAL));
 	gtk_container_add(GTK_CONTAINER (timebox), gtk_label_new(l.ttimezone));
-	
 
 	/* A grid. */
 	GtkWidget *gtime = gtk_grid_new();	
@@ -358,7 +356,6 @@ void add_timezone() {
 	g_signal_connect(gregion, "changed", G_CALLBACK (region_changed), NULL);
 	gtk_grid_attach(GTK_GRID (gtime), gregion, 1, 0, 1, 1);
 
-
 	/* Country combo box */
 	gcountry = gtk_combo_box_text_new();
 	gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(gcountry), 3);
@@ -369,7 +366,6 @@ void add_timezone() {
 	g_signal_connect(b, "clicked", G_CALLBACK(set_timezone), NULL);
 	gtk_widget_set_tooltip_text(b, l.ttooltip);
 	gtk_grid_attach(GTK_GRID (gtime), GTK_WIDGET (b), 3, 0, 1, 1);
-
 }
 
 void timetab() {
@@ -388,8 +384,5 @@ void timetab() {
 		g_source_remove(timeup);
 	timeup = g_timeout_add(6000, timeup_cb, NULL);
 
-
 	gtk_widget_show_all(timebox);
-	gtk_widget_hide(gregion);
-	gtk_widget_show(gregion);
 }
