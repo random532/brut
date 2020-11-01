@@ -1,10 +1,14 @@
 /* First tab related code */
 #include "disk.h"
 
-
+/* 
+ * These callback functions switch the current tab.
+ */
+ 
 void disk_cb(GtkMenuItem *item, gpointer page) {  
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 1);
 }
+
 void time_cb(GtkMenuItem *item, gpointer page) {  
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 4);
 }
@@ -17,7 +21,7 @@ void user_cb(GtkMenuItem *item, gpointer page) {
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 3);
 }
 
-
+/* Hardware widget */
 void attach_disk(GtkWidget *g) {
 
 	GtkWidget *c_disk = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -29,9 +33,9 @@ void attach_disk(GtkWidget *g) {
 	gtk_label_set_markup(GTK_LABEL(d), l.cdisks);
 	g_signal_connect(d, "activate-link", G_CALLBACK (disk_cb), NULL);
 	gtk_container_add(GTK_CONTAINER(c_disk), d);
-
 }
 
+/* Time widget */
 void attach_time(GtkWidget *g) {
 
 	GtkWidget *c_disk = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -44,9 +48,9 @@ void attach_time(GtkWidget *g) {
 	g_signal_connect(d, "activate-link", G_CALLBACK (time_cb), NULL);
 
 	gtk_container_add(GTK_CONTAINER(c_disk), d);
-
 }
 
+/* User widget */
 void attach_user(GtkWidget *g) {
 
 	GtkWidget *c_disk = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
@@ -63,7 +67,6 @@ void attach_user(GtkWidget *g) {
 	gtk_label_set_markup(GTK_LABEL(d), l.cgroups);
 	g_signal_connect(d, "activate-link", G_CALLBACK (groups_cb), NULL);
 	gtk_container_add(GTK_CONTAINER(c_disk), d);
-	
 }
 
 void control() {
