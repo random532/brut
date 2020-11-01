@@ -11,6 +11,7 @@ void editor() {
 	gtk_container_add (GTK_CONTAINER (box), thegrid);
 	gtk_grid_insert_column(GTK_GRID (thegrid), 0);
 	
+	/* XXX: can we remove this? */
 	int rows = 0;
 	while(rows <= 20) {	/* XXX: hardcoded? */
 		gtk_grid_insert_row (GTK_GRID(thegrid), rows);

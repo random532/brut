@@ -71,6 +71,18 @@ lang en = {
 	.uremove="Remove",
 	.uremove1="Delete this user, including home directory?",
 
+	/* Time */
+	.tsettime="Set time",
+	.tsetzone="Set timezone",
+	.tyear="year",
+	.tmonth="month",
+	.tday="day",
+	.thour="hour",
+	.tminute="minute",
+	.tsecond="second",
+	.ttimezone="Timezone",
+	.ttitle="Clock, Date, Timezone",
+
 	/* About */
 	.about="Hello.\n\nThis program makes use of GTK (GIMP Toolkit). See: www.gtk.org\n\
 For bugs, questions, feedback, open an issue here: github.com/random532/xdisk/issues\n\
@@ -155,6 +167,18 @@ lang de = {
 	.uedit="Ändern",
 	.uremove="Entfernen",
 	.uremove1="Benutzer entfernen (inklusive Heimatverzeichnis)?",
+
+	/* Time */
+	.tsettime="Uhrzeit einstellen",
+	.tsetzone="Zeitzone festlegen",
+	.tyear="Jahr",
+	.tmonth="Monat",
+	.tday="Tag",
+	.thour="Stunde",
+	.tminute="Minute",
+	.tsecond="Sekunde",
+	.ttimezone="Zeitzone",
+	.ttitle="Uhrzeit, Datum, Zeitzone",
 
 	/* About tab */
 	.about="Hallo.\n\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\

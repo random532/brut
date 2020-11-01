@@ -8,9 +8,9 @@ void redraw_groups() {
 		groups();
 }
 
-void execute_me(char *cmd) {
+void execute_me(char *cmd, int what) {
 	
-	todo = USR;
+	todo = what;
 
 	if(!root() )  { /* try sudo */
 		if(pw_needed() ) {
@@ -33,7 +33,7 @@ void execute_me(char *cmd) {
 void button_pressed_cb (GtkButton *item, gpointer cmd) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 ) {
-		execute_me(cmd);
+		execute_me(cmd, USR);
 		redraw_groups();
 	}
 	else {
@@ -51,7 +51,7 @@ void new_group_cb (GtkButton *item, gpointer e) {
 		int len = strlen(newname);
 		char *cmd = malloc(len +20);
 		sprintf(cmd, "pw groupadd %s", newname);
-		execute_me(cmd);
+		execute_me(cmd, USR);
 	}
 
 	gtk_widget_destroy(groupconfirm);

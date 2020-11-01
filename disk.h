@@ -9,12 +9,15 @@
 #include <string.h>
 #include <errno.h>
 #include <math.h>
+#include <time.h>
 #include <ctype.h>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/wait.h>
 #include <inttypes.h>
+
 #include <gtk/gtk.h>
+#include <glib.h>
 
 #define LANG_EN 0
 #define LANG_DE 1
@@ -231,6 +234,18 @@ typedef struct {
 	char uremove[20];
 	char uremove1[60];
 
+
+	char tsettime[20];
+	char tsetzone[30];
+	char tyear[10];
+	char tmonth[10];
+	char tday[10];
+	char thour[10];
+	char tminute[10];
+	char tsecond[10];
+	char ttimezone[20];
+	char ttitle[30];
+
 	/* About */
 	char about[250];
 
@@ -414,7 +429,7 @@ void about();
 
 /* groups.c */
 void groups();
-void execute_me(char *);
+void execute_me(char *, int);
 
 /* user.c */
 void users();

@@ -28,7 +28,6 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 			gtk_widget_destroy(controlbox);
 		control();
 	}
-	
 	else if(strcmp(tab, l.tabdisks) == 0) {
 		if(diskbox) {
 			gtk_widget_destroy(diskbox);
@@ -37,7 +36,6 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 		}
 		disk();
 	}
-
 	else if(strcmp(tab, l.tabgroup) == 0) {
 		if(groupbox)
 			gtk_widget_destroy(groupbox);
@@ -53,13 +51,11 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 			gtk_widget_destroy(userbox);
 		users();
 	}
-	
 	else if(strcmp(tab, l.tabtime) == 0) {
 		if(timebox)
 			gtk_widget_destroy(timebox);
 		timetab();
 	}
-	
 
 	/* Clean up debug info. */
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow)), "      ", 6);

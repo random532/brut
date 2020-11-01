@@ -57,7 +57,7 @@ void add_cb (GtkButton *item, gpointer a) {
 			strcat(cmd, " -L ");
 			strcat(cmd, gclass);
 		}
-		execute_me(cmd);
+		execute_me(cmd, USR);
 	}
 	redraw_user();
 }
@@ -98,7 +98,7 @@ void edit_ok (GtkButton *item, gpointer user) {
 			strcat(cmd, " -s ");
 			strcat(cmd, gshell);
 		}
-		execute_me(cmd);
+		execute_me(cmd, USR);
 	}
 
 	redraw_user();
@@ -107,7 +107,7 @@ void edit_ok (GtkButton *item, gpointer user) {
 void delete_ok (GtkButton *item, gpointer cmd) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 )
-		execute_me(cmd);
+		execute_me(cmd, USR);
 	redraw_user();
 }
 
