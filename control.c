@@ -26,7 +26,6 @@ void attach_disk(GtkWidget *g) {
 
 	GtkWidget *c_disk = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_grid_attach(GTK_GRID(g), c_disk, 0, 0, 1, 1);
-
 	gtk_container_add(GTK_CONTAINER(c_disk), gtk_label_new(l.chardware));
 
 	GtkWidget *d = gtk_label_new(NULL);
@@ -40,13 +39,11 @@ void attach_time(GtkWidget *g) {
 
 	GtkWidget *c_disk = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_grid_attach(GTK_GRID(g), c_disk, 0, 2, 1, 1);
-
 	gtk_container_add(GTK_CONTAINER(c_disk), gtk_label_new(l.ctime1));
 
 	GtkWidget *d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.ctime2);
 	g_signal_connect(d, "activate-link", G_CALLBACK (time_cb), NULL);
-
 	gtk_container_add(GTK_CONTAINER(c_disk), d);
 }
 
@@ -55,7 +52,6 @@ void attach_user(GtkWidget *g) {
 
 	GtkWidget *c_disk = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_grid_attach(GTK_GRID(g), c_disk, 1, 0, 1, 1);
-
 	gtk_container_add(GTK_CONTAINER(c_disk), gtk_label_new(l.caccount));
 
 	GtkWidget *d = gtk_label_new(NULL);
@@ -70,7 +66,7 @@ void attach_user(GtkWidget *g) {
 }
 
 void control() {
-		
+
 	/* A top level container. */
 	controlbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 	gtk_container_add (GTK_CONTAINER (tab0), controlbox);
