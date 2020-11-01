@@ -1,10 +1,14 @@
-xdisk is a partition editor with a graphical user interface.
+xdisk is a multitool. Among its features are... 
+- partition editor, disk editor
+- group/user management
+- date, time, timezone
+
 It uses gtk3 for the GUI elements.
 It uses sudo as backend. ${LOCALBASE}/etc/sudoers file handles the permissions.
 
 Start it with xdisk.
-
 If it complains about missing machine-id, run "dbus-uuidgen --ensure".
+
 
 Source code:
 www.github.com/random532/xdisk
