@@ -175,7 +175,7 @@ void set_timezone(GtkMenuItem *item, gpointer userdata) {
 		sprintf(cmd, "cp /usr/share/zoneinfo/%s/%s /etc/localtime", string, string1);
 	}
 	
-	execute_me(cmd, USR);
+	execute_me(cmd, MOUNT);
 }
 
 void region_changed() {
@@ -351,7 +351,7 @@ void add_timezone() {
 	if(mytimezone != NULL)
 		gtk_grid_attach(GTK_GRID (gtime), gtk_label_new(mytimezone), 0, 0, 1, 1);
 
-	/* Region */
+	/* Region combo box */
 	gregion = gtk_combo_box_text_new();
 	gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(gregion), 3);
 	fill_region();
@@ -359,13 +359,15 @@ void add_timezone() {
 	gtk_grid_attach(GTK_GRID (gtime), gregion, 1, 0, 1, 1);
 
 
-	/* Country */
+	/* Country combo box */
 	gcountry = gtk_combo_box_text_new();
 	gtk_combo_box_set_wrap_width(GTK_COMBO_BOX(gcountry), 3);
 	gtk_grid_attach(GTK_GRID (gtime), gcountry, 2, 0, 1, 1);
 
+	/* Button */
 	GtkWidget *b = gtk_button_new_with_label(l.tsetzone);
 	g_signal_connect(b, "clicked", G_CALLBACK(set_timezone), NULL);
+	gtk_widget_set_tooltip_text(b, l.ttooltip);
 	gtk_grid_attach(GTK_GRID (gtime), GTK_WIDGET (b), 3, 0, 1, 1);
 
 }
