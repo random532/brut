@@ -99,7 +99,7 @@ gint timeup_cb(gpointer data) {
 
 char *get_timezone() {
 
-	time_t currtime= time(NULL);
+	time_t currtime = time(NULL);
 	struct tm *t = localtime(&currtime);
 	
 	if(t != NULL)
@@ -193,7 +193,7 @@ void region_changed() {
 		return;
 	sprintf(cmd, "ls /usr/share/zoneinfo/%s", string);
 
-	FILE * fp = popen(cmd, "r");
+	FILE *fp = popen(cmd, "r");
 	if (fp == NULL) {
 		msg("couldnt popen");
 		return;
@@ -216,7 +216,7 @@ void region_changed() {
 
 void fill_region() {
 
-	FILE * fp = popen("ls /usr/share/zoneinfo", "r");
+	FILE *fp = popen("ls /usr/share/zoneinfo", "r");
 	if (fp == NULL) {
 		msg("couldnt popen");
 		return;
@@ -382,7 +382,7 @@ void timetab() {
 	write_time_to_widgets();
 	if(timeup)
 		g_source_remove(timeup);
-	timeup = g_timeout_add(6000, timeup_cb, NULL);
+	timeup = g_timeout_add(4000, timeup_cb, NULL);
 
 	gtk_widget_show_all(timebox);
 }
