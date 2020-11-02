@@ -24,7 +24,7 @@ Screenshots in wayland/hikari:
 
 
 3. What are the dependencies?<br>
-gtk3 and sudo. "pkg install gtk3" is recommended, since it is large.<br><br>
+gtk3 and sudo. "pkg install gtk3" is recommended, since that one is large.<br><br>
 
 4. Is it safe? <br>
 In general, it translates mouse clicks into shell commands.<br>
