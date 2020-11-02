@@ -9,7 +9,8 @@ void redraw_groups() {
 }
 
 void redraw_groupconfirm() {
-		gtk_widget_destroy(groupconfirm);
+		if(GTK_IS_WIDGET(groupconfirm))
+			gtk_widget_destroy(groupconfirm);
 		groupconfirm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
 		gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
 		gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfoclick));
@@ -430,4 +431,6 @@ void groups() {
 
 	/* A window that asks for confirmation. */
 	redraw_groupconfirm();
+
+	gtk_widget_show_all(groupbox);
 }
