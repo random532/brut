@@ -1,13 +1,16 @@
-brut is a GUI multitool. Among its features are: 
+Graphical user interface (GUI) for various administrative tasks.
+
+Features:
 
 - partition editor, disk editor
 - group/user management
 - date, time, timezone
 
+Some Hints:
 It uses gtk3 for the GUI elements.
-It uses sudo. /usr/local/etc/sudoers file handles the permissions.
+It uses sudo as backend. /usr/local/etc/sudoers file handles the permissions.
 
-If it complains about missing a machine-id, run "dbus-uuidgen --ensure".
+If dbus complains about a missing machine-id, run "dbus-uuidgen --ensure".
 
 The start command is: brut
 
