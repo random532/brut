@@ -1,14 +1,16 @@
-xdisk is a multitool. Among its features are... 
+brut is a multitool. Among its features are... 
+
 - partition editor, disk editor
 - group/user management
 - date, time, timezone
 
 It uses gtk3 for the GUI elements.
-It uses sudo as backend. ${LOCALBASE}/etc/sudoers file handles the permissions.
+It uses sudo. /usr/local/etc/sudoers file handles the permissions.
 
-Start it with xdisk.
-If it complains about missing machine-id, run "dbus-uuidgen --ensure".
+If it complains about missing a machine-id, run "dbus-uuidgen --ensure".
+
+The start command is: brut
 
 
 Source code:
-www.github.com/random532/xdisk
+www.github.com/random532/brut
