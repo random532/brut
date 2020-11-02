@@ -4,7 +4,7 @@ CFLAGS+= -L${LOCALBASE}/lib/ -lgdk-3  -lgio-2.0 -lgtk-3 -lgobject-2.0 -lglib-2.0
 
 SOURCES= mainWindow.c treeviews.c lang.c subroutines.c menubar.c editorWindow.c editorGridEntries.c on_combos_changed.c applyButtonClicked.c mount.c root.c about.c groups.c user.c disk.c time.c control.c
 
-all: xdisk
+all: brut
 
-xdisk: $(SOURCES)
-	$(CC) -o xdisk $(SOURCES) -DPATH='"${LOCALBASE}"' $(CFLAGS)
+brut: $(SOURCES)
+	$(CC) -o brut $(SOURCES) -DPATH='"${LOCALBASE}"' $(CFLAGS)
