@@ -8,7 +8,7 @@ brut
 FAQ
 -----------------------
 
-1. What is brut<br>
+1. What is brut?<br>
 A graphical user interface (GUI) for various admin tasks in FreeBSD.<br><br>
 Among its features are:<br>
 - disk editor, partition editor<br>
