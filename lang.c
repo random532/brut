@@ -82,6 +82,7 @@ lang en = {
 	.tsecond="second",
 	.ttimezone="Timezone",
 	.ttitle="Clock, Date, Timezone",
+	.tsync="Synchronize with network time, once:",
 	.ttooltip="Takes effect after next logout/login",
 
 	/* About */
@@ -180,6 +181,7 @@ lang de = {
 	.tsecond="Sekunde",
 	.ttimezone="Zeitzone",
 	.ttitle="Uhrzeit, Datum, Zeitzone",
+	.tsync="Zeit aus dem Netzwerk beziehen, einmalig",
 	.ttooltip="Erfordert logout/login",
 
 	/* About tab */

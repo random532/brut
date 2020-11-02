@@ -82,6 +82,12 @@ void write_time_to_widgets() {
 
 }
 
+void sync_time(GtkMenuItem *item, gpointer userdata) {
+	char *cmd = malloc(20);
+	sprintf(cmd, "ntpd -gq");
+	execute_me(cmd, MOUNT);
+}
+
 gint timeup_cb(gpointer data) {
 
 	/* Is our tab still open? */
@@ -328,6 +334,23 @@ void add_time() {
 	GtkWidget *b = gtk_button_new_with_label(l.tsettime);
 	gtk_grid_attach(GTK_GRID (gtime), GTK_WIDGET (b), 7, 2, 1, 1);
 	g_signal_connect(b, "clicked", G_CALLBACK(set_new_time), NULL);
+
+
+	/* Synchronize with network time GUI */
+	gtk_container_add(GTK_CONTAINER (timebox), gtk_separator_new(GTK_ORIENTATION_HORIZONTAL));
+	
+	gtime = gtk_grid_new();
+	gtk_grid_set_column_homogeneous(GTK_GRID(gtime), FALSE);
+	gtk_grid_set_row_spacing(GTK_GRID(gtime), 5);
+	gtk_grid_set_column_spacing(GTK_GRID(gtime), 20);
+	gtk_box_pack_start(GTK_BOX(timebox), gtime, FALSE, FALSE, 0);
+
+	gtk_grid_attach(GTK_GRID (gtime), gtk_label_new(l.tsync), 0, 0, 1, 1);
+	
+	b = gtk_button_new_with_label("Ok");
+	gtk_grid_attach(GTK_GRID (gtime), GTK_WIDGET (b), 1, 0, 1, 1);
+	g_signal_connect(b, "clicked", G_CALLBACK(sync_time), NULL);
+
 }
 
 void add_timezone() {
