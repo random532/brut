@@ -1,12 +1,11 @@
 Graphical user interface (GUI) for various administrative tasks.
 
 Features:
-
 - partition editor, disk editor
 - group/user management
 - date, time, timezone
 
-Some Hints:
+Some hints:
 It uses gtk3 for the GUI elements.
 It uses sudo as backend. /usr/local/etc/sudoers file handles the permissions.
 
