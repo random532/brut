@@ -1,6 +1,6 @@
 # $FreeBSD$
 
-PORTNAME=	xdisk
+PORTNAME=	brut
 DISTVERSION=	1.41
 CATEGORIES=	sysutils
 
@@ -17,7 +17,7 @@ USE_GNOME=	gtk30
 USE_GITHUB=	yes
 GH_ACCOUNT=	random532
 
-PLIST_FILES=	bin/xdisk
+PLIST_FILES=	bin/brut
 
 do-install:
 	${INSTALL_PROGRAM} work/${PORTNAME}-${DISTVERSION}/${PORTNAME} ${STAGEDIR}${LOCALBASE}/bin
