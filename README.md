@@ -46,5 +46,8 @@ Or build as a standalone binary:<br>
 3. Run "make LOCALBASE=/usr/local"<br>
 4. Start the binary (./brut).<br><br>
 
+Or download the binary located under /binary/brut (compiled on 12.1 amd64).<br>
+Change permissions, "chmod +x ./brut", then run it.<br><br>
+
 6. How to uninstall?<br>
 run "pkg remove brut".<br><br>
