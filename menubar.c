@@ -39,13 +39,11 @@ void change_lang_en (GtkMenuItem *item, gpointer user_data) {
 }
 
 void font_inc (GtkMenuItem *item, gpointer user_data) {    
-	int what = 1; /* 1 increase, 0 decrease */    	
-	change_fontsize(1);
+	change_fontsize(TRUE); /* increase */
 }
 
 void font_dec (GtkMenuItem *item, gpointer user_data) {    
-	int what = 0; /* 1 increase, 0 decrease */    	
-	change_fontsize(what);
+	change_fontsize(FALSE); /* decrease */
 }
 
 void add_menubar() {

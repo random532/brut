@@ -343,7 +343,7 @@ char *read_disk(char *);
 int add_slices();
 int add_geoms();
 int add_partitions();
-void change_fontsize(int);
+void change_fontsize(gboolean);
 char *add_to_list(char *, char *);
 void clean_up_pointers();
 char *what_file_system(char *);
