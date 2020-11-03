@@ -1,8 +1,18 @@
 /* Disk tab */
 #include "disk.h"
 
+/* Redraw (most of) the disk tab */
+void redraw_cb (GtkMenuItem *item, gpointer user_data) {  
+	toplevel_entries();
+	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);
+	gtk_widget_destroy(thegrid);
+	editor();
+	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logwindow))), "          ", 10);
+}
+
 void add_grid() {
 	
+	/* A grid */
 	grid = gtk_grid_new();
 	gtk_grid_insert_column(GTK_GRID(grid), 3);
 	gtk_box_pack_start(GTK_BOX(diskbox), grid, FALSE, TRUE, 0);
@@ -24,6 +34,7 @@ void add_grid() {
 
 void scrolled() {
 	
+	/* Scrolled window for the treeview */
 	scrolled_window = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
                                     GTK_POLICY_ALWAYS, GTK_POLICY_AUTOMATIC); 

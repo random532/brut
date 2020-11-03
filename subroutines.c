@@ -4,14 +4,14 @@
 char *get_disks() {
 
 int size = 40;
-char* buf = malloc(size);
-	if ( buf == NULL )
+char *buf = malloc(size);
+	if(buf == NULL)
 		return NULL;	
 
 memset(buf, 0, size);
 
-FILE * fp = popen("geom disk status -s | awk '{print $1}'", "r");
-if ( fp == NULL ) {
+FILE *fp = popen("geom disk status -s | awk '{print $1}'", "r");
+if (fp == NULL) {
 	printf("could not execute geom disk status\n");
 	free(buf);	
 	return NULL;
@@ -19,7 +19,7 @@ if ( fp == NULL ) {
 
 char line[40];
 int len;
-while( fgets(line, sizeof line, fp) ) {
+while(fgets(line, sizeof line, fp) ) {
 
 	len = strlen(line);
 	line[len-1] = (char) 0;
@@ -47,20 +47,20 @@ int add_slices() {
 /* buffer to read input stream */
 char line[50];
 
-FILE * fp = popen("geom part status -s | awk '{print $1}'", "r");
-if ( fp == NULL ) {
+FILE *fp = popen("geom part status -s | awk '{print $1}'", "r");
+if (fp == NULL) {
 	printf("could not execute geom part status\n");
 	return 0;
 }
 
-while( fgets(line, sizeof line, fp) ) {
+while(fgets(line, sizeof line, fp)) {
 
 	int len = strlen(line);
 	line[len-1] = (char) 0;
 	
-	if( (strncmp( line, "diskid", 6) != 0 ) && (strncmp( line, "gptid", 5) != 0) ){
+	if((strncmp(line, "diskid", 6) != 0) && (strncmp( line, "gptid", 5) != 0) ){
 
-		/* is partition a "freebsd" partition? */
+		/* Is this partition type "freebsd"? */
 		char *ptype = get_type(line);
 		if(ptype == NULL)
 			return 0;
@@ -71,26 +71,27 @@ while( fgets(line, sizeof line, fp) ) {
 	/* prepare next round */
 	memset(line, 0, sizeof line);
 }
-	
+
 pclose(fp);
 return 1;
 }
 
 
 int add_geoms() {
+
 /* add disks to the combo box */
 
 //	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_disks)); SLICES!
 
-	FILE * fp = popen("geom disk status -s | awk '{print $1}'", "r");
-	if ( fp == NULL ) {
+	FILE *fp = popen("geom disk status -s | awk '{print $1}'", "r");
+	if (fp == NULL) {
 		printf("could not execute geom disk status\n");	
 		return 0;
 	}
 
 	char line[40];
 	int len;
-	while( fgets(line, sizeof line, fp) ) {
+	while(fgets(line, sizeof line, fp)) {
 
 		len = strlen(line);
 		line[len-1] = (char) 0;
@@ -107,20 +108,20 @@ int add_partitions() {
 
 gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT(combo_partitions));
 
-FILE * fp = popen("geom part status -s | awk '{print $1}'", "r");
-if ( fp == NULL ) {
+FILE *fp = popen("geom part status -s | awk '{print $1}'", "r");
+if (fp == NULL) {
 	printf("could not execute geom part status\n");
 	return 0;
 }
 
 char line[50];
-while( fgets(line, sizeof line, fp) ) {
+while(fgets(line, sizeof line, fp)) {
 
 	int len = strlen(line);
 	line[len-1] = (char) 0;
-	
-	if(strncmp( line, "diskid", 5) != 0 )
-		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (combo_partitions), NULL, line); 
+
+	if(strncmp(line, "diskid", 5) != 0 )
+		gtk_combo_box_text_append(GTK_COMBO_BOX_TEXT (combo_partitions), NULL, line); 
 
 	memset(line, 0, sizeof line);
 }
@@ -136,14 +137,14 @@ char *read_disk(char *diskname) {
 	char buffer[CMDSIZE];
 	snprintf(buffer, sizeof buffer, "geom part list %s 2>&1", diskname);
 
-	char* diskinfo = malloc(size);
-	if ( diskinfo == NULL )
+	char *diskinfo = malloc(size);
+	if (diskinfo == NULL)
 		return NULL;	
 
 	memset(diskinfo, 0, size);
 
-	FILE * fp = popen(buffer, "r");
-	if ( fp == NULL ) {
+	FILE *fp = popen(buffer, "r");
+	if (fp == NULL) {
 		printf("could not execute geom part list %s\n", diskname);	
 		return NULL;
 	}
@@ -157,7 +158,7 @@ char *read_disk(char *diskname) {
 		}
 		size= size + strlen(buffer);
 		diskinfo = realloc(diskinfo, size +5);
-		if( diskinfo == NULL ) {
+		if(diskinfo == NULL) {
 			printf("realloc(): failed\n");
 			return NULL;
 		}
@@ -170,13 +171,13 @@ char *read_disk(char *diskname) {
 }
 
 /* remove brackets, i.e. () from a string */
-void format_string(char* mystring) {
+void format_string(char *mystring) {
 
 	int len = strlen(mystring);
 	int i=0;
 
 	while(i < len) {
-		if( (mystring[i] == '(') || (mystring[i] == ')') ){	
+		if((mystring[i] == '(') || (mystring[i] == ')')) {	
 			mystring[i] = ' ';
 		}
 	i++;
@@ -187,16 +188,16 @@ void format_string(char* mystring) {
 /* pstart = starting sector */
 /* pend = ending sector */
 /* psectorsize = sectorsize */
-char *check_free_space( char *pstart, char *pend, char *psectorsize) {
+char *check_free_space(char *pstart, char *pend, char *psectorsize) {
 
-if( (pstart == NULL) || (pend == NULL) )
+if( (pstart == NULL) || (pend == NULL))
 	return NULL;
 
 long p_end = strtol(pend, NULL, 0);	/* convert to integer */
 long p_start = strtol(pstart, NULL, 0);
 long result = p_start - p_end;
 
-if(result <=100 ) 
+if(result <=100) 
 	return NULL;
 
 int size = 20;
@@ -207,7 +208,7 @@ result = result * sectorsize;
 result = result / 1024;	/* kilobytes */
 result = result / 1024;	/* megabytes */
 
-if( result <= 1024 ) {
+if(result <= 1024) {
 	snprintf(free_megabytes, size, " %ld", result);
 	strncat(free_megabytes, "M", 1);
 }
@@ -219,7 +220,7 @@ else {
 return free_megabytes;
 }
 
-void change_fontsize(int increase) {
+void change_fontsize(gboolean increase) {
 
 	long fsize = strtol(opt.fontsize, NULL, 0);
    
@@ -280,13 +281,13 @@ char *what_file_system(char *partition) {
 	int size;
 	int ac;
 
-	if (partition == NULL)
+	if(partition == NULL)
 		return NULL;
 	
 	size = 25;
 	fs_type = malloc(size);
 	memset(fs_type, 0, size);
-	
+
 	/* check read permissions */	
 	len = strlen(partition);
 	len = len +50;
@@ -295,7 +296,7 @@ char *what_file_system(char *partition) {
 	snprintf(cmd, len, "/dev/%s", partition);
 	ac = access(cmd, R_OK);
 	
-	if( ac == 0 )  /* read access on device */
+	if(ac == 0)  /* read access on device */
 		snprintf(cmd, len, "fstyp -u /dev/%s 2>/dev/null", partition);
 	else if(!pw_needed()) /* try as sudo if no password is needed */
 		snprintf(cmd, len, "sudo -S fstyp -u /dev/%s 2>/dev/null", partition);
@@ -305,15 +306,15 @@ char *what_file_system(char *partition) {
 		return fs_type;
 	}
 	
-	FILE * fp = popen(cmd, "r");
-	if ( fp == NULL ) {
+	FILE *fp = popen(cmd, "r");
+	if (fp == NULL) {
 		printf("could not execute popen() with %s\n", partition);	
 		free(cmd);
 		return NULL;
 	}
 	error = fgets(fs_type, size, fp);
 	pclose(fp);
-	
+
 	if(error == NULL) {
 		free(fs_type);
 		return NULL;
@@ -328,7 +329,7 @@ char *what_file_system(char *partition) {
 }
 
 /* execute a shell command */
-int execute_cmd(char * cmd, int inform) {
+int execute_cmd(char *cmd, int inform) {
 
 	if(cmd == NULL)
 		return 1;
@@ -337,15 +338,15 @@ int execute_cmd(char * cmd, int inform) {
 	memset(buf, 0, len+20);
 	
 	snprintf(buf, len+20, "%s 2>&1", cmd);
-	FILE * fp = popen(buf, "r");
+	FILE *fp = popen(buf, "r");
 	if (fp == NULL)
 		msg("couldnt popen");
-	
+
 	char info[200];
 	memset(info, 0, 200);
 
-	while( fgets(info, sizeof info, fp)) { /* pointless? */
-		
+	while(fgets(info, sizeof info, fp)) { /* pointless? */
+
 		}
 	if((inform == 1) && (strlen(info) != 0))
 		msg(info);
@@ -354,9 +355,8 @@ int execute_cmd(char * cmd, int inform) {
 	return suc;
 }
 
-	/* popup a message box */
+/* Send a string to logwindow. */
 void msg(char *blah) {
-	
 
 	int len = strlen(blah);
 	if(len > 0)
@@ -365,14 +365,15 @@ void msg(char *blah) {
 
 void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
+	// XXX: Obsolete?
 	gtk_widget_destroy(GTK_WIDGET (dialog));	
 }
 
-	/* ask for comfirmation */
+/* ask for comfirmation */
 void ask(char *cmd) {
 	GtkWidget *message = gtk_message_dialog_new(GTK_WINDOW (window), GTK_DIALOG_MODAL, GTK_MESSAGE_QUESTION, GTK_BUTTONS_YES_NO, "%s", cmd);
 	//gtk_dialog_set_default_response (GTK_DIALOG (message), GTK_RESPONSE_YES);
-	
+
 	int len = strlen(cmd);
 	char *c = malloc(len+5);
 	if(c != NULL) {
@@ -393,48 +394,57 @@ void ask_cb(GtkDialog *dialog, gint response_id, gpointer cmd) {
 	on_toplevel_changed();
 	gtk_widget_destroy(thegrid);
 	editor();
-
 }
-/* execute a command */
-/* return the result in a buffer */
+
+/* 
+ * Execute a command.
+ * Return the result in a buffer.
+ * We can only read CMDSIZE per line, which is ~200 chars.
+ */
+ 
 char* command(char *cmd) {
-	
+
 	if(cmd == NULL)
 		return NULL;
 
-	char buf[CMDSIZE];
-	char *ret;
-	int size;
-	int len;
+	char line[CMDSIZE];
+	int len;	/* Characters read. */
+	char *buf;
+	int buflen;	/* The buffer might grow in size. */
+
 	
-	size = strlen(cmd);
-	ret = malloc(size+2);
-	if(ret == NULL)
+	buflen = CMDSIZE + 2;
+	buf = malloc(buflen);
+	if(buf == NULL)
 		return NULL;
 
-	memset(buf, 0, CMDSIZE);
-	memset(ret, 0, size+2);
+	memset(line, 0, CMDSIZE);
+	memset(buf, 0, buflen);
 
-	FILE * fp = popen(cmd, "r");
+	FILE *fp = popen(cmd, "r");
 	if (fp == NULL) {
 		msg("fopen failed");
 		return NULL;
 	}
-	while( fgets(buf, CMDSIZE, fp)) {
-		len = strlen(buf);
-		strncat(ret, buf, size);
-		size = size + len;
-		ret = realloc(ret, size);
-		if(ret == NULL)
+	while( fgets(line, CMDSIZE, fp)) {
+		
+		/* Add contents to our buffer. */
+		len = strlen(line);
+		strncat(buf, line, len);
+		
+		/* Adjust buffer size. */
+		buflen = buflen + len;
+		buf = realloc(buf, buflen);
+		if(buf == NULL)
 			return NULL;
-		memset(buf, 0, CMDSIZE);
+		memset(line, 0, CMDSIZE);
 	}
 	pclose(fp);
 	
 	/* zero terminate */
-	len = strlen(ret);
-	ret[len-1] = '\0';
-	return ret;
+	buflen = strlen(buf);
+	buf[buflen-1] = '\0';
+	return buf;
 }
 
 int find_p(char *partition) {
@@ -448,19 +458,19 @@ int find_p(char *partition) {
 	int len = strlen(partition);
 	len--;
 	
-	if( (partition[len] >= '0') && (partition[len] <= '9') )
+	if((partition[len] >= '0') && (partition[len] <= '9'))
 		slice = 0;	/* slices are labeled with abcd.., not with numbers */
 
 	else
 		slice = 1;
 		
-	if( slice == 0) {
-		while( (partition[len] >= '0') && (partition[len] <= '9') ) 
+	if(slice == 0) {
+		while((partition[len] >= '0') && (partition[len] <= '9')) 
 			len--;
 		partition[len] = (char) 0;
 		index = atoi(&partition[len+1]);	
 	}
-	else if( slice == 1 ) {
+	else if(slice == 1) {
 		
 		/* can we do this more cleverly? */
 		if(partition[len] == 'a')
@@ -554,8 +564,8 @@ int root() {
 int command_exist(char *cmd) {
 
 	char *localbase = PATH;
-	int a= strlen(localbase);
-	int b= strlen(cmd);
+	int a = strlen(localbase);
+	int b = strlen(cmd);
 	char *exist = malloc(a+b+5);
 	snprintf(exist, a+b+1, "%s%s", localbase, cmd);
 
@@ -566,7 +576,7 @@ int command_exist(char *cmd) {
 }
 
 int submit(char *cmd, int conf) {
-	
+
 	int error = 0;
 	
 	if((todo == MOUNT) || (todo == USR)) {
@@ -607,6 +617,7 @@ void fsscan() {
 	window_pw(cmd);
 }
 void destroyme(GtkMenuItem *item, gpointer user_data) {
+	// XXX: Obsolete?
 	gtk_widget_destroy(user_data);
 }
 
@@ -638,7 +649,7 @@ char *get_scheme(const gchar *gdisk) {
 	strcat(buf, gdisk);
 	strncat(buf, " | awk 'NR==1{print $5}' ", 25); 
 	
-	FILE * fp = popen(buf, "r");
+	FILE *fp = popen(buf, "r");
 	if (fp == NULL) {
 		msg("couldnt popen");
 		return NULL;
@@ -659,12 +670,12 @@ char *random_filename() {
 	int len;
 
 	number = arc4random();
-	len = 20;
-	fname = malloc(len+1);
+	len = 50;
+	fname = malloc(len);
 	if(fname == NULL)
 		return NULL;
-	memset(fname, 0, len+1);
+	memset(fname, 0, len);
 	
-	snprintf(fname, len ,"%i", number);
+	sprintf(fname,"/tmp/1%i", number);
 	return fname;
 }

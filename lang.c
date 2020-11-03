@@ -87,7 +87,7 @@ lang en = {
 
 	/* About */
 	.about="Hello.\n\nThis program makes use of GTK (GIMP Toolkit). See: www.gtk.org\n\
-For bugs, questions, feedback, open an issue here: github.com/random532/xdisk/issues\n\
+For bugs, questions, feedback, open an issue here: github.com/random532/brut/issues\n\
 Have fun,\nBrut.\n",
 
 	/* Tabs */
@@ -186,7 +186,7 @@ lang de = {
 
 	/* About tab */
 	.about="Hallo.\n\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\
-Bei Bugs, Fragen, Problemen, öffne ein Problemreport: github.com/random532/xdisk/issues\n\
+Bei Bugs, Fragen, Problemen, öffne ein Problemreport: github.com/random532/brut/issues\n\
 Viel Spass,\nBrut.\n",
 
 	/* Tabs */
@@ -254,8 +254,6 @@ void en_lang() {
 	strcpy(usercol[POS_UDESC], "Full Name");
 	strcpy(usercol[POS_UHOME], "Home directory");
 	strcpy(usercol[POS_USHELL], "Login Shell");
-
-
 }
 
 void de_lang() {
@@ -301,7 +299,6 @@ void de_lang() {
 	strncpy(column[9], "Stripesize", 15);
 	strncpy(column[10], "Stripeoffset", 15);
 	
-
 	/* User tab treeview. */
 	strcpy(usercol[POS_UNAME], "Name");
 	strcpy(usercol[POS_UPASSWORD],"PW");
@@ -313,10 +310,4 @@ void de_lang() {
 	strcpy(usercol[POS_UDESC], "Ganzer Name");
 	strcpy(usercol[POS_UHOME], "Heimatverzeichnis");
 	strcpy(usercol[POS_USHELL], "Shell");
-
-}
-
-void update_menubar_lang() {
-	gtk_widget_destroy(menu);
-	add_menubar();
 }

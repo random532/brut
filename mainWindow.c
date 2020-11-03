@@ -37,7 +37,7 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 		disk();
 	}
 	else if(strcmp(tab, l.tabgroup) == 0) {
-		if(groupbox)
+		if(GTK_IS_WIDGET (groupbox))
 			gtk_widget_destroy(groupbox);
 		groups();
 	}
@@ -86,8 +86,8 @@ void add_tabs() {
 
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab0, gtk_label_new(l.tabcontrol));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab1, gtk_label_new(l.tabdisks));
-	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab4, gtk_label_new(l.tabtime));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
 	

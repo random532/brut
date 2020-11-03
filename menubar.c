@@ -1,18 +1,11 @@
 #include "disk.h"
 
-	/* callback fuctions */
-
-void redraw_cb (GtkMenuItem *item, gpointer user_data) {  
-	toplevel_entries();
-	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);
-	gtk_widget_destroy(thegrid);
-	editor();
-	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logwindow))), "          ", 10);
+void redraw_menubar() {
+	gtk_widget_destroy(menu);
+	add_menubar();
 }
 
 void update_lang() {
-
-	update_menubar_lang();	
 
 	/* Update tabs. */
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab0, gtk_label_new(l.tabcontrol));
@@ -21,6 +14,8 @@ void update_lang() {
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab4, gtk_label_new(l.tabtime));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
+
+	redraw_menubar();	
 
 	on_tabs_changed(NULL, NULL);
 }
@@ -63,13 +58,6 @@ void add_menubar() {
 	GtkWidget *menuItem1 = gtk_menu_item_new_with_mnemonic (l.mapplication);
    	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem1), menu_app);
     gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
-
-	/* App - Refresh */
-//	GtkWidget * app_refresh = gtk_menu_item_new_with_mnemonic (l.mrefresh);
-//	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_refresh);
-
-//	GtkWidget *sep = gtk_separator_menu_item_new();
-//	gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), sep);
 	
 	/* App - Quit */
 	GtkWidget *app_quit = gtk_menu_item_new_with_mnemonic (l.mquit);
@@ -94,11 +82,11 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_lang_sub), item_lang_de);
 
 	/* language - en */
-	GtkWidget * item_lang_en = gtk_menu_item_new_with_mnemonic ("_English");
+	GtkWidget *item_lang_en = gtk_menu_item_new_with_mnemonic ("_English");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_lang_sub), item_lang_en);
 
 	/* Font size  */
-	GtkWidget * item_font = gtk_menu_item_new_with_mnemonic (l.mfont);
+	GtkWidget *item_font = gtk_menu_item_new_with_mnemonic (l.mfont);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_font);
 	
 	/* Font submenu */
@@ -106,17 +94,16 @@ void add_menubar() {
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_font), menu_font_sub);
 
 	/* Font size  increase*/
-	GtkWidget * item_fontinc = gtk_menu_item_new_with_mnemonic (l.mfontinc);
+	GtkWidget *item_fontinc = gtk_menu_item_new_with_mnemonic (l.mfontinc);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_font_sub), item_fontinc);
 
 	/* Font size  increase*/
-	GtkWidget * item_fontdec = gtk_menu_item_new_with_mnemonic (l.mfontdec);
+	GtkWidget *item_fontdec = gtk_menu_item_new_with_mnemonic (l.mfontdec);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_font_sub), item_fontdec);
 
 
 	/*  callback functions */
 	g_signal_connect_swapped (app_quit, "activate", G_CALLBACK(gtk_main_quit), NULL);
-//   	g_signal_connect (app_refresh, "activate", G_CALLBACK (redraw_cb), NULL);
 	g_signal_connect (item_lang_de, "activate", G_CALLBACK (change_lang_de), NULL);
 	g_signal_connect (item_lang_en, "activate", G_CALLBACK (change_lang_en), NULL);
 	g_signal_connect (item_fontinc, "activate", G_CALLBACK (font_inc), NULL);
@@ -126,6 +113,6 @@ void add_menubar() {
 	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
 	gtk_box_reorder_child(GTK_BOX(fixed), menuBar, 0);
 	
-	gtk_widget_show (menuBar);
+	gtk_widget_show_all (menuBar); //XXX: ???
 	gtk_widget_show_all(window);
 }

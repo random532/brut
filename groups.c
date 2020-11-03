@@ -3,7 +3,7 @@
 
 GtkWidget *groupconfirm; /* a box positioned right next to the treeview. */
 
-void redraw_groups() {
+void redraw_groups() { /// XXX:???
 		gtk_widget_destroy(groupbox);
 		groups();
 }
@@ -37,17 +37,17 @@ void execute_me(char *cmd, int what) {
 	}
 	submit(cmd, 0);
 	free(cmd);
+	update_view();
 }
 
 void button_pressed_cb(GtkButton *item, gpointer cmd) {
 
 	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 ) {
 		execute_me(cmd, USR);
-		redraw_groups();
 	}
 	else { /* Cancel clicked */
 		free(cmd);
-		redraw_groupconfirm();	
+		redraw_groupconfirm();
 	}
 }
 
@@ -415,7 +415,7 @@ GtkWidget *group_treeview() {
 	/* Empty row at the end for style points. */
 	gtk_tree_store_append(t, &parent, NULL);
 
-	/* scrollbars? */
+	/* scrollbars for Wayland? */
 
 	return gtv;
 }
@@ -423,8 +423,9 @@ GtkWidget *group_treeview() {
 void groups() {
 	
 	/* A top level container. */
+	groupbox = NULL;
 	groupbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 15);
-	gtk_container_add (GTK_CONTAINER (tab2), groupbox);
+	gtk_container_add(GTK_CONTAINER (tab2), groupbox);
 	
 	/* A treeview that contains all groups. */
 	GtkWidget *gtree = group_treeview();

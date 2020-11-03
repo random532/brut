@@ -80,7 +80,7 @@ void edit_ok(GtkButton *item, gpointer user) {
 		}
 
 		sprintf(cmd, "pw usermod -n %s", user);
-		
+
 		if(strlen(gname) != 0) {	/* New user name. */
 			strcat(cmd, " -l ");
 			strcat(cmd, gname);
@@ -99,15 +99,17 @@ void edit_ok(GtkButton *item, gpointer user) {
 		}
 		execute_me(cmd, USR);
 	}
-
-	redraw_user();
+	else
+		redraw_user();
 }
 
 void delete_ok(GtkButton *item, gpointer cmd) {
 
-	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 )
+	if(strncmp(gtk_button_get_label(item), "Ok", 2) == 0 ) {
 		execute_me(cmd, USR);
-	redraw_user();
+	}
+	else
+		redraw_user();
 }
 
 void del_user (GtkMenuItem *item, gpointer userview) {
@@ -117,7 +119,7 @@ void del_user (GtkMenuItem *item, gpointer userview) {
 	char *cmd = malloc(strlen(user) + 40);
 	if(cmd == NULL)
 		return;
-	sprintf(cmd, "echo \"y\" | sudo rmuser -y %s", user);
+	sprintf(cmd, "sudo rmuser -y %s", user);
 
 	/* GUI elements */
 	gtk_widget_destroy(userbox);

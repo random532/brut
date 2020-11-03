@@ -22,29 +22,6 @@
 
 	gint timeup;
 
-char *get_current_time() {
-
-	FILE *fp = popen("date +%Y:%m:%d:%H:%M:%S", "r");
-	if (fp == NULL) {
-		msg("couldnt popen");
-		return NULL;
-	}
-	
-	char *info = malloc(100);
-	if(info == NULL)
-		return NULL;
-	memset(info, 0, 100);
-	fgets(info, 100, fp);
-
-	if(info[0] == '\0') {
-		free(info);
-		return NULL;
-	}
-
-	pclose(fp);
-	return info;
-}
-
 void write_time_to_widgets() {
 
 	char *thetime;
@@ -52,7 +29,7 @@ void write_time_to_widgets() {
 	char *brk;
 	char *snippet;
 
-	thetime = get_current_time();
+	thetime = command("date +%Y:%m:%d:%H:%M:%S");
 	if(thetime == NULL)
 		return;
 
