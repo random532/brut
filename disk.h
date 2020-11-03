@@ -309,7 +309,6 @@ geom_data g;
 /* lang.c */
 void en_lang();
 void de_lang();
-void update_menubar_lang();
 
 /* EditorGridEntries.c */
 void create_combo_geom();
@@ -373,6 +372,7 @@ int test_pw(char *);
 void window_pw(char *);
 int pw_needed();
 char *sudo_backend(char *, char *);
+void update_view();
 
 /* editorWindow.c */
 void editor();
@@ -380,7 +380,8 @@ void hide_widgets();
 
 /* menubar.c */
 void add_menubar();
-void redraw_cb (GtkMenuItem *, gpointer);
+void redraw_menubar();
+
 
 /* applyButtonClicked.c */
 void on_edit_clicked (GtkMenuItem *, gpointer);
@@ -437,6 +438,7 @@ void execute_me(char *, int);
 void users();
 
 /* disk.c */
+void redraw_cb (GtkMenuItem *, gpointer);
 void scrolled();
 void main_combo();
 void disk();
