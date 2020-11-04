@@ -1,0 +1,13 @@
+Graphical user interface (GUI) for various administrative tasks.
+- partition editor, disk editor
+- group/user management
+- date, time, timezone
+
+It uses gtk3 for the GUI elements.
+It uses sudo as backend. /usr/local/etc/sudoers file handles the permissions.
+If dbus complains about a missing machine-id, run "dbus-uuidgen --ensure".
+
+The start command is: brut
+
+Source code:
+www.github.com/random532/brut
