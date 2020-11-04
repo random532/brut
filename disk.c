@@ -76,7 +76,13 @@ void add_box() {
 }
 
 void disk() {
-		
+	
+	if(GTK_IS_WIDGET(diskbox)) {
+		gtk_widget_destroy(diskbox);
+		tree = NULL;
+		tree1 = NULL;
+	}
+	
 	/* A top level container. */
 	diskbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 	gtk_container_add (GTK_CONTAINER (tab1), diskbox);

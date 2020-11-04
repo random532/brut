@@ -370,6 +370,9 @@ void add_timezone() {
 
 void timetab() {
 		
+	if(GTK_IS_WIDGET(timebox))
+		gtk_widget_destroy(timebox);
+
 	/* A top level container. */
 	timebox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 	gtk_container_add (GTK_CONTAINER (tab4), timebox);

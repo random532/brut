@@ -3,6 +3,9 @@
 
 void about() {
 
+	if(GTK_IS_WIDGET(abox))
+		gtk_widget_destroy(abox);
+
 	/* Top level box */
 	abox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_container_add (GTK_CONTAINER (tab5), abox);

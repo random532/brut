@@ -419,6 +419,9 @@ GtkWidget *user_treeview() {
 
 void users() {
 	
+	if(GTK_IS_WIDGET (userbox))
+		gtk_widget_destroy(userbox);
+
 	/* A top level container. */
 	userbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 15);
 	gtk_container_add (GTK_CONTAINER (tab3), userbox);

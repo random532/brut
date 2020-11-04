@@ -67,6 +67,9 @@ void attach_user(GtkWidget *g) {
 
 void control() {
 
+	if(GTK_IS_WIDGET (controlbox))
+		gtk_widget_destroy(controlbox);
+
 	/* A top level container. */
 	controlbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
 	gtk_container_add (GTK_CONTAINER (tab0), controlbox);

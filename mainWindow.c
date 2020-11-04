@@ -13,51 +13,27 @@ void top_window() {
 
 void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 
-	/* 
-	 * Tabs changed. So redraw them.
-	 */
-	 
+	/* Redraw current tab. */
+
 	gint n = gtk_notebook_get_current_page(GTK_NOTEBOOK (tabs));
 	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (tabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (tabs), n));
 	
 	if(tab == NULL)
 		return;
-
-	else if(strcmp(tab, l.tabcontrol) == 0) {
-		if(controlbox)
-			gtk_widget_destroy(controlbox);
+	else if(strcmp(tab, l.tabcontrol) == 0)
 		control();
-	}
-	else if(strcmp(tab, l.tabdisks) == 0) {
-		if(diskbox) {
-			gtk_widget_destroy(diskbox);
-			tree = NULL;
-			tree1 = NULL;
-		}
+	else if(strcmp(tab, l.tabdisks) == 0)
 		disk();
-	}
-	else if(strcmp(tab, l.tabgroup) == 0) {
-		if(GTK_IS_WIDGET (groupbox))
-			gtk_widget_destroy(groupbox);
+	else if(strcmp(tab, l.tabgroup) == 0)
 		groups();
-	}
-	else if(strcmp(tab, l.tababout) == 0) {
-		if(abox)
-			gtk_widget_destroy(abox);
+	else if(strcmp(tab, l.tababout) == 0)
 		about();
-	}
-	else if(strcmp(tab, l.tabuser) == 0) {
-		if(userbox)
-			gtk_widget_destroy(userbox);
+	else if(strcmp(tab, l.tabuser) == 0)
 		users();
-	}
-	else if(strcmp(tab, l.tabtime) == 0) {
-		if(timebox)
-			gtk_widget_destroy(timebox);
+	else if(strcmp(tab, l.tabtime) == 0)
 		timetab();
-	}
 
-	/* Clean up debug info. */
+	/* Clear log info. */
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow)), "      ", 6);
 }
 

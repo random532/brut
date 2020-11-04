@@ -2,19 +2,13 @@
 #include "disk.h"
 
 GtkWidget *groupconfirm; /* a box positioned right next to the treeview. */
+GtkWidget *hint;
 
-void redraw_groups() { /// XXX:???
-		gtk_widget_destroy(groupbox);
-		groups();
-}
-
-void redraw_groupconfirm() {
+void remove_groupconfirm() {
 		if(GTK_IS_WIDGET(groupconfirm))
 			gtk_widget_destroy(groupconfirm);
-		groupconfirm = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 10);
-		gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);
-		gtk_container_add(GTK_CONTAINER (groupconfirm), gtk_label_new(l.ginfoclick));
-		gtk_widget_show_all(groupconfirm);
+		gtk_container_add(GTK_CONTAINER (groupbox), gtk_label_new(l.ginfoclick));
+		gtk_widget_show_all(groupbox);
 }
 
 void execute_me(char *cmd, int what) {
@@ -47,7 +41,7 @@ void button_pressed_cb(GtkButton *item, gpointer cmd) {
 	}
 	else { /* Cancel clicked */
 		free(cmd);
-		redraw_groupconfirm();
+		remove_groupconfirm();
 	}
 }
 
@@ -60,10 +54,10 @@ void new_group_cb(GtkButton *item, gpointer e) {
 		char *cmd = malloc(len +20);
 		sprintf(cmd, "pw groupadd %s", newname);
 		execute_me(cmd, USR);
-		redraw_groups();
+		// groups(); /* XXX: ??? */
 	}
 	else /* Cancel clicked */
-		redraw_groupconfirm();
+		remove_groupconfirm();
 }
 
 void del_group(GtkMenuItem *item, gpointer gtv) {
@@ -80,7 +74,7 @@ void del_group(GtkMenuItem *item, gpointer gtv) {
 	sprintf(cmd, "pw groupdel %s", groupname);
 
 	/* GUI elements. */
-	gtk_widget_destroy(groupconfirm);
+	gtk_widget_destroy(hint);
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
 	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
@@ -101,7 +95,7 @@ void del_group(GtkMenuItem *item, gpointer gtv) {
 void new_group(GtkMenuItem *item, gpointer user_data) {
 
 	/* GUI elements. */
-	gtk_widget_destroy(groupconfirm);
+	gtk_widget_destroy(hint);
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
 	gtk_container_add (GTK_CONTAINER (groupbox), groupconfirm);	
@@ -140,7 +134,7 @@ void adduser(GtkMenuItem *item, gpointer gtv) {
 	sprintf(cmd, "pw groupmod %s -m %s", groupname, user);
 	
 	/* GUI elements. */
-	gtk_widget_destroy(groupconfirm);
+	gtk_widget_destroy(hint);
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	
 	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
@@ -174,7 +168,7 @@ void remuser (GtkMenuItem *item, gpointer gtv) {
 	sprintf(cmd, "pw groupmod %s -d %s", groupname, user);
 	
 	/* GUI elements. */
-	gtk_widget_destroy(groupconfirm);
+	gtk_widget_destroy(hint);
 	groupconfirm = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
 	GtkWidget *o = gtk_button_new_with_mnemonic("Ok");
@@ -320,7 +314,7 @@ GtkWidget *group_treeview() {
 	g_signal_connect(G_OBJECT (gtv), "button-press-event", G_CALLBACK(click), NULL);
 	
 	/* Insert 4 columns. */
-	GtkTreeViewColumn   *col;
+	GtkTreeViewColumn *col;
 	
 	col = gtk_tree_view_column_new();
 	gtk_tree_view_column_set_title(col, l.gname);
@@ -421,17 +415,24 @@ GtkWidget *group_treeview() {
 }
 
 void groups() {
-	
+
+	/* Cleanup */
+	if(GTK_IS_WIDGET(groupbox))
+			gtk_widget_destroy(groupbox);
+
 	/* A top level container. */
-	groupbox = NULL;
 	groupbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 15);
 	gtk_container_add(GTK_CONTAINER (tab2), groupbox);
-	
+
 	/* A treeview that contains all groups. */
-	GtkWidget *gtree = group_treeview();
+	group_treeview();
+
+	/* A hint */
+	hint = gtk_label_new(l.ginfoclick);
+	gtk_container_add(GTK_CONTAINER (groupbox), hint);
 
 	/* A window that asks for confirmation. */
-	redraw_groupconfirm();
+//	redraw_groupconfirm();
 
 	gtk_widget_show_all(groupbox);
 }

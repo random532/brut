@@ -13,11 +13,10 @@ void update_lang() {
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab4, gtk_label_new(l.tabtime));
-	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
-
-	redraw_menubar();	
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));	
 
 	on_tabs_changed(NULL, NULL);
+	redraw_menubar();
 }
 
 void change_lang_de (GtkMenuItem *item, gpointer la) {
@@ -52,7 +51,7 @@ void add_menubar() {
 	menu = menuBar;	/* it is global now */
 
 	/* "Application" */
-	GtkWidget * menu_app = gtk_menu_new();
+	GtkWidget *menu_app = gtk_menu_new();
 	GtkWidget *menuItem1 = gtk_menu_item_new_with_mnemonic (l.mapplication);
    	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem1), menu_app);
     gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
@@ -68,7 +67,7 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem2);
 
 	/* language */
-	GtkWidget * item_lang = gtk_menu_item_new_with_mnemonic (l.mlanguage);
+	GtkWidget *item_lang = gtk_menu_item_new_with_mnemonic (l.mlanguage);
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_options), item_lang);
 
 	/* language submenu */
@@ -76,7 +75,7 @@ void add_menubar() {
 	gtk_menu_item_set_submenu (GTK_MENU_ITEM (item_lang), menu_lang_sub);
 
 	/* language - de */
-	GtkWidget * item_lang_de = gtk_menu_item_new_with_mnemonic ("_Deutsch");
+	GtkWidget *item_lang_de = gtk_menu_item_new_with_mnemonic ("_Deutsch");
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_lang_sub), item_lang_de);
 
 	/* language - en */
@@ -111,6 +110,5 @@ void add_menubar() {
 	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
 	gtk_box_reorder_child(GTK_BOX(fixed), menuBar, 0);
 	
-	gtk_widget_show_all (menuBar); //XXX: ???
-	gtk_widget_show_all(window);
+	gtk_widget_show_all(menuBar);
 }
