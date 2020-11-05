@@ -3,7 +3,6 @@
 brut
 ------------------------
 
-
 -----------------------
 FAQ
 -----------------------
@@ -41,7 +40,7 @@ Install it just like any other port:<br>
 - The start command is: brut :)<br><br>
 
 Or build as a standalone binary:<br>
-1. Download the source files (without the /ports and /screenshots folder). I will add a tarball in the future.
+1. Download the source files (no need for the /ports, /screenshots, /binary folder).
 2. Make sure you have gtk3 and sudo installed.<br>
 3. Run "make LOCALBASE=/usr/local"<br>
 4. Start the binary (./brut).<br><br>
@@ -49,5 +48,3 @@ Or build as a standalone binary:<br>
 Or download the binary located under /binary/brut (compiled on 12.1 amd64).<br>
 Change permissions, "chmod +x ./brut", then run it.<br><br>
 
-6. How to uninstall?<br>
-run "pkg remove brut".<br><br>
