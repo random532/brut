@@ -400,7 +400,7 @@ GtkWidget *user_treeview() {
 	while( fgets(line, sizeof line, fp) ) {
 
 		/* Cosmetics. */
-		if(&line[0] != '\0') {	
+		if(line[0] != '\0') {	
 			int len = strlen(line);
 			line[len-1] = '\0';
 		}

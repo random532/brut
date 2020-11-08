@@ -366,7 +366,7 @@ GtkWidget *group_treeview() {
 
 	/* Get a line */
 	while( fgets(line, sizeof line, fp) ) {
-		if(&line[0] != '\0') {
+		if(line[0] != '\0') {
 			
 		int len = strlen(line);
 		line[len-1] = '\0';
@@ -398,7 +398,7 @@ GtkWidget *group_treeview() {
 	
 		gtk_tree_store_append(t, &parent, NULL);
 		gtk_tree_store_set(t, &parent, 0, name, 1, pw, 2, id, -1);
-		if(&line[i+1] != '\0')
+		if(line[i+1] != '\0')
 			gtk_tree_store_set(t, &parent, 3, memb, -1);
 	}
 		memset(line, 0, size);
