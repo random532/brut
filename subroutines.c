@@ -399,26 +399,25 @@ void ask_cb(GtkDialog *dialog, gint response_id, gpointer cmd) {
 /* 
  * Execute a command.
  * Return the result in a buffer.
- * We can only read CMDSIZE per line, which is ~200 chars.
+ * We only read MAXLINE chars per line, which is 250.
  */
- 
+
 char* command(char *cmd) {
 
 	if(cmd == NULL)
 		return NULL;
 
-	char line[CMDSIZE];
+	char line[MAXLINE];
 	int len;	/* Characters read. */
 	char *buf;
 	int buflen;	/* The buffer might grow in size. */
 
-	
-	buflen = CMDSIZE + 2;
+	buflen = MAXLINE + 2;
 	buf = malloc(buflen);
 	if(buf == NULL)
 		return NULL;
 
-	memset(line, 0, CMDSIZE);
+	memset(line, 0, MAXLINE);
 	memset(buf, 0, buflen);
 
 	FILE *fp = popen(cmd, "r");
@@ -426,7 +425,7 @@ char* command(char *cmd) {
 		msg("fopen failed");
 		return NULL;
 	}
-	while( fgets(line, CMDSIZE, fp)) {
+	while( fgets(line, MAXLINE, fp)) {
 		
 		/* Add contents to our buffer. */
 		len = strlen(line);
@@ -437,7 +436,7 @@ char* command(char *cmd) {
 		buf = realloc(buf, buflen);
 		if(buf == NULL)
 			return NULL;
-		memset(line, 0, CMDSIZE);
+		memset(line, 0, MAXLINE);
 	}
 	pclose(fp);
 	

@@ -23,6 +23,7 @@
 #define LANG_DE 1
 
 #define CMDSIZE 150
+#define MAXLINE	250
 #define ENTRY_MAX 8
 
 	/* column header for 2 treeviews */
@@ -114,16 +115,24 @@ GtkWidget *tab2;
 GtkWidget *tab3;
 GtkWidget *tab4;
 GtkWidget *tab5;
+GtkWidget *tab6;
+GtkWidget *tab7;
 
 /* Each tab has one box that serves as a reference point. */
+/* Global in case we redraw the tab. */
 GtkWidget *controlbox;	/* Control */
 GtkWidget *diskbox; 	/* Disks */
 GtkWidget *abox;		/* About */
 GtkWidget *userbox;		/* User */
 GtkWidget *groupbox;	/* Groups */
 GtkWidget *timebox;		/* Time */
+GtkWidget *taskbox;		/* Tasks */
+GtkWidget *configbox;	/* Config files */
 
 /* More disk related widgets */
+
+/* We generally try to avoid global pointers to Widgets
+ * that only belong to one particular tab. */
 GtkWidget *box;
 GtkWidget *scrolled_window;
 GtkWidget *combo_toplevel;
@@ -208,6 +217,11 @@ typedef struct {
 	char cgroups[30];
 	char ctime1[40];
 	char ctime2[30];
+	char ctime3[40];
+	char ctasks[30];
+	char csystem[10];
+	char cconfigfiles[40];
+	char cabout[30];
 	
 	/* Group options */
 	char gname[10];
@@ -234,7 +248,7 @@ typedef struct {
 	char uremove[20];
 	char uremove1[60];
 
-
+	/* Time tab */
 	char tsettime[20];
 	char tsetzone[30];
 	char tyear[10];
@@ -248,6 +262,10 @@ typedef struct {
 	char tsync[50];
 	char ttooltip[40];
 
+	/* config tab */
+	char csave[15];
+	char cfchose[30];
+
 	/* About */
 	char about[250];
 
@@ -258,6 +276,8 @@ typedef struct {
 	char tababout[10];
 	char tabuser[10];
 	char tabtime[10];
+	char tabtasks[10];
+	char tabconfig[10];
 } lang;
 lang l;
 
@@ -436,6 +456,12 @@ void execute_me(char *, int);
 
 /* user.c */
 void users();
+
+/* tasks */
+void tasks();
+
+/* config files */
+void config();
 
 /* disk.c */
 void redraw_cb (GtkMenuItem *, gpointer);

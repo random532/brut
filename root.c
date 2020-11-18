@@ -13,7 +13,7 @@ void update_view() {
 	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (tabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (tabs), n));
 	
 	if(strcmp(tab, "Disks") == 0) {
-	
+
 		/* redraw_cb() can be called. */
 		/* but this is nicer. */
 		on_toplevel_changed();
@@ -29,6 +29,12 @@ void update_view() {
 	else if(strcmp(tab, l.tabuser) == 0) {
 		gtk_widget_destroy(userbox);
 		users();
+	}
+
+	else if(strcmp(tab, l.tabconfig) == 0) {
+		printf("redrawing config box!\n");
+		gtk_widget_destroy(configbox);
+		config();
 	}
 }
 

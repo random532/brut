@@ -5,7 +5,7 @@ void top_window() {
 	/* main window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
 	gtk_window_set_title (GTK_WINDOW (window), "Best Admin ever");
-	gtk_widget_set_size_request (window, 800, 450); /* width, height */
+	gtk_widget_set_size_request (window, 800, 500); /* width, height */
 	gtk_window_set_position (GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
 	g_signal_connect(window, "destroy", G_CALLBACK(gtk_main_quit), NULL);
@@ -32,6 +32,10 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 		users();
 	else if(strcmp(tab, l.tabtime) == 0)
 		timetab();
+	else if(strcmp(tab, l.tabtasks) == 0)
+		tasks();
+	else if(strcmp(tab, l.tabconfig) == 0)
+		config();
 
 	/* Clear log info. */
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow)), "      ", 6);
@@ -45,7 +49,11 @@ void add_tabs() {
 	 */
 	
 	tabs = gtk_notebook_new();
+
 	gtk_notebook_set_show_border(GTK_NOTEBOOK (tabs), FALSE);
+	gtk_notebook_set_show_tabs(GTK_NOTEBOOK (tabs), FALSE);
+	gtk_notebook_set_scrollable(GTK_NOTEBOOK (tabs), TRUE);
+
 	gtk_container_add (GTK_CONTAINER (fixed), tabs);
 
 	tab0 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
@@ -54,19 +62,27 @@ void add_tabs() {
 	tab3 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab4 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab5 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
-	
+	tab6 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tab7 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+
 	gtk_container_set_border_width(GTK_CONTAINER (tab1), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab2), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab3), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab4), 10);
+//	gtk_container_set_border_width(GTK_CONTAINER (tab5), 10);
+	gtk_container_set_border_width(GTK_CONTAINER (tab6), 10);
+	gtk_container_set_border_width(GTK_CONTAINER (tab7), 10);
+
 
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab0, gtk_label_new(l.tabcontrol));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab1, gtk_label_new(l.tabdisks));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab4, gtk_label_new(l.tabtime));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab6, gtk_label_new(l.tabtasks));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab7, gtk_label_new(l.tabconfig));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
-	
+
 	g_signal_connect_after(G_OBJECT (tabs), "switch-page", G_CALLBACK(on_tabs_changed), NULL);
 }
 

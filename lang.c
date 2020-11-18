@@ -40,11 +40,16 @@ lang en = {
 	.ctitle="<b>Control Panel</b>",
 	.chardware="Hardware",
 	.cdisks="<a href=\" \"> disks</a>",
-	.caccount="Account Management",
+	.caccount="Accounts",
 	.cuser="<a href=\" \"> User</a>",
 	.cgroups="<a href=\" \"> Groups</a>",
-	.ctime1="Clock, Date, Timezone",
-	.ctime2="<a href=\" \"> Time</a>",
+	.ctime1="Date, Time, Jobs",
+	.ctime2="<a href=\" \"> Date/Time</a>",
+	.ctime3="Date, Time, Timezone",
+	.ctasks="<a href=\" \"> cron</a>",
+	.csystem="System",
+	.cconfigfiles="<a href=\" \"> Config files</a>",
+	.cabout="<a href=\" \"> About</a>",
 
 	/* groups */
 	.gname="Name",
@@ -85,6 +90,10 @@ lang en = {
 	.tsync="Synchronize with network time, once:",
 	.ttooltip="Takes effect after next logout/login",
 
+	/* Config */
+	.csave="Save",
+	.cfchose="Choose a file",
+
 	/* About */
 	.about="Hello.\n\nThis program makes use of GTK (GIMP Toolkit). See: www.gtk.org\n\
 For bugs, questions, feedback, open an issue here: github.com/random532/brut/issues\n\
@@ -96,8 +105,9 @@ Have fun,\nBrut.\n",
 	.tababout="About",
 	.tabgroup="Groups",
 	.tabuser="User",
-	.tabtime="Time"
-
+	.tabtime="Time",
+	.tabtasks="Tasks",
+	.tabconfig="Config"
 };
 
 lang de = {
@@ -139,11 +149,16 @@ lang de = {
 	.ctitle="<b>Systemsteuerung</b>",
 	.chardware="Hardware",
 	.cdisks="<a href=\" \"> Disks</a>",
-	.caccount="Account Management",
+	.caccount="Accounts",
 	.cuser="<a href=\" \"> Benutzer</a>",
 	.cgroups="<a href=\" \"> Gruppen</a>",
-	.ctime1="Uhrzeit, Datum, Zeitzone",
+	.ctime1="Uhrzeit, Datum, Jobs",
 	.ctime2="<a href=\" \"> Zeit</a>",
+	.ctime3="Uhrzeit, Datum, Zeitzone",
+	.ctasks="<a href=\" \"> Cron</a>",
+	.csystem="System",
+	.cconfigfiles="<a href=\" \"> Konfigurations Dateien</a>",
+	.cabout="<a href=\" \"> Über</a>",
 
 	/* groups */
 	.gname="Name",
@@ -184,6 +199,10 @@ lang de = {
 	.tsync="Zeit aus dem Netzwerk beziehen, einmalig",
 	.ttooltip="Erfordert logout/login",
 
+	/* Config */
+	.csave="Speichern",
+	.cfchose="Wähle eine Datei",
+
 	/* About tab */
 	.about="Hallo.\n\nDieses Programm benutzt GTK (GIMP Toolkit). Siehe: www.gtk.org\n\
 Bei Bugs, Fragen, Problemen, öffne ein Problemreport: github.com/random532/brut/issues\n\
@@ -195,7 +214,9 @@ Viel Spass,\nBrut.\n",
 	.tababout="Über",
 	.tabgroup="Gruppen",
 	.tabuser="Benutzer",
-	.tabtime="Uhrzeit"
+	.tabtime="Uhrzeit",
+	.tabtasks="Aufgaben",
+	.tabconfig="Konfig"
 };
 
 void en_lang() {

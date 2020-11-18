@@ -14,6 +14,8 @@ void update_lang() {
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab4, gtk_label_new(l.tabtime));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));	
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab6, gtk_label_new(l.tabtasks));	
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab7, gtk_label_new(l.tabconfig));	
 
 	on_tabs_changed(NULL, NULL);
 	redraw_menubar();
@@ -45,6 +47,10 @@ void font_dec (GtkMenuItem *item, gpointer user_data) {
 	change_fontsize(FALSE); /* decrease */
 }
 
+void back_cb (GtkMenuItem *item, gpointer user_data) {    
+		gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 0);
+}
+
 void add_menubar() {
 	
 	GtkWidget * menuBar = gtk_menu_bar_new();	
@@ -56,6 +62,10 @@ void add_menubar() {
    	gtk_menu_item_set_submenu (GTK_MENU_ITEM (menuItem1), menu_app);
     gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
 	
+	/* App - Back */
+	GtkWidget *app_back = gtk_menu_item_new_with_mnemonic ("Back");
+    gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_back);
+
 	/* App - Quit */
 	GtkWidget *app_quit = gtk_menu_item_new_with_mnemonic (l.mquit);
     gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_quit);
@@ -99,13 +109,14 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_font_sub), item_fontdec);
 
 
+
 	/*  callback functions */
 	g_signal_connect_swapped (app_quit, "activate", G_CALLBACK(gtk_main_quit), NULL);
+	g_signal_connect (app_back, "activate", G_CALLBACK (back_cb), NULL);
 	g_signal_connect (item_lang_de, "activate", G_CALLBACK (change_lang_de), NULL);
 	g_signal_connect (item_lang_en, "activate", G_CALLBACK (change_lang_en), NULL);
 	g_signal_connect (item_fontinc, "activate", G_CALLBACK (font_inc), NULL);
 	g_signal_connect (item_fontdec, "activate", G_CALLBACK (font_dec), NULL);
-
 
 	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
 	gtk_box_reorder_child(GTK_BOX(fixed), menuBar, 0);

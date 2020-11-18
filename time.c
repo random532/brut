@@ -219,7 +219,7 @@ void fill_region() {
 
 void add_time() {
 
-	gtk_container_add(GTK_CONTAINER (timebox), gtk_label_new(l.ctime1));
+	gtk_container_add(GTK_CONTAINER (timebox), gtk_label_new(l.ctime3));
 	gtk_container_add(GTK_CONTAINER (timebox), gtk_separator_new(GTK_ORIENTATION_HORIZONTAL));
 	
 	/* Grid */

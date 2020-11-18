@@ -13,7 +13,7 @@ void remove_groupconfirm() {
 
 void execute_me(char *cmd, int what) {
 	
-	todo = what;
+	todo = what; //XXX: unused???
 
 	if(!root() )  { /* try sudo */
 		if(pw_needed() ) {

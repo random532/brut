@@ -352,7 +352,7 @@ GtkWidget *user_treeview() {
 
 	/* Add columns  */
 	int cnt = 0;
-	while( (cnt <= UCOL) && (strlen(usercol[cnt]) >0) ) {
+	while((cnt <= UCOL) && (strlen(usercol[cnt]) >0)) {
 	
 		char *col_title = usercol[cnt];
 
@@ -387,7 +387,7 @@ GtkWidget *user_treeview() {
 	int n = 0;
 	cnt = 0;
 
-	FILE * fp = popen(buf, "r");
+	FILE *fp = popen(buf, "r");
 	if ( fp == NULL ) {
 		printf("could not execute pw usershow -a\n");	
 		return NULL;
@@ -414,6 +414,8 @@ GtkWidget *user_treeview() {
 		else
 			cnt++;
 	}
+
+	pclose(fp);
 	return userview;
 }
 
@@ -425,7 +427,7 @@ void users() {
 	/* A top level container. */
 	userbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 15);
 	gtk_container_add (GTK_CONTAINER (tab3), userbox);
-	
+
 	/* A treeview that contains all users. */
 	user_treeview();
 
