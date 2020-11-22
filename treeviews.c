@@ -72,12 +72,12 @@ GtkWidget *create_treeview1() {
 	g_object_set(view, "enable-grid-lines", GTK_TREE_VIEW_GRID_LINES_BOTH, NULL);
 	
 	int cnt = 0;
-	while( (cnt < COLUMNS) && (strlen(columns[cnt]) >0 ) ) {
+	while((cnt < COLUMNS) && (strlen(columns[cnt]) >0 )) {
 	
 		/* First column */
-		char * col_title = columns[cnt];
+		char *col_title = columns[cnt];
 
-		GtkTreeViewColumn   * col = gtk_tree_view_column_new();
+		GtkTreeViewColumn *col = gtk_tree_view_column_new();
 		gtk_tree_view_column_set_title(col, col_title);
 		gtk_tree_view_column_set_clickable(col, TRUE);
 		gtk_tree_view_column_set_reorderable(col, TRUE);
@@ -214,7 +214,7 @@ int populate_treeview() {
 	return (1);
 }
 
-int populate_treeview1( char * one_disk) {
+int populate_treeview1( char *one_disk) {
 
 	/* 
 	 * Add disk and slice information to the treeview.

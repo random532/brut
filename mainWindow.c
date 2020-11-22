@@ -1,4 +1,4 @@
-/* includes and definitions */
+/* Main window  */
 #include "disk.h"
 
 void top_window() {
@@ -20,7 +20,15 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 	
 	if(tab == NULL)
 		return;
-	else if(strcmp(tab, l.tabcontrol) == 0)
+
+	/* Show or hide the "back" button. */
+	if(strcmp(tab, l.tabcontrol) == 0)
+		gtk_widget_hide(bback);
+	else
+		gtk_widget_show(bback);
+
+	/* Draw the changed tab. */
+	if(strcmp(tab, l.tabcontrol) == 0)
 		control();
 	else if(strcmp(tab, l.tabdisks) == 0)
 		disk();
@@ -36,6 +44,15 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 		tasks();
 	else if(strcmp(tab, l.tabconfig) == 0)
 		config();
+	else if(strcmp(tab, l.tabdevices) == 0)
+		devices();
+	else if(strcmp(tab, l.tabwlan) == 0)
+		wireless();
+	else if(strcmp(tab, l.tabaudio) == 0)
+		audio();
+	else if(strcmp(tab, l.tablan) == 0)
+		lan();
+
 
 	/* Clear log info. */
 	gtk_text_buffer_set_text(gtk_text_view_get_buffer(GTK_TEXT_VIEW (logwindow)), "      ", 6);
@@ -64,6 +81,10 @@ void add_tabs() {
 	tab5 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab6 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab7 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tab8 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tab9 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tab10 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tab11 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
 	gtk_container_set_border_width(GTK_CONTAINER (tab1), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab2), 10);
@@ -72,16 +93,23 @@ void add_tabs() {
 //	gtk_container_set_border_width(GTK_CONTAINER (tab5), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab6), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab7), 10);
-
+	gtk_container_set_border_width(GTK_CONTAINER (tab8), 10);
+	gtk_container_set_border_width(GTK_CONTAINER (tab9), 10);
+	gtk_container_set_border_width(GTK_CONTAINER (tab10), 10);
+	gtk_container_set_border_width(GTK_CONTAINER (tab11), 10);
 
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab0, gtk_label_new(l.tabcontrol));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab1, gtk_label_new(l.tabdisks));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab3, gtk_label_new(l.tabuser));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab2, gtk_label_new(l.tabgroup));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab4, gtk_label_new(l.tabtime));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab6, gtk_label_new(l.tabtasks));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab7, gtk_label_new(l.tabconfig));
-	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab8, gtk_label_new(l.tabdevices));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab9, gtk_label_new(l.tabwlan));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab10, gtk_label_new(l.tablan));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab11, gtk_label_new(l.tabaudio));
 
 	g_signal_connect_after(G_OBJECT (tabs), "switch-page", G_CALLBACK(on_tabs_changed), NULL);
 }
@@ -102,6 +130,38 @@ void add_text(GtkWidget *t) {
 	gtk_text_buffer_set_text(GTK_TEXT_BUFFER (gtk_text_view_get_buffer(GTK_TEXT_VIEW(logwindow))), "      ", 6);
 }
 
+void back_clicked(GtkWidget *b, gpointer p) {
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 0);
+}
+
+GtkWidget *back_button() {
+
+//	GtkWidget *image = gtk_image_new_from_file("image.jpg");
+//	GtkWidget *button = gtk_button_new();
+//	gtk_button_set_image(GTK_BUTTON (button), image);
+	GtkWidget *button = gtk_button_new_with_label("Back");
+	gtk_container_add (GTK_CONTAINER (menubox), button);
+	g_signal_connect(button, "clicked", G_CALLBACK(back_clicked), NULL);
+	return button;
+}
+
+void add_menubox() {
+	
+	/* 
+	 * Menu box has two (horizontal) items. 
+	 * A menubar, and a "back" button.
+	 */
+
+	menubox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 520);
+	gtk_box_pack_start(GTK_BOX(fixed), menubox, FALSE, TRUE, 0);
+	gtk_box_reorder_child(GTK_BOX(fixed), menubox, 0);
+
+	add_menubar();
+
+	bback = back_button();
+
+	gtk_widget_show_all(menubox);
+}
 int main(int argc, char *argv[]) {
 	
 	/* default options */
@@ -159,12 +219,13 @@ int main(int argc, char *argv[]) {
 	/* The box contains 3 items:
 	 * a menu bar, Tabs, and a debug info.
 	 */
-	add_menubar();
+	add_menubox();
 	add_tabs();
 	add_text(fixed);
 	
 	/*  Let the user see everything. */
 	gtk_widget_show_all(window);
+	gtk_widget_hide(bback);
 
 	/* and go! */
 	gtk_main();

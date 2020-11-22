@@ -14,7 +14,7 @@ void add_grid() {
 	
 	/* A grid */
 	grid = gtk_grid_new();
-	gtk_grid_insert_column(GTK_GRID(grid), 3);
+//	gtk_grid_insert_column(GTK_GRID(grid), 3);
 	gtk_box_pack_start(GTK_BOX(diskbox), grid, FALSE, TRUE, 0);
 	gtk_grid_set_column_homogeneous(GTK_GRID(grid), FALSE);
 	gtk_grid_set_column_spacing(GTK_GRID(grid), 7);
@@ -89,11 +89,11 @@ void disk() {
 
 	/* It has two boxes. */
 	add_grid(); /* ... with a combo box and a refresh button. */
-	add_box();	/* ... with a treeview and the editor. */
+	add_box();	/* ... for the treeview and the editor. */
 
 	/* Populate the scrolled window once. */
 	gtk_combo_box_set_active( GTK_COMBO_BOX (combo_toplevel), 0);
-	
+
 	gtk_widget_show_all(diskbox);
 
 	/* At last, add the editor. */

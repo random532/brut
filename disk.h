@@ -26,12 +26,22 @@
 #define MAXLINE	250
 #define ENTRY_MAX 8
 
-	/* column header for 2 treeviews */
+/* column header for 2 disk treeviews */
 #define COLUMNS  27
 char columns[COLUMNS][26];
 #define COL 11
 char column[COL][25];
 
+
+/* pci devices column header */
+#define PCICOL 10 /* lol.. DEVCLASS */
+char pcicol[PCICOL][20];
+
+/* usb devices column header */
+#define USBCOL 10
+char usbcol[USBCOL][20];
+
+/* Treeview column positions */
 #define POS_DISK	0
 #define POS_PART	1
 #define POS_TYPE	2
@@ -104,19 +114,24 @@ GtkWidget *window; 	/* main window */
 GtkWidget *fixed;
 
 /* More toplevel widgets */
-GtkWidget *menu;
+GtkWidget *menubox;
+GtkWidget *bback;
 GtkWidget *logwindow;
 
 /* All tabs */
-GtkWidget *tabs;
-GtkWidget *tab0;
-GtkWidget *tab1;
-GtkWidget *tab2;
-GtkWidget *tab3;
-GtkWidget *tab4;
-GtkWidget *tab5;
-GtkWidget *tab6;
-GtkWidget *tab7;
+GtkWidget *tabs;	/* GtkNotebook */
+GtkWidget *tab0;	/* Control panel */
+GtkWidget *tab1;	/* Disks */
+GtkWidget *tab2;	/* Groups */
+GtkWidget *tab3;	/* User */
+GtkWidget *tab4;	/* Time */
+GtkWidget *tab5;	/* About */
+GtkWidget *tab6;	/* Tasks */
+GtkWidget *tab7;	/* Config files */
+GtkWidget *tab8;	/* Devices */
+GtkWidget *tab9;	/* Wireless */
+GtkWidget *tab10;	/* Ethernet */
+GtkWidget *tab11;	/* Audio */
 
 /* Each tab has one box that serves as a reference point. */
 /* Global in case we redraw the tab. */
@@ -128,6 +143,10 @@ GtkWidget *groupbox;	/* Groups */
 GtkWidget *timebox;		/* Time */
 GtkWidget *taskbox;		/* Tasks */
 GtkWidget *configbox;	/* Config files */
+GtkWidget *devbox;		/* Devices */
+GtkWidget *wbox;		/* Wireless */
+GtkWidget *audiobox;	/* Audio */
+GtkWidget *lanbox;		/* Ethernet */
 
 /* More disk related widgets */
 
@@ -190,6 +209,7 @@ typedef struct {
 	char mfontdec[25];
 	char medit[25];
 	char mabort[15];
+	char mback[10];
 
 	/* hints */
 	char no_root[35];
@@ -212,6 +232,7 @@ typedef struct {
 	char ctitle[30];
 	char chardware[20];
 	char cdisks[30];
+	char cdevices[30];
 	char caccount[30];
 	char cuser[30];
 	char cgroups[30];
@@ -222,7 +243,11 @@ typedef struct {
 	char csystem[10];
 	char cconfigfiles[40];
 	char cabout[30];
-	
+	char cnetwork[20];
+	char cwlan[30];
+	char clan[35];
+	char caudio[30];
+
 	/* Group options */
 	char gname[10];
 	char gid[10];
@@ -278,6 +303,11 @@ typedef struct {
 	char tabtime[10];
 	char tabtasks[10];
 	char tabconfig[10];
+	char tabdevices[20];
+	char tabwlan[20];
+	char tablan[10];
+	char tabaudio[10];
+
 } lang;
 lang l;
 
@@ -445,23 +475,25 @@ int volume_cmp(char *, char *);
 /* mainWindow.c */
 /* int main() */
 void top_window();
+void add_menubox();
 void on_tabs_changed(GtkMenuItem *item, gpointer user_data);
 
-/* about.c */
-void about();
 
 /* groups.c */
 void groups();
 void execute_me(char *, int);
 
-/* user.c */
-void users();
+void about();	/* about.c */
+void users();	/* user.c */
+void tasks();	/* tasks.c */
+void config();	/* config.c */
+void devices();	/* devices.c */
+void lan();		/* Ethernet */
+void wireless();	/* wireless.c */
+void AfterRootCmd();
 
-/* tasks */
-void tasks();
-
-/* config files */
-void config();
+void audio();	/* audio.c */
+void cosmetics(char *); 
 
 /* disk.c */
 void redraw_cb (GtkMenuItem *, gpointer);

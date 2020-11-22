@@ -18,6 +18,7 @@ lang en = {
 	.mfontdec="_Decrease",
 	.medit="_Editor",
 	.mabort="Cancel",
+	.mback="Back",
 
 	/* hints */
 	.no_root="not Root! Sorry.",
@@ -39,7 +40,8 @@ lang en = {
 	/* Control Panel */
 	.ctitle="<b>Control Panel</b>",
 	.chardware="Hardware",
-	.cdisks="<a href=\" \"> disks</a>",
+	.cdisks="<a href=\" \"> Disks</a>",
+	.cdevices="<a href=\" \"> Devices</a>",
 	.caccount="Accounts",
 	.cuser="<a href=\" \"> User</a>",
 	.cgroups="<a href=\" \"> Groups</a>",
@@ -50,6 +52,11 @@ lang en = {
 	.csystem="System",
 	.cconfigfiles="<a href=\" \"> Config files</a>",
 	.cabout="<a href=\" \"> About</a>",
+	.cnetwork="Network",
+	.cwlan="<a href=\" \"> Wireless</a>",
+	.clan="<a href=\" \"> Ethernet</a>",
+	.caudio="<a href=\" \"> Sound</a>",
+
 
 	/* groups */
 	.gname="Name",
@@ -107,7 +114,12 @@ Have fun,\nBrut.\n",
 	.tabuser="User",
 	.tabtime="Time",
 	.tabtasks="Tasks",
-	.tabconfig="Config"
+	.tabconfig="Config",
+	.tabdevices="Devices",
+	.tabwlan="Wireless",
+	.tablan="Ethernet",
+	.tabaudio="Sound"
+
 };
 
 lang de = {
@@ -127,6 +139,7 @@ lang de = {
 	.mfontdec="ver_kleinern",
 	.medit="_Editor",
 	.mabort="Abbrechen",
+	.mback="Zurück",
 
 	/* hints */
 	.no_root="Du bist kein Root. Sorry.",
@@ -149,6 +162,7 @@ lang de = {
 	.ctitle="<b>Systemsteuerung</b>",
 	.chardware="Hardware",
 	.cdisks="<a href=\" \"> Disks</a>",
+	.cdevices="<a href=\" \"> Geräte</a>",
 	.caccount="Accounts",
 	.cuser="<a href=\" \"> Benutzer</a>",
 	.cgroups="<a href=\" \"> Gruppen</a>",
@@ -159,6 +173,10 @@ lang de = {
 	.csystem="System",
 	.cconfigfiles="<a href=\" \"> Konfigurations Dateien</a>",
 	.cabout="<a href=\" \"> Über</a>",
+	.cnetwork="Netzwerk",
+	.cwlan="<a href=\" \"> WLAN</a>",
+	.clan="<a href=\" \"> LAN</a>",
+	.caudio="<a href=\" \"> Sound</a>",
 
 	/* groups */
 	.gname="Name",
@@ -216,7 +234,11 @@ Viel Spass,\nBrut.\n",
 	.tabuser="Benutzer",
 	.tabtime="Uhrzeit",
 	.tabtasks="Aufgaben",
-	.tabconfig="Konfig"
+	.tabconfig="Konfig",
+	.tabdevices="Hardware",
+	.tabwlan="Wlan",
+	.tablan="LAN",
+	.tabaudio="Sound"
 };
 
 void en_lang() {
@@ -275,6 +297,32 @@ void en_lang() {
 	strcpy(usercol[POS_UDESC], "Full Name");
 	strcpy(usercol[POS_UHOME], "Home directory");
 	strcpy(usercol[POS_USHELL], "Login Shell");
+
+
+	/* Pci devices columns */
+	strcpy(pcicol[0], "Name");
+	strcpy(pcicol[1], "Description");
+	strcpy(pcicol[2], "Vendor");
+	strcpy(pcicol[3], "Card");
+	strcpy(pcicol[4], "Chip");
+	strcpy(pcicol[5], "Slot");
+	strcpy(pcicol[6], "Class");
+	strcpy(pcicol[7], "Class");
+	strcpy(pcicol[8], "Sublass");
+	strcpy(pcicol[9], "--");
+	
+	/* Usb device columns */
+	strcpy(usbcol[0], "Name");
+	strcpy(usbcol[1], "Description");
+	strcpy(usbcol[2], "Bus");
+	strcpy(usbcol[3], "cfg");
+	strcpy(usbcol[4], "Mode");
+	strcpy(usbcol[5], "Speed");
+	strcpy(usbcol[6], "Power");
+	strcpy(usbcol[7], "Power2");
+	strcpy(usbcol[8], "empty");
+	strcpy(usbcol[9], "empty");
+
 }
 
 void de_lang() {
@@ -331,4 +379,29 @@ void de_lang() {
 	strcpy(usercol[POS_UDESC], "Ganzer Name");
 	strcpy(usercol[POS_UHOME], "Heimatverzeichnis");
 	strcpy(usercol[POS_USHELL], "Shell");
+
+	/* pci devices columns */
+	strcpy(pcicol[0], "Name");
+	strcpy(pcicol[1], "Beschreibung");
+	strcpy(pcicol[2], "Hersteller");
+	strcpy(pcicol[3], "Karte");
+	strcpy(pcicol[4], "Chip");
+	strcpy(pcicol[5], "Steckplatz");
+	strcpy(pcicol[6], "Typ");
+	strcpy(pcicol[7], "Typ");
+	strcpy(pcicol[8], "Subtyp");
+	strcpy(pcicol[9], "--");
+
+	/* Usb device columns */
+	strcpy(usbcol[0], "Name");
+	strcpy(usbcol[1], "Beschreibung");
+	strcpy(usbcol[2], "Bus");
+	strcpy(usbcol[3], "cfg");
+	strcpy(usbcol[4], "Modus");
+	strcpy(usbcol[5], "Geschwindigkeit");
+	strcpy(usbcol[6], "Power");
+	strcpy(usbcol[7], "Strom");
+	strcpy(usbcol[8], "--");
+	strcpy(usbcol[9], "--");
+
 }

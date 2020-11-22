@@ -1,8 +1,20 @@
 #include "disk.h"
 
 void redraw_menubar() {
-	gtk_widget_destroy(menu);
-	add_menubar();
+
+	gtk_widget_destroy(menubox);
+	add_menubox();
+
+	/* Show or hide the "back" button. */
+	gint n = gtk_notebook_get_current_page(GTK_NOTEBOOK (tabs));
+	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (tabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (tabs), n));
+	
+	if(tab == NULL)
+		return;
+	if(strcmp(tab, l.tabcontrol) == 0)
+		gtk_widget_hide(bback);
+	else
+		gtk_widget_show(bback);
 }
 
 void update_lang() {
@@ -16,7 +28,12 @@ void update_lang() {
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab5, gtk_label_new(l.tababout));	
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab6, gtk_label_new(l.tabtasks));	
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab7, gtk_label_new(l.tabconfig));	
-
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab7, gtk_label_new(l.tabconfig));	
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab8, gtk_label_new(l.tabdevices));	
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab9, gtk_label_new(l.tabwlan));
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab10, gtk_label_new(l.tablan));
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab11, gtk_label_new(l.tabaudio));
+		
 	on_tabs_changed(NULL, NULL);
 	redraw_menubar();
 }
@@ -54,7 +71,7 @@ void back_cb (GtkMenuItem *item, gpointer user_data) {
 void add_menubar() {
 	
 	GtkWidget * menuBar = gtk_menu_bar_new();	
-	menu = menuBar;	/* it is global now */
+//	menu = menuBar;	/* it is global now */
 
 	/* "Application" */
 	GtkWidget *menu_app = gtk_menu_new();
@@ -109,7 +126,6 @@ void add_menubar() {
 	gtk_menu_shell_append (GTK_MENU_SHELL (menu_font_sub), item_fontdec);
 
 
-
 	/*  callback functions */
 	g_signal_connect_swapped (app_quit, "activate", G_CALLBACK(gtk_main_quit), NULL);
 	g_signal_connect (app_back, "activate", G_CALLBACK (back_cb), NULL);
@@ -118,8 +134,12 @@ void add_menubar() {
 	g_signal_connect (item_fontinc, "activate", G_CALLBACK (font_inc), NULL);
 	g_signal_connect (item_fontdec, "activate", G_CALLBACK (font_dec), NULL);
 
-	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
-	gtk_box_reorder_child(GTK_BOX(fixed), menuBar, 0);
+	/* Add to container. */
+	gtk_container_add (GTK_CONTAINER (menubox), menuBar);
+
+//	gtk_widget_show_all(bbox);
+//	gtk_box_pack_start(GTK_BOX(fixed), menuBar, FALSE, TRUE, 0);
+//	gtk_box_reorder_child(GTK_BOX(fixed), menuBar, 0);
 	
-	gtk_widget_show_all(menuBar);
+//	gtk_widget_show_all(menuBar);
 }

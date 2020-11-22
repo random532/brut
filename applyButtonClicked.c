@@ -99,7 +99,7 @@ char *get_combo_box_partition(int inform) {
 
 /* while we are here: */
 /* make it char instead of const char */
-/* also format it!! */
+/* also format it. */
 
 	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
 	if(gpartition == NULL) {

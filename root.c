@@ -12,7 +12,7 @@ void update_view() {
 	gint n = gtk_notebook_get_current_page(GTK_NOTEBOOK (tabs));
 	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (tabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (tabs), n));
 	
-	if(strcmp(tab, "Disks") == 0) {
+	if(strcmp(tab, l.tabdisks) == 0) {
 
 		/* redraw_cb() can be called. */
 		/* but this is nicer. */
@@ -32,10 +32,17 @@ void update_view() {
 	}
 
 	else if(strcmp(tab, l.tabconfig) == 0) {
-		printf("redrawing config box!\n");
 		gtk_widget_destroy(configbox);
 		config();
 	}
+	else if(strcmp(tab, l.tabdevices) == 0) {
+		gtk_widget_destroy(devbox);
+		devices();
+	}
+	else if(strcmp(tab, l.tabwlan) == 0) {
+		AfterRootCmd();
+	}
+
 }
 
 void inform_user(int error, int sudo_failed, char *buf) {
@@ -116,7 +123,7 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 
 	/* Restore GUI */
 	gtk_widget_destroy(passwbox);
-	gtk_widget_show(menu);
+	gtk_widget_show(menubox);
 	gtk_widget_show(tabs);
 	gtk_widget_show(logwindow);
 	update_view();
@@ -153,7 +160,7 @@ void o_cb(GtkMenuItem *item, gpointer cmd) {
 
 	/* Restore GUI */
 	gtk_widget_destroy(passwbox);
-	gtk_widget_show(menu);
+	gtk_widget_show(menubox);
 	gtk_widget_show(tabs);
 	gtk_widget_show(logwindow);
 	update_view();
@@ -165,7 +172,7 @@ void window_pw(char *cmd) {
 
 	/* this window asks for root password */
 	gtk_widget_hide(tabs);
-	gtk_widget_hide(menu);
+	gtk_widget_hide(menubox);
 	gtk_widget_hide(logwindow);
 
 	/* A top level container. */
