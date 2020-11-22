@@ -152,7 +152,7 @@ void add_menubox() {
 	 * A menubar, and a "back" button.
 	 */
 
-	menubox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 520);
+	menubox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 50);
 	gtk_box_pack_start(GTK_BOX(fixed), menubox, FALSE, TRUE, 0);
 	gtk_box_reorder_child(GTK_BOX(fixed), menubox, 0);
 
