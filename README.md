@@ -19,7 +19,6 @@ Among its features are:<br>
 2. How does it look?<br>
 
 Screenshots of early versions of brut in wayland/hikari:
-![](screenshot/grim8.png)
 ![](screenshot/grim1.png)
 ![](screenshot/grim4.png)
 
