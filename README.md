@@ -14,7 +14,7 @@ Among its features are:<br>
 - manage users/groups<br>
 - set time and timezone<br>
 - very basic wireless settings<br>
-- Inspect devices (usb, pci).<br>
+- see devices (usb, pci)<br>
 
 2. How does it look?<br>
 
