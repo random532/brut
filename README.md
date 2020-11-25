@@ -20,6 +20,8 @@ Among its features are:<br>
 
 Screenshots:<br>
 ![](screenshot/scrot20.png)
+![](screenshot/scrot21.png)
+![](screenshot/scrot22.png)
 ![](screenshot/scrot18.png)
 ![](screenshot/scrot19.png)
 
