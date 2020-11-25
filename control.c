@@ -1,52 +1,48 @@
 /* First tab - control panel */
 #include "disk.h"
 
-/* 
- * These callback functions switch the current tab.
- */
- 
-void disk_cb(GtkMenuItem *item, gpointer page) {  
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 1);
-}
+void control();
+void attach_hardware(GtkWidget *);
+void attach_time(GtkWidget *);
+void attach_accounts(GtkWidget *);
+void attach_network(GtkWidget *);
+void ChangeTab(GtkWidget *item, gpointer page);
 
-void user_cb(GtkMenuItem *item, gpointer page) {  
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 2);
-}
 
-void groups_cb(GtkMenuItem *item, gpointer page) {  
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 3);
-}
+void ChangeTab(GtkWidget *item, gpointer page) {
 
-void time_cb(GtkMenuItem *item, gpointer page) {  
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 4);
-}
+	int newtab = 0;
 
-void about_cb(GtkMenuItem *item, gpointer page) {
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 5);
-}
+	const gchar *label = gtk_label_get_label(GTK_LABEL(item));
+	if((label == NULL) || (strlen(label) == 0)) {
+		msg("control.c: cannot read label.");
+		return;
+	}
 
-void tasks_cb(GtkMenuItem *item, gpointer page) {
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 6);
-}
+	if(strcmp(label, l.cdisks) == 0)
+		newtab = 1;
+	else if(strcmp(label, l.cuser) == 0)
+		newtab = 2;
+	else if(strcmp(label, l.cgroups) == 0)
+		newtab = 3;
+	else if(strcmp(label, l.ctime2) == 0)
+		newtab = 4;
+	else if(strcmp(label, l.cabout) == 0)
+		newtab = 5;
+	else if(strcmp(label, l.cdevices) == 0)
+		newtab = 8;
+	else if(strcmp(label, l.ctasks) == 0)
+		newtab = 6;
+	else if(strcmp(label, l.caudio) == 0)
+		newtab = 11;
+	else if(strcmp(label, l.cconfigfiles) == 0)
+		newtab = 7;
+	else if(strcmp(label, l.cwlan) == 0)
+		newtab = 9;
+	else if(strcmp(label, l.clan) == 0)
+		newtab = 10;
 
-void system_cb(GtkMenuItem *item, gpointer page) {
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 7);
-}
-
-void devices_cb(GtkMenuItem *item, gpointer page) {  
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 8);
-}
-
-void wlan_cb(GtkMenuItem *item, gpointer page) {  
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 9);
-}
-
-void lan_cb(GtkMenuItem *item, gpointer page) {  
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 10);
-}
-
-void audio_cb(GtkMenuItem *item, gpointer page) {  
-	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), 11);
+	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), newtab);
 }
 
 /* Hardware widget */
@@ -60,13 +56,13 @@ void attach_hardware(GtkWidget *g) {
 	/* Disks */
 	GtkWidget *d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.cdisks);
-	g_signal_connect(d, "activate-link", G_CALLBACK (disk_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(hw), d);
 	
 	/* Devices */
 	d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.cdevices);
-	g_signal_connect(d, "activate-link", G_CALLBACK (devices_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(hw), d);
 }
 
@@ -80,13 +76,13 @@ void attach_time(GtkWidget *g) {
 	/* Time */
 	GtkWidget *d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.ctime2);
-	g_signal_connect(d, "activate-link", G_CALLBACK (time_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(c_disk), d);
 
 	/* Tasks */
 	GtkWidget *t = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(t), l.ctasks);
-	g_signal_connect(t, "activate-link", G_CALLBACK (tasks_cb), NULL);
+	g_signal_connect(t, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(c_disk), t);
 
 }
@@ -100,12 +96,12 @@ void attach_accounts(GtkWidget *g) {
 
 	GtkWidget *d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.cuser);
-	g_signal_connect(d, "activate-link", G_CALLBACK (user_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(c_disk), d);
 	
 	d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.cgroups);
-	g_signal_connect(d, "activate-link", G_CALLBACK (groups_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(c_disk), d);
 }
 
@@ -120,20 +116,20 @@ void attach_system(GtkWidget *g) {
 	/* Audio */
 	GtkWidget *d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.caudio);
-	g_signal_connect(d, "activate-link", G_CALLBACK (audio_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(csys), d);
 
 	/* Config */
 	d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.cconfigfiles);
-	g_signal_connect(d, "activate-link", G_CALLBACK (system_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(csys), d);
 	
 	/* About */
 	d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.cabout);
-	g_signal_connect(d, "activate-link", G_CALLBACK (about_cb), NULL);
-	gtk_container_add(GTK_CONTAINER(csys), d);	
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
+	gtk_container_add(GTK_CONTAINER(csys), d);
 }
 
 void attach_network(GtkWidget *g) {
@@ -146,13 +142,13 @@ void attach_network(GtkWidget *g) {
 	/* Wireless */
 	GtkWidget *d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.cwlan);
-	g_signal_connect(d, "activate-link", G_CALLBACK (wlan_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(cnet), d);
 
 	/* Ethernet */
 	d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.clan);
-	g_signal_connect(d, "activate-link", G_CALLBACK (lan_cb), NULL);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(cnet), d);
 }
 
@@ -175,7 +171,7 @@ void control() {
 
 	/* Grid view. */
 	GtkWidget *g = gtk_grid_new();
-	gtk_grid_insert_column(GTK_GRID(g), 2); // XXX: needed?
+//	gtk_grid_insert_column(GTK_GRID(g), 2); // XXX: needed?
 	gtk_box_pack_start(GTK_BOX(controlbox), g, FALSE, TRUE, 0);
 	gtk_grid_set_column_homogeneous(GTK_GRID(g), TRUE);
 	gtk_grid_set_column_spacing(GTK_GRID(g), 20);

@@ -1,6 +1,6 @@
 /*
  * TODO:
- * -Doublecheck all buffers that handle user input.
+ * -Bugs?
  */
 
 #include <stdio.h>
@@ -148,7 +148,7 @@ GtkWidget *wbox;		/* Wireless */
 GtkWidget *audiobox;	/* Audio */
 GtkWidget *lanbox;		/* Ethernet */
 
-/* More disk related widgets */
+/* Disk related widgets */
 
 /* We generally try to avoid global pointers to Widgets
  * that only belong to one particular tab. */

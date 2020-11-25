@@ -4,7 +4,18 @@
 GtkWidget *sndstat;
 GtkWidget *mxgrid;
 
+/* Functions */
 void add_mixer();
+void cosmetics(char *);
+gboolean is_default(char *);
+void cleanup_audio();
+void vol_cb(GtkWidget *item, GtkWidget *);
+void group_changed(GtkButton *, gpointer);
+GtkWidget *CreateRadio (GtkWidget *, GSList **, char *);
+void add_sndstat(GtkWidget *); 
+void add_mixer();
+GtkWidget *audio_scrolled(GtkWidget *);
+void audio();
 
 void cosmetics(char *line) {
 	/*Cosmetics */
@@ -22,8 +33,11 @@ gboolean is_default(char *line) {
 	end--;
 	if(strncmp(&line[end], ")", 1) == 0) 
 		return FALSE;
-	else
+	else {
+		if(strncmp(&line[end], "t", 1) == 0) /* default */ 
+			end = end - 7;
 		return TRUE;
+	}
 }
 
 void cleanup_audio() {

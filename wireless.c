@@ -82,7 +82,6 @@ char *GetBssid(char *string) {
 		start++;
 
 	strncpy(bssid, &string[start], 18);
-	printf("bssid:%s\n", bssid);
 	return bssid;
 }
 
@@ -122,7 +121,6 @@ GtkWidget *WScrolled(GtkWidget *box) {
 
 	return scrolled_window;
 }
-
 
 GtkWidget *ComboModes() {
 	GtkWidget *c = gtk_combo_box_text_new();
@@ -214,7 +212,7 @@ void ExecDestroy() {
 	char *what;
 	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
 	if((what == NULL) || (strlen(what) == 0)) {
-		printf("no device!\n");
+		msg("no device!");
 		return;
 	}
 	char *cmd = malloc(CMDSIZE);
@@ -319,8 +317,6 @@ void ExecConnect() {
 	FILE *fp = popen(cmd, "r");
 	pclose(fp);
 
-	printf("%s\n", cmd);
-
 	/* pkill wpa_supplicant */
 	memset(cmd, 0, MAXLINE);
 	sprintf(cmd, "pkill wpa_supplicant");
@@ -331,7 +327,6 @@ void ExecConnect() {
 	snprintf(secondcmd, MAXLINE, "wpa_supplicant -i %s -B -c %s", dev, tmpfile);
 	exec2 = TRUE;
 	wtmp = tmpfile;
-	printf("%s\n", secondcmd);
 
 	free(bssid);
 	free(dev);

@@ -1,6 +1,18 @@
 /* Main window  */
 #include "disk.h"
 
+/* Functions */
+
+void add_menubox();
+void add_log(GtkWidget *);
+void add_tabs();
+GtkWidget *back_button();
+void back_clicked(GtkWidget *, gpointer);
+void on_tabs_changed(GtkMenuItem *, gpointer);
+void top_window();
+// int main(int argc, char *);
+
+
 void top_window() {
 	/* main window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
@@ -114,7 +126,7 @@ void add_tabs() {
 	g_signal_connect_after(G_OBJECT (tabs), "switch-page", G_CALLBACK(on_tabs_changed), NULL);
 }
 
-void add_text(GtkWidget *t) {
+void add_log(GtkWidget *t) {
 		
 	/* 
 	 * Some debug info text at the bottom of a tab.
@@ -139,7 +151,7 @@ GtkWidget *back_button() {
 //	GtkWidget *image = gtk_image_new_from_file("image.jpg");
 //	GtkWidget *button = gtk_button_new();
 //	gtk_button_set_image(GTK_BUTTON (button), image);
-	GtkWidget *button = gtk_button_new_with_label("Back");
+	GtkWidget *button = gtk_button_new_with_label(l.mback);
 	gtk_container_add (GTK_CONTAINER (menubox), button);
 	g_signal_connect(button, "clicked", G_CALLBACK(back_clicked), NULL);
 	return button;
@@ -162,6 +174,7 @@ void add_menubox() {
 
 	gtk_widget_show_all(menubox);
 }
+
 int main(int argc, char *argv[]) {
 	
 	/* default options */
@@ -217,12 +230,12 @@ int main(int argc, char *argv[]) {
 	gtk_container_add (GTK_CONTAINER (window), fixed);
 
 	/* The box contains 3 items:
-	 * a menu bar, Tabs, and a debug info.
+	 * a menu bar, Tabs (aka GtkNotebook), and a debug info.
 	 */
 	add_menubox();
 	add_tabs();
-	add_text(fixed);
-	
+	add_log(fixed);
+
 	/*  Let the user see everything. */
 	gtk_widget_show_all(window);
 	gtk_widget_hide(bback);
