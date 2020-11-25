@@ -19,9 +19,9 @@ Among its features are:<br>
 2. How does it look?<br>
 
 Screenshots:
-![](screenshot/scrot15.png)
-![](screenshot/scrot16.png)
-
+![](screenshot/scrot20.png)
+![](screenshot/scrot18.png)
+![](screenshot/scrot19.png)
 
 3. What are the dependencies?<br>
 gtk3 and sudo. "pkg install gtk3" is recommended, since that one is large.<br><br>
