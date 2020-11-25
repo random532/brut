@@ -18,7 +18,7 @@ Among its features are:<br>
 
 2. How does it look?<br>
 
-Screenshots of brut:
+Screenshots:
 ![](screenshot/scrot15.png)
 ![](screenshot/scrot16.png)
 
