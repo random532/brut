@@ -18,7 +18,7 @@ Among its features are:<br>
 
 2. How does it look?<br>
 
-Screenshots:
+Screenshots:<br>
 ![](screenshot/scrot20.png)
 ![](screenshot/scrot18.png)
 ![](screenshot/scrot19.png)
