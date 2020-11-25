@@ -18,9 +18,9 @@ Among its features are:<br>
 
 2. How does it look?<br>
 
-Screenshots of early versions of brut in wayland/hikari:
+Screenshots of brut:
 ![](screenshot/scrot15.png)
-![](screenshot/grim4.png)
+![](screenshot/scrot16.png)
 
 
 3. What are the dependencies?<br>
