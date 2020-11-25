@@ -1,11 +1,11 @@
 # $FreeBSD$
 
 PORTNAME=	brut
-DISTVERSION=	1.52
+DISTVERSION=	1.53
 CATEGORIES=	sysutils
 
 MAINTAINER=	georg.lastname@web.de
-COMMENT=	Multitool, Partition Editor, Manage Groups/User
+COMMENT=        Multitool, Partition Editor, Manage User/Groups
 
 LICENSE=	BSD2CLAUSE
 
