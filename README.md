@@ -21,9 +21,8 @@ Among its features are:<br>
 Screenshots:<br>
 ![](screenshot/scrot20.png)
 ![](screenshot/scrot21.png)
-![](screenshot/scrot22.png)
 ![](screenshot/scrot18.png)
-![](screenshot/scrot19.png)
+
 
 3. What are the dependencies?<br>
 gtk3 and sudo. "pkg install gtk3" is recommended, since that one is large.<br><br>
