@@ -5,20 +5,20 @@ GtkWidget *sndstat;
 GtkWidget *mxgrid;
 
 /* Functions */
-void add_mixer();
+//void mixer();
 void cosmetics(char *);
 gboolean is_default(char *);
 void cleanup_audio();
-void vol_cb(GtkWidget *item, GtkWidget *);
-void group_changed(GtkButton *, gpointer);
+void vol_changed(GtkWidget *item, GtkWidget *);
+void sndstat_changed(GtkButton *, gpointer);
 GtkWidget *CreateRadio (GtkWidget *, GSList **, char *);
-void add_sndstat(GtkWidget *); 
-void add_mixer();
-GtkWidget *audio_scrolled(GtkWidget *);
+void audio_sources(GtkWidget *); 
+void mixer();
+GtkWidget *audio_scrolled_window(GtkWidget *);
 void audio();
 
 void cosmetics(char *line) {
-	/*Cosmetics */
+	/* Zero terminate. */
 	int i = 0;
 	while((line[i] != '\n') && (i < MAXLINE))
 		i++;
@@ -26,18 +26,17 @@ void cosmetics(char *line) {
 }
 
 gboolean is_default(char *line) {
+	/* 
+	 * Last character = ")" means not default.
+	 * Last character = "t" means default audio device. 
+	 */
 
-	int end = 0;
-	while(line[end] != '\0')
-		end++;
-	end--;
-	if(strncmp(&line[end], ")", 1) == 0) 
+	int len = strlen(line);
+
+	if((len >0) && (line[len-1] == ')'))
 		return FALSE;
-	else {
-		if(strncmp(&line[end], "t", 1) == 0) /* default */ 
-			end = end - 7;
+	else
 		return TRUE;
-	}
 }
 
 void cleanup_audio() {
@@ -46,7 +45,7 @@ void cleanup_audio() {
 		gtk_widget_destroy(audiobox);
 }
 
-void vol_cb(GtkWidget *item, GtkWidget *p) {
+void vol_changed(GtkWidget *item, GtkWidget *p) {
 
 	gdouble volume = gtk_scale_button_get_value(GTK_SCALE_BUTTON (item));
 	volume = volume * 100;
@@ -57,9 +56,18 @@ void vol_cb(GtkWidget *item, GtkWidget *p) {
 	command(cmd);
 }
 
-void group_changed(GtkButton *item, gpointer p) {
-	const gchar *text = gtk_button_get_label(p);
-	
+void sndstat_changed(GtkButton *item, gpointer p) {
+
+	/* We only care about sndstat changes later on. */
+	if(GTK_IS_WIDGET (mxgrid) == FALSE)
+		return;
+
+	/* Get the audio device. */
+	const gchar *text = gtk_button_get_label(item);
+	if(is_default((char *) text))
+		return;
+
+	/* Extract the unit number. */
 	int end = 0;
 	while(text[end] != ':')
 		end++;
@@ -74,15 +82,10 @@ void group_changed(GtkButton *item, gpointer p) {
 
 	memset(cmd, 0, CMDSIZE);
 	sprintf(cmd, "sysctl hw.snd.default_unit=%s", line);
-
 	command(cmd);
-	
-	/* Redraw mixer. */
-	if(GTK_IS_WIDGET (mxgrid)) {
-		gtk_widget_destroy(mxgrid);
-		add_mixer();
-		gtk_widget_show_all(audiobox);
-	}
+
+	/* Just redraw everything. */
+	audio();
 }
 
 GtkWidget *CreateRadio (GtkWidget *box, GSList **group, char *szLabel)
@@ -93,12 +96,12 @@ GtkWidget *CreateRadio (GtkWidget *box, GSList **group, char *szLabel)
     *group = gtk_radio_button_get_group(GTK_RADIO_BUTTON (radio));
     gtk_box_pack_start (GTK_BOX (box), radio, FALSE, FALSE, 0);
 
-    g_signal_connect(radio, "toggled", G_CALLBACK(group_changed), radio);
+    g_signal_connect(radio, "toggled", G_CALLBACK(sndstat_changed), radio);
 
     return (radio);
 }
 
-void add_sndstat(GtkWidget *sw) {
+void audio_sources(GtkWidget *sw) {
 
 	/* 
 	 * Execute "cat /dev/sndstat"
@@ -134,7 +137,7 @@ void add_sndstat(GtkWidget *sw) {
 	
 }
 
-void add_mixer() {
+void mixer() {
 	
 	/* Grid. */
 	mxgrid = gtk_grid_new();
@@ -160,7 +163,6 @@ void add_mixer() {
 	while(fgets(line, MAXLINE, fp)) {
 
 
-
 	if(row == 0) { /* The device */
 		cosmetics(line);
 		label = gtk_label_new(line);
@@ -182,7 +184,7 @@ void add_mixer() {
 			double v = atof(line) / 100;
 			gtk_scale_button_set_value(GTK_SCALE_BUTTON (vol), v);
 			gtk_grid_attach(GTK_GRID (mxgrid), GTK_WIDGET (vol), cl, row, 1, 1);		
-			g_signal_connect(vol, "value-changed", G_CALLBACK(vol_cb), label);
+			g_signal_connect(vol, "value-changed", G_CALLBACK(vol_changed), label);
 		}
 	}
 
@@ -201,19 +203,19 @@ void add_mixer() {
 	pclose(fp);
 }
 
-GtkWidget *audio_scrolled(GtkWidget *box) {
-	/* Scrolled window. */
-	GtkWidget *scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
+GtkWidget *audio_scrolled_window(GtkWidget *box) {
+	/* Scrolled window in case we have many audio devices. */
+	GtkWidget *w = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (w),
                                     GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC); 
-	gtk_box_pack_start(GTK_BOX(box), scrolled_window, FALSE, TRUE, 0);
+	gtk_box_pack_start(GTK_BOX(box), w, FALSE, TRUE, 0);
 
 	/* fixed size? */
-	gtk_widget_set_size_request (scrolled_window, 500, 200); /* width, height */
+	gtk_widget_set_size_request (w, 500, 200); /* width, height */
 //	gtk_scrolled_window_set_propagate_natural_height (GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
 //	gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
 
-	return scrolled_window;
+	return w;
 }
 
 void audio() {
@@ -225,14 +227,13 @@ void audio() {
 	gtk_container_add(GTK_CONTAINER (tab11), audiobox);
 
 	/* Checkboxes for audio output */
-	/* In a scrolled window. */
-	GtkWidget *sw = audio_scrolled(audiobox);
-	add_sndstat(sw);
+	GtkWidget *sw = audio_scrolled_window(audiobox);
+	audio_sources(sw);
 
-	/* Audio input?? */
+	/* Audio input? */
 	
 	/* Mixer settings */
-	add_mixer();
+	mixer();
 
 	gtk_widget_show_all(audiobox);
 }
