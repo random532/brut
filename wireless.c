@@ -37,7 +37,8 @@ void ExecCreate();
 void ExecDestroy();
 void ExecConnect();
 char *GetBssid(char *);
-void ExecDisconnect();
+void ExecUp();
+void ExecDown();
 void ExecScan();
 void ExecModify();
 void ApplyClicked( GtkWidget *, gpointer);
@@ -136,7 +137,8 @@ GtkWidget *ComboCommands() {
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (c), NULL, "Scan");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (c), NULL, "Modify");
 	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (c), NULL, "Connect");
-	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (c), NULL, "Disconect");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (c), NULL, "Up");
+	gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (c), NULL, "Down");
 	g_signal_connect (c, "changed", G_CALLBACK (command_changed), NULL);	
 
 	gtk_grid_attach(GTK_GRID(wedit), c, 0, 0, 1, 1);
@@ -264,18 +266,33 @@ void ExecScan() {
 void ExecModify() {
 }
 
-void ExecDisconnect() {
+void ExecDown() {
 
 	char *what;
 	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
-	if(what == NULL) {
+	if(what == NULL)
 		return;
-	}
 	char *cmd = malloc(CMDSIZE);
 	if(cmd == NULL)
 		return;
 	memset(cmd, 0, CMDSIZE);
 	sprintf(cmd, "ifconfig %s down", what);
+	free(what);
+	exec2 = FALSE;
+	execute_me(cmd, USR);
+	}
+
+void ExecUp() {
+
+	char *what;
+	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
+	if(what == NULL)
+		return;
+	char *cmd = malloc(CMDSIZE);
+	if(cmd == NULL)
+		return;
+	memset(cmd, 0, CMDSIZE);
+	sprintf(cmd, "ifconfig %s up", what);
 	free(what);
 	exec2 = FALSE;
 	execute_me(cmd, USR);
@@ -352,27 +369,33 @@ void ApplyClicked( GtkWidget *w, gpointer p) {
 		ExecCreate();
 		wireless();
 	}
-	if(strcmp(what, "Destroy") == 0) {
+	else if(strcmp(what, "Destroy") == 0) {
 		free(what);
 		ExecDestroy();
 		wireless();
 	}
-	if(strcmp(what, "Scan") == 0) {
+	else if(strcmp(what, "Scan") == 0) {
 		free(what);
 		ExecScan();
 	}
-	if(strcmp(what, "Modify") == 0) {
+	else if(strcmp(what, "Modify") == 0) {
 		free(what);
 		ExecModify();
 	}
-	if(strcmp(what, "Connect") == 0) {
+	else if(strcmp(what, "Connect") == 0) {
 		free(what);
 		ExecConnect();
 		wireless();
 	}
-	if(strcmp(what, "Disconnect") == 0) {
+	else if(strcmp(what, "Up") == 0) {
 		free(what);
-		ExecDisconnect();
+		ExecUp();
+		//wireless(); XXX: ???
+	}
+	else if(strcmp(what, "Down") == 0) {
+		free(what);
+		ExecDown();
+		//wireless(); XXX: ???
 	}
 }
 
@@ -494,13 +517,17 @@ void DrawOptions(char *what) {
 		/* No options */
 		gtk_widget_show(wdevices);
 	}
-	else if(strcmp(what, "Disconnect") == 0) {
-		/* No options */
-		gtk_widget_show(wdevices);
-	}
 	else if(strcmp(what, "Connect") == 0) {
 		gtk_widget_show(wdevices);
 		OptionsConnect();
+	}
+	else if(strcmp(what, "Up") == 0) {
+		/* No options */
+		gtk_widget_show(wdevices);
+	}
+	else if(strcmp(what, "Down") == 0) {
+		/* No options */
+		gtk_widget_show(wdevices);
 	}
 	else if(strcmp(what, "Modify") == 0) {
 		/* empty for now */
@@ -509,14 +536,15 @@ void DrawOptions(char *what) {
 
 void command_changed( GtkWidget *w, gpointer p) {
 
+	if(GTK_IS_WIDGET (wdevices))
+		gtk_widget_hide(wdevices);
 	gtk_widget_show(wapply);
 
 	char *cmd;
 	cmd = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wcommands));
-	if(cmd == NULL) {
+	if(cmd == NULL)
 		return;
-	}
-	
+
 	DrawOptions(cmd);
 	free(cmd);
 }
