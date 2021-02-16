@@ -16,7 +16,7 @@ void top_window();
 void top_window() {
 	/* main window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (window), "Best Admin ever");
+	gtk_window_set_title (GTK_WINDOW (window), "Control Panel");
 	gtk_widget_set_size_request (window, 800, 500); /* width, height */
 	gtk_window_set_position (GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
