@@ -146,10 +146,12 @@ void attach_network(GtkWidget *g) {
 	gtk_container_add(GTK_CONTAINER(cnet), d);
 
 	/* Ethernet */
-	d = gtk_label_new(NULL);
+	/* XXX: Ethernet is not implemented yet. So hide it. */
+	/* d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.clan);
 	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(cnet), d);
+	*/
 }
 
 void control() {
