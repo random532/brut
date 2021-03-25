@@ -8,7 +8,7 @@ FAQ
 -----------------------
 
 1. What is brut?<br>
-A standalone GUI (graphical user interface) for admin tasks in FreeBSD.<br><br>
+A standalone GUI (graphical user interface) for admin tasks in FreeBSD, e.g. disk partitioning.<br><br>
 2. Screenshots:<br>
 Main view:<br>
 ![](screenshot/scrot20.png)
