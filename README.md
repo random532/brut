@@ -14,8 +14,6 @@ Main view - control panel:<br>
 ![](screenshot/scrot20.png)
 <br>Partition Editor - Overview of disks:<br>
 ![](screenshot/scrot21.png)
-<br>Partition Editor - edit partitions with simple mouseclicks:<br>
-![](screenshot/scrot18.png)
 
 --------------------------
 3. What are the dependencies?<br>
