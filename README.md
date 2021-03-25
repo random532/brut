@@ -9,8 +9,7 @@ FAQ
 
 1. What is brut?<br>
 A standalone GUI (graphical user interface) for admin tasks in FreeBSD.<br><br>
-2. Screenshots:<br><br>
-
+2. Screenshots:<br>
 Main view - control panel:<br>
 ![](screenshot/scrot20.png)
 <br>Partition Editor - Overview of disks:<br>
@@ -18,9 +17,10 @@ Main view - control panel:<br>
 <br>Partition Editor - edit stuff with simple mouseclicks:<br>
 ![](screenshot/scrot18.png)
 
-
+--------------------------
 3. What are the dependencies?<br>
 gtk3 and sudo. "pkg install gtk3" is recommended, since that one is large.<br><br>
+--------------------------
 
 4. Is it safe? <br>
 In general, it translates mouse clicks into shell commands.<br>
@@ -29,6 +29,7 @@ The password is piped to sudo via a named pipe (there is no other way). You can 
 sudo behavior if you edit its configuration file /usr/local/etc/sudoers.<br>
 Currently there are no plans to use polkit.<br><br>
 
+--------------------------
 5. How do I install it?<br>
 Install it just like any other port:<br>
 - Make sure you have /usr/ports directory.<br>
@@ -46,3 +47,4 @@ Or build as a standalone binary:<br>
 Or download the binary located under /binary/brut (compiled on 12.1 amd64).<br>
 Change permissions, "chmod +x ./brut", then run it.<br><br>
 
+--------------------------
