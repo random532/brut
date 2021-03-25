@@ -8,19 +8,14 @@ FAQ
 -----------------------
 
 1. What is brut?<br>
-A graphical user interface (GUI) for various admin tasks in FreeBSD.<br><br>
-Among its features are:<br>
-- disk editor, partition editor<br>
-- manage users/groups<br>
-- set time and timezone<br>
-- very basic wireless settings<br>
-- see devices (usb, pci)<br>
+A standalone GUI (graphical user interface) for admin tasks in FreeBSD.<br><br>
+2. Screenshots:<br><br>
 
-2. How does it look?<br>
-
-Screenshots:<br>
+Main view - control panel:<br>
 ![](screenshot/scrot20.png)
+<br>Partition Editor - Overview of disks:<br>
 ![](screenshot/scrot21.png)
+<br>Partition Editor - edit stuff with simple mouseclicks:<br>
 ![](screenshot/scrot18.png)
 
 
@@ -31,11 +26,12 @@ gtk3 and sudo. "pkg install gtk3" is recommended, since that one is large.<br><b
 In general, it translates mouse clicks into shell commands.<br>
 Start it as a regular user. For root commands, it has a sudo(8) backend.<br>
 The password is piped to sudo via a named pipe (there is no other way). You can change<br>
-sudo behavior by editing its configuration file /usr/local/etc/sudoers.<br>
+sudo behavior if you edit its configuration file /usr/local/etc/sudoers.<br>
 Currently there are no plans to use polkit.<br><br>
 
 5. How do I install it?<br>
 Install it just like any other port:<br>
+- Make sure you have /usr/ports directory.<br>
 - Download ports/Makefile and ports/pkg-descr<br>
 - Run "make makesum" and "make install clean"<br>
 - (recommended: Run "dbus-uuidgen --ensure", for dbus)<br>
