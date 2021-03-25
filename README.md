@@ -10,9 +10,9 @@ FAQ
 1. What is brut?<br>
 A standalone GUI (graphical user interface) for admin tasks in FreeBSD.<br><br>
 2. Screenshots:<br>
-Main view - control panel:<br>
+Main view:<br>
 ![](screenshot/scrot20.png)
-<br>Partition Editor - Overview of disks:<br>
+<br>Partition Editor:<br>
 ![](screenshot/scrot21.png)
 
 --------------------------
@@ -46,10 +46,3 @@ Or download the binary located under /binary/brut (compiled on 12.1 amd64).<br>
 Change permissions, "chmod +x ./brut", then run it.<br><br>
 
 --------------------------
-
-6. Can I trust you?<br>
-I am a hobby programmer. I refuse to remember the syntax of every config file, read
-through man files all the time, figure out command line options.. That's my motivation.
-Sometimes, you just want a control panel as in Windows XP, right?
-
-------------------------
