@@ -1,7 +1,7 @@
 # $FreeBSD$
 
 PORTNAME=	brut
-DISTVERSION=	1.54
+DISTVERSION=	1.55
 CATEGORIES=	sysutils
 
 MAINTAINER=	georg.lastname@web.de
