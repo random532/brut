@@ -260,7 +260,7 @@ void ExecScan() {
 
 	GtkWidget *g = DrawHosts();
 
-	sprintf(cmd, "ifconfig %s up list scan", what);
+	sprintf(cmd, "ifconfig %s list scan", what);
 	FILE *fp = popen(cmd, "r");
 	if(fp == NULL)
 		return;
