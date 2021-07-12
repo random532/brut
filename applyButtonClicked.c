@@ -372,7 +372,7 @@ char *gpart_filesystem( char *cmd) {
 	/* what did user chose? */
 
 	if(strncmp(gf, "ufs2", 4) == 0) {
-		strcat(cmd, "newfs -T ");
+		strcat(cmd, "newfs -t ");
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_journal)) == TRUE)
 			strncat(cmd, "-J ", 4);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_soft)) == TRUE)

@@ -10,9 +10,8 @@ GtkWidget *woptions;
 
 /* Widgets */
 GtkWidget *wcommands;
-GtkWidget *wdevices; /* combo box */
-GtkWidget *wdev; /* text entry */
-GtkWidget *wname; /* text entry */
+GtkWidget *winterface; /* combo box */
+GtkWidget *wdev; /* combo box */
 GtkWidget *whosts; /* combo box */
 GtkWidget *wapply;
 GtkWidget *wpass;  /* text entry */
@@ -31,7 +30,8 @@ void WTopbox();
 GtkWidget *WScrolled(GtkWidget *);
 GtkWidget *ComboModes();
 GtkWidget *ComboCommands();
-GtkWidget *ComboDevices();
+GtkWidget *ComboWlanDevices();
+GtkWidget *ComboWlanInterfaces();
 void WGridEntries();
 void ExecCreate();
 void ExecDestroy();
@@ -48,7 +48,7 @@ gboolean ComboHosts();
 GtkWidget *DrawHosts();
 void DrawOptions(char *);
 void command_changed( GtkWidget *, gpointer);
-void devices_changed( GtkWidget *, gpointer);
+void winterface_changed( GtkWidget *, gpointer);
 void WEditor();
 void WBottomView();
 GtkWidget *WTreeview(GtkWidget *);
@@ -145,48 +145,74 @@ GtkWidget *ComboCommands() {
 	return c;
 }
 
-GtkWidget *ComboDevices() {
+GtkWidget *ComboWlanDevices() {
 
-	GtkWidget *c = gtk_combo_box_text_new();
+	/* Combo box with all wlan devices on the system. */
+
+	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT (wdev));
+
+	char line[MAXLINE];
+	char *dev;
+	char *brk;
+	
+	memset(line, 0, MAXLINE);
+	FILE *fp = popen("sysctl -n net.wlan.devices", "r");
+	while(fgets(line, MAXLINE, fp)) {
+		
+		cosmetics(line);
+		dev = strtok_r(line, " ", &brk);
+		while(dev) {
+
+			gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (wdev), NULL, dev);
+			dev = strtok_r( NULL, " ", &brk);
+		}
+	}
+	pclose(fp);
+
+	return wdev;
+}
+
+GtkWidget *ComboWlanInterfaces() {
+
+	/* Box with all currently configured wlan interfaces */
+
+	gtk_combo_box_text_remove_all(GTK_COMBO_BOX_TEXT (winterface));
 
 	char line[MAXLINE];
 	FILE *fp = popen("ifconfig -g wlan | sed 's/ /\\n/g'", "r");
 	while(fgets(line, MAXLINE, fp)) {
 
 		cosmetics(line);
-		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (c), NULL, line);
+		gtk_combo_box_text_append( GTK_COMBO_BOX_TEXT (winterface), NULL, line);
 	}
 	pclose(fp);
-	
-	g_signal_connect (c, "changed", G_CALLBACK (devices_changed), NULL);
-	gtk_grid_attach(GTK_GRID(wedit), c, 0, 1, 1, 1);
 
-	return c;
+	return winterface;
 }
 
 void WGridEntries() {
 
 	wcommands = ComboCommands();
-	wdevices = ComboDevices();
-
+	wdev = gtk_combo_box_text_new();
+	winterface = gtk_combo_box_text_new();
 	wapply = gtk_button_new_with_mnemonic(l.apply);
+
+
 	g_signal_connect(wapply, "clicked", G_CALLBACK(ApplyClicked), NULL);
+	g_signal_connect (winterface, "changed", G_CALLBACK (winterface_changed), NULL);
+
 	gtk_grid_attach(GTK_GRID(wedit), gtk_label_new("   "), 0, 4, 1, 1);
-	gtk_grid_attach(GTK_GRID(wedit), gtk_label_new("   "), 0, 5, 1, 1);
-	gtk_grid_attach(GTK_GRID(wedit), wapply, 0, 6, 1, 1);
+//	gtk_grid_attach(GTK_GRID(wedit), gtk_label_new("   "), 0, 5, 1, 1);
+	gtk_grid_attach(GTK_GRID(wedit), wdev, 0, 6, 1, 1);
+	gtk_grid_attach(GTK_GRID(wedit), winterface, 0, 7, 1, 1);
+	gtk_grid_attach(GTK_GRID(wedit), wapply, 0, 8, 1, 1);
 }
 
 void ExecCreate() {
 
-	const gchar *dev = gtk_entry_get_text(GTK_ENTRY (wdev));
+	const gchar *dev =  gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (GTK_COMBO_BOX_TEXT (wdev)));
 	if((dev == NULL) || (strlen(dev) == 0)) {
-		msg("Device missing.");
-		return;
-	}
-
-	const gchar *devname = gtk_entry_get_text(GTK_ENTRY (wname));
-	if((devname == NULL) || (strlen(devname) == 0)) {
-		msg("Name missing.");
+		msg("No wlan devices chosen. Driver issues?");
 		return;
 	}
 
@@ -194,25 +220,16 @@ void ExecCreate() {
 	if(cmd == NULL)
 		return;
 	memset(cmd, 0, CMDSIZE);
-	sprintf(cmd, "ifconfig %s create wlandev %s", devname, dev);
+	sprintf(cmd, "ifconfig wlan create wlandev %s", dev);
 
-	/* 2. Command: Mark it as "up", and do a preliminary scan? */
-	secondcmd = malloc(CMDSIZE);
-	if(secondcmd == NULL) {
-		free(cmd);
-		return;
-	}
-	memset(secondcmd, 0, CMDSIZE);
-	sprintf(secondcmd, "ifconfig %s up list scan", devname);
-	exec2 = TRUE;
-
+	exec2 = FALSE;
 	execute_me(cmd, USR);
 }
 
 void ExecDestroy() {
 
 	char *what;
-	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
+	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (winterface));
 	if((what == NULL) || (strlen(what) == 0)) {
 		msg("no device!");
 		return;
@@ -230,7 +247,7 @@ void ExecDestroy() {
 void ExecScan() {
 
 	char *what;
-	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
+	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (winterface));
 	if(what == NULL) {
 		return;
 	}
@@ -243,13 +260,16 @@ void ExecScan() {
 
 	GtkWidget *g = DrawHosts();
 
-	sprintf(cmd, "ifconfig %s list scan", what);
+	sprintf(cmd, "ifconfig %s up list scan", what);
 	FILE *fp = popen(cmd, "r");
 	if(fp == NULL)
 		return;
 	while(fgets(line, MAXLINE, fp)) {
 		cosmetics(line);
+		/* XXX: This might look better in a treeview. */
 		gtk_grid_attach(GTK_GRID (g), gtk_label_new(line), 0, row, 1, 1);
+		gtk_grid_attach(GTK_GRID (g), gtk_label_new("-- "), 1, row, 1, 1);
+
 		row++;
 		memset(line, 0, MAXLINE);
 	}
@@ -258,7 +278,7 @@ void ExecScan() {
 	if(row == 0)
 		gtk_grid_attach(GTK_GRID (g), gtk_label_new("No results!"), 0, row, 1, 1);
 
-	/* Show everything. */
+
 	gtk_grid_attach(GTK_GRID (g), gtk_label_new("   "), 0, (row+1), 1, 1);
 	gtk_widget_show_all(woptions);
 }
@@ -269,7 +289,7 @@ void ExecModify() {
 void ExecDown() {
 
 	char *what;
-	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
+	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (winterface));
 	if(what == NULL)
 		return;
 	char *cmd = malloc(CMDSIZE);
@@ -285,7 +305,7 @@ void ExecDown() {
 void ExecUp() {
 
 	char *what;
-	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
+	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (winterface));
 	if(what == NULL)
 		return;
 	char *cmd = malloc(CMDSIZE);
@@ -302,7 +322,7 @@ void ExecConnect() {
 
 	/* Network interface. */
 	char *dev;
-	dev = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (wdevices));
+	dev = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (winterface));
 	if(dev == NULL) {
 		return;
 	}
@@ -323,6 +343,7 @@ void ExecConnect() {
 	}
 
 	/*
+	 * XXX: This is certainly a dirty way to connect.
 	 * echo > /tmp
 	 * pkill wpa_supplicant
 	 * wpa_supplicant -i -B -c
@@ -401,20 +422,7 @@ void ApplyClicked( GtkWidget *w, gpointer p) {
 
 void OptionsCreate() {
 
-	/* Two text entries. */
-	wdev = gtk_entry_new();
-	gtk_entry_buffer_set_max_length (gtk_entry_get_buffer(GTK_ENTRY (wdev)), 10);
-	gtk_entry_set_width_chars(GTK_ENTRY(wdev), 20);
-	gtk_entry_set_placeholder_text (GTK_ENTRY(wdev), "e.g. ath0, iwn0");
-
-	wname = gtk_entry_new();
-	gtk_entry_buffer_set_max_length (gtk_entry_get_buffer(GTK_ENTRY (wname)), 10);
-	gtk_entry_set_width_chars(GTK_ENTRY(wname), 20);
-	gtk_entry_set_placeholder_text (GTK_ENTRY(wname), "e.g. wlan0, wlan1");
-	
 	gtk_container_add(GTK_CONTAINER (woptions), gtk_label_new("Options:"));
-	gtk_container_add(GTK_CONTAINER (woptions), wdev);
-	gtk_container_add(GTK_CONTAINER (woptions), wname);
 
 // XXX: todo: Add Modes.
 //	gtk_container_add(GTK_CONTAINER (woptions), ComboModes());
@@ -426,7 +434,7 @@ void OptionsConnect() {
 
 	/* Did he choose an interface yet? */
 	char *dev;
-	dev = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
+	dev = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (winterface));
 	if((dev == NULL) || (strlen(dev) == 0)) {
 		msg("Choose an interface!");
 		return;
@@ -455,7 +463,7 @@ gboolean ComboHosts() {
 	whosts = gtk_combo_box_text_new();
 
 	char *what;
-	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdevices));
+	what = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (winterface));
 	if(what == NULL) {
 		msg("Choose a wlan interface!");
 		return FALSE;
@@ -492,7 +500,7 @@ GtkWidget *DrawHosts() {
 	GtkWidget *s = WScrolled(woptions);
 	
 	/* Grid */
-	GtkWidget *hg = gtk_grid_new();
+	GtkWidget *hg	 = gtk_grid_new();
 	gtk_grid_set_column_homogeneous(GTK_GRID(hg), FALSE);
 //	gtk_grid_insert_column(GTK_GRID(gh), 7);
 	gtk_grid_set_row_spacing(GTK_GRID(hg), 5);
@@ -505,29 +513,30 @@ GtkWidget *DrawHosts() {
 void DrawOptions(char *what) {
 
 	CleanOptions();
+	
 
 	if(strcmp(what, "Create") == 0) {
 		OptionsCreate();
+		gtk_widget_show(wdev);
 	}
 	else if(strcmp(what, "Destroy") == 0) {
-		/* No options */
-		gtk_widget_show(wdevices);
+		gtk_widget_show(winterface);
 	}
 	else if(strcmp(what, "Scan") == 0) {
 		/* No options */
-		gtk_widget_show(wdevices);
+		gtk_widget_show(winterface);
 	}
 	else if(strcmp(what, "Connect") == 0) {
-		gtk_widget_show(wdevices);
+		gtk_widget_show(winterface);
 		OptionsConnect();
 	}
 	else if(strcmp(what, "Up") == 0) {
 		/* No options */
-		gtk_widget_show(wdevices);
+		gtk_widget_show(winterface);
 	}
 	else if(strcmp(what, "Down") == 0) {
 		/* No options */
-		gtk_widget_show(wdevices);
+		gtk_widget_show(winterface);
 	}
 	else if(strcmp(what, "Modify") == 0) {
 		/* empty for now */
@@ -536,8 +545,8 @@ void DrawOptions(char *what) {
 
 void command_changed( GtkWidget *w, gpointer p) {
 
-	if(GTK_IS_WIDGET (wdevices))
-		gtk_widget_hide(wdevices);
+	if(GTK_IS_WIDGET (winterface))
+		gtk_widget_hide(winterface);
 	gtk_widget_show(wapply);
 
 	char *cmd;
@@ -545,11 +554,18 @@ void command_changed( GtkWidget *w, gpointer p) {
 	if(cmd == NULL)
 		return;
 
+	/* Update devices and interfaces. */
+	wdev = ComboWlanDevices();
+	winterface = ComboWlanInterfaces();
+
+	gtk_widget_hide(GTK_WIDGET (wdev));
+	gtk_widget_hide(GTK_WIDGET (winterface));
+	/* Present relevant options to user. */
 	DrawOptions(cmd);
 	free(cmd);
 }
 
-void devices_changed( GtkWidget *w, gpointer p) {
+void winterface_changed( GtkWidget *w, gpointer p) {
 	
 	char *cmd;
 	cmd = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wcommands));
@@ -626,9 +642,11 @@ void WFillTree(GtkWidget *tv) {
 	GtkTreeIter child;
 	GtkTreeIter parent;
 
-	devlist = command("ifconfig -g wlan");
+
+	devlist = command("ifconfig -g wlan | tr \"\n\" \" \"");
 	if((devlist == NULL) || (strlen(devlist) == 0))
 		return;
+
 
 	dev = strtok_r(devlist, " ", &brk);
 	while(dev) {
@@ -670,7 +688,7 @@ void WBottomView() {
 	
 	/* Fill the treestore. */
 	WFillTree(tv);
-	
+
 	/* Update treeview nicely. */
 	gtk_widget_hide(sw);
 	gtk_widget_show(sw);
@@ -692,6 +710,7 @@ void wireless() {
 	
 	gtk_widget_show_all(wbox);
 	gtk_widget_hide(wapply);
-	gtk_widget_hide(wdevices);
+	gtk_widget_hide(winterface);
+	gtk_widget_hide(wdev);
 }
 

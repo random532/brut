@@ -14,9 +14,9 @@ char *is_mounted(char *part) {
 	memset(buf, 0, 100);
 	
 	int len = strlen(part);
-	sprintf(buf, "mount | awk '/");
-	strcat( buf, part);
-	strcat( buf, "/{printf $3}'");
+	sprintf(buf, "mount | awk '/\\/");
+	strcat(buf, part);
+	strcat(buf, "/{printf $3}'");
 	
 	FILE *fp = popen(buf, "r");
 	if (fp == NULL) {

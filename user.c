@@ -79,7 +79,7 @@ void edit_ok(GtkButton *item, gpointer user) {
 			return;
 		}
 
-		sprintf(cmd, "pw usermod -n %s", user);
+		sprintf(cmd, "pw usermod -n %s", (char *) user);
 
 		if(strlen(gname) != 0) {	/* New user name. */
 			strcat(cmd, " -l ");

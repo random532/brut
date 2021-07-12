@@ -2,6 +2,8 @@
  * TODO:
  * -Bugs?
  */
+#pragma once
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -18,6 +20,7 @@
 
 #include <gtk/gtk.h>
 #include <glib.h>
+
 
 #define LANG_EN 0
 #define LANG_DE 1
@@ -102,6 +105,7 @@ struct {
 	gboolean confirm;	/* ask for confirmation */
 		
 } opt;
+
 
 	/* keep track of disks and partitions */
 char *all_disks;
@@ -189,6 +193,7 @@ GtkWidget *toggle_fast;
 GtkWidget *toggle_comp;
 GtkWidget *toggle_ask;
 GtkWidget *gfile;
+
 
 /* Strings for different languages. */
 typedef struct {
@@ -353,8 +358,8 @@ char *consumer_sectorsize;
 geom_data g;
 
 	/* (most) functions */
-#ifndef FUNCTIONS_H_INCLUDED
-#define FUNCTIONS_H_INCLUDED
+//#ifndef FUNCTIONS_H_INCLUDED
+//#define FUNCTIONS_H_INCLUDED
 
 /* lang.c */
 void en_lang();
@@ -506,4 +511,4 @@ void timetab();		/* time.c */
 
 lang en;
 lang de;
-#endif
+//#endif

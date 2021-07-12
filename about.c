@@ -1,6 +1,7 @@
 /* 'About' tab */
 #include "disk.h"
 
+
 void about() {
 
 	if(GTK_IS_WIDGET(abox))
