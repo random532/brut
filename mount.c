@@ -74,6 +74,42 @@ char *is_mounted_fuse(char *partition) {
 		return NULL;
 }
 
+char *do_mountpoint(char *mp) {
+
+
+	const gchar *label = gtk_menu_item_get_label(gmenu); //XXX: free(label) ??
+
+	/* mountpoint */
+	if(strncmp(label, "/mnt", 4) == 0) {
+		mp = malloc(10);
+		strncpy(mp, "/mnt", 4);
+		return mp;
+	}
+	else if(strncmp(label, "/media", 6) == 0) {
+		mp = malloc(10);
+		strncpy(mp, "/media", 6);
+		return mp;
+	}
+	else {
+		/* other path */
+		/* file chooser dialog */
+		GtkWidget * dialog;
+		GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+		dialog = gtk_file_chooser_dialog_new("Mointpoint", GTK_WINDOW (window), action, "Cancel", GTK_RESPONSE_CANCEL, "Mount", GTK_RESPONSE_ACCEPT, NULL);
+		gint res = gtk_dialog_run(GTK_DIALOG (dialog));
+		if(res == GTK_RESPONSE_ACCEPT) {
+			GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+			mp = gtk_file_chooser_get_filename(chooser);
+			gtk_widget_destroy(dialog);
+			return mp;
+		}
+		else {
+			gtk_widget_destroy(dialog);
+			return NULL;
+		}
+	}
+}
+
 void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	
 	/*
@@ -84,45 +120,24 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	char *fs;	/* File system */
 	char *path;	/* Mount path */
 	char *cmd;	/* Mount command */
-	const gchar *label; /* Users choice of mountpoint */
 	int success = 0;
 	int plen;	/* Partition length */
 	int mlen = 0;	/* Mount path length (?) */
-	
-	label = gtk_menu_item_get_label(gmenu);
+
 	part = selected_item(tree1, POS_PART);
 	plen = strlen(part);
 	fs = selected_item(tree1, POS_FS);
 	
-	if( (part == NULL) || (fs == NULL) || (label == NULL) )
+	if((part == NULL) || (fs == NULL))
 		return;
-	
-	/* mountpoint */
-	path = malloc(10);
-	memset(path, 0, 10);
-	if( strncmp(label, "/mnt", 4) == 0) 
-		strncpy(path, label, 4);
-	else if( strncmp(label, "/media", 6) == 0)  
-		strncpy(path, label, 6);
-	else {
-		/* other path */
-		/* file chooser dialog */
-		GtkWidget * dialog;
-		GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
-		dialog = gtk_file_chooser_dialog_new("Mointpoint", GTK_WINDOW (window), action, "Cancel", GTK_RESPONSE_CANCEL, "Mount", GTK_RESPONSE_ACCEPT, NULL);
-		gint res = gtk_dialog_run(GTK_DIALOG (dialog));
-		if(res == GTK_RESPONSE_ACCEPT) {
-			GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-			path = gtk_file_chooser_get_filename(chooser);
-			mlen = strlen(path);
-			gtk_widget_destroy(dialog);
-		}
-		else {
-			gtk_widget_destroy(dialog);
-			return;
-		}
+
+	path = do_mountpoint(path);
+	if(path == NULL) {
+		msg("No mount point selected.");
+		return;
 	}
-	
+	mlen = strlen(path);
+
 	/* 
 	 * We have all we need.
 	 * So build the mount command.
@@ -177,7 +192,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		msg("undocumented file system.");
 		error = 1;
 	}
-	
+
 	if(error) {
 		free(path);
 		free(cmd);
