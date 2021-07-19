@@ -1,5 +1,10 @@
 #pragma once
 
+#include "../brut.h"
+
+//#ifndef DISKS_INCL
+//#define DISKS_INCL
+
 /* column header for 2 disk treeviews */
 #define COLUMNS  27
 char columns[COLUMNS][26];
@@ -186,3 +191,5 @@ int buf_to_struct(char *);
 void g_zero();
 char *get_capacity(char *);
 char *get_label(char *, char *);
+
+//#endif

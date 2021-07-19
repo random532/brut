@@ -1,4 +1,5 @@
 #include "disk.h"
+#include "../brut.h"
 
 void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 

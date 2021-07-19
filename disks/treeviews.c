@@ -1,4 +1,5 @@
 #include "disk.h"
+#include "../brut.h"
 
 /* 
  * In the disk tab there are two distinct treeviews.
@@ -405,32 +406,7 @@ void treeview_add_rows(char *geombuf, char *disk) {
 	gtk_tree_store_append(treestore1, &parent, NULL);
 }
 
-char *selected_item(GtkWidget *tview, int column) {
-	
-	/* 
-	 * Get the contents of the selected row/column.
-	 */
-	char *data = NULL;
-	if(tview != NULL) {
-		GtkTreeSelection *selected = gtk_tree_view_get_selection(GTK_TREE_VIEW (tview));
-		if (selected == NULL) {
-			printf("please select a row!\n");
-			return NULL;
-		}
-		GtkTreeModel *model = gtk_tree_view_get_model(GTK_TREE_VIEW (tview));
-		if (model == NULL) {
-			printf("gtk_tree_view_get_model() failed\n");
-			return NULL;
-		}
-		GtkTreeIter iter;
-		if (gtk_tree_selection_get_selected(selected, &model, &iter) ) {
-			gtk_tree_model_get(model, &iter, column, &data, -1);
-			if(data != NULL) 
-				return data;
-		}
-	}
-	return NULL;
-}
+
 
 int buf_to_struct(char *buf) {
 

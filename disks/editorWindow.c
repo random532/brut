@@ -1,4 +1,5 @@
 #include "disk.h"
+#include "../brut.h"
 
 void on_ask_clicked(GtkToggleButton *item, gpointer user_data) {
 	opt.confirm = gtk_toggle_button_get_active(item);
