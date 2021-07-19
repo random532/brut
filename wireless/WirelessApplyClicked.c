@@ -2,7 +2,7 @@
  * This file contains functions in case "Apply" was clicked.
  */
  
-#include "disk.h"
+#include "../brut.h"
 #include "wireless.h"
 
 void ApplyClicked( GtkWidget *, gpointer);

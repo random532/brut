@@ -3,7 +3,7 @@
  * This file handles the drawing of all the Options (top right).
  */
 
-#include "disk.h"
+#include "../brut.h"
 #include "wireless.h"
 
 

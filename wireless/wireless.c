@@ -3,7 +3,7 @@
  * This file contains all the gtk/GUI elements.
  */
 
-#include "disk.h"
+#include "../brut.h"
 #include "wireless.h"
 
 
