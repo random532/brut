@@ -1,5 +1,5 @@
 /* Config files tab */
-#include "disk.h"
+#include "brut.h"
 
 GtkWidget *fc;			/* File choser combo box */
 GtkWidget *bt;			/* Save button */

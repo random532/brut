@@ -1,5 +1,5 @@
 /* 'About' tab */
-#include "disk.h"
+#include "brut.h"
 
 
 void about() {

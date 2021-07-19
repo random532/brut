@@ -1,5 +1,5 @@
 /* Audio tab */
-#include "disk.h"
+#include "brut.h"
 
 GtkWidget *sndstat;
 GtkWidget *mxgrid;

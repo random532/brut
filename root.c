@@ -1,4 +1,4 @@
-#include "disk.h"
+#include "brut.h"
 
 GtkWidget *p;
 GtkWidget *passwbox;
@@ -13,12 +13,7 @@ void update_view() {
 	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (tabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (tabs), n));
 	
 	if(strcmp(tab, l.tabdisks) == 0) {
-
-		/* redraw_cb() can be called. */
-		/* but this is nicer. */
-		on_toplevel_changed();
-		gtk_widget_destroy(thegrid);
-		editor();
+		redraw_disks();
 	}
 		
 	else if(strcmp(tab, l.tabgroup) == 0) {

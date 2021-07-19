@@ -1,5 +1,5 @@
 /* Group tab */
-#include "disk.h"
+#include "brut.h"
 
 GtkWidget *groupconfirm; /* a box positioned right next to the treeview. */
 GtkWidget *hint;

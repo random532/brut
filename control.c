@@ -1,5 +1,5 @@
 /* First tab - control panel */
-#include "disk.h"
+#include "brut.h"
 
 void control();
 void attach_hardware(GtkWidget *);

@@ -1,5 +1,15 @@
 /* Devices */
-#include "disk.h"
+#include "brut.h"
+
+/* pci devices column header */
+#define PCICOL 10 /* lol.. DEVCLASS */
+char pcicol[PCICOL][20];
+
+/* usb devices column header */
+#define USBCOL 10
+char usbcol[USBCOL][20];
+
+
 
 GtkWidget *topgrid;	/* Grid at the top */
 GtkWidget *updt;	/* Update button */
@@ -85,6 +95,60 @@ pcibox = NULL;
 usbbox = NULL;
 acpibox = NULL;
 
+}
+
+void strings_devices(int l) {
+
+	if(l == LANG_DE) {
+		/* pci device columns */
+		strcpy(pcicol[0], "Name");
+		strcpy(pcicol[1], "Beschreibung");
+		strcpy(pcicol[2], "Hersteller");
+		strcpy(pcicol[3], "Karte");
+		strcpy(pcicol[4], "Chip");
+		strcpy(pcicol[5], "Steckplatz");
+		strcpy(pcicol[6], "Typ");
+		strcpy(pcicol[7], "Typ");
+		strcpy(pcicol[8], "Subtyp");
+		strcpy(pcicol[9], "--");
+
+		/* Usb device columns */
+		strcpy(usbcol[0], "Name");
+		strcpy(usbcol[1], "Beschreibung");
+		strcpy(usbcol[2], "Bus");
+		strcpy(usbcol[3], "cfg");
+		strcpy(usbcol[4], "Modus");
+		strcpy(usbcol[5], "Geschwindigkeit");
+		strcpy(usbcol[6], "Power");
+		strcpy(usbcol[7], "Strom");
+		strcpy(usbcol[8], "--");
+		strcpy(usbcol[9], "--");
+	}
+	else if(l == LANG_EN) {
+		/* Pci device columns */
+		strcpy(pcicol[0], "Name");
+		strcpy(pcicol[1], "Description");
+		strcpy(pcicol[2], "Vendor");
+		strcpy(pcicol[3], "Card");
+		strcpy(pcicol[4], "Chip");
+		strcpy(pcicol[5], "Slot");
+		strcpy(pcicol[6], "Class");
+		strcpy(pcicol[7], "Class");
+		strcpy(pcicol[8], "Sublass");
+		strcpy(pcicol[9], "--");
+
+		/* Usb device columns */
+		strcpy(usbcol[0], "Name");
+		strcpy(usbcol[1], "Description");
+		strcpy(usbcol[2], "Bus");
+		strcpy(usbcol[3], "cfg");
+		strcpy(usbcol[4], "Mode");
+		strcpy(usbcol[5], "Speed");
+		strcpy(usbcol[6], "Power");
+		strcpy(usbcol[7], "Power2");
+		strcpy(usbcol[8], "empty");
+		strcpy(usbcol[9], "empty");
+	}
 }
 
 GtkWidget *add_scrolled(GtkWidget *box) {

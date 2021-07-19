@@ -1,5 +1,5 @@
 /* Ethernet tab */
-#include "disk.h"
+#include "brut.h"
 
 void CleanLan() {
 
