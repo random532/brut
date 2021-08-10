@@ -1,4 +1,4 @@
-#include "disk.h"
+#include "brut.h"
 
 void redraw_menubar() {
 
@@ -33,13 +33,15 @@ void update_lang() {
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab9, gtk_label_new(l.tabwlan));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab10, gtk_label_new(l.tablan));
 	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab11, gtk_label_new(l.tabaudio));
-		
+	gtk_notebook_set_tab_label(GTK_NOTEBOOK (tabs), tab12, gtk_label_new(l.tabdmesg));
 	on_tabs_changed(NULL, NULL);
+
 	redraw_menubar();
+	gtk_button_set_label(GTK_BUTTON(bback), l.mback);
 }
 
 void change_lang_de (GtkMenuItem *item, gpointer la) {
-	
+
 	if(opt.language != LANG_DE) {
 		opt.language = LANG_DE;
 		de_lang();
@@ -80,7 +82,7 @@ void add_menubar() {
     gtk_menu_shell_append (GTK_MENU_SHELL (menuBar), menuItem1);
 	
 	/* App - Back */
-	GtkWidget *app_back = gtk_menu_item_new_with_mnemonic ("Back");
+	GtkWidget *app_back = gtk_menu_item_new_with_mnemonic (l.mback);
     gtk_menu_shell_append (GTK_MENU_SHELL (menu_app), app_back);
 
 	/* App - Quit */

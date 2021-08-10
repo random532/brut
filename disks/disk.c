@@ -1,5 +1,6 @@
 /* Disk tab */
 #include "disk.h"
+#include "../brut.h"
 
 /* Redraw (most of) the disk tab */
 void redraw_cb (GtkMenuItem *item, gpointer user_data) {  
@@ -8,6 +9,31 @@ void redraw_cb (GtkMenuItem *item, gpointer user_data) {
 	gtk_widget_destroy(thegrid);
 	editor();
 	gtk_text_buffer_set_text(GTK_TEXT_BUFFER(gtk_text_view_get_buffer(GTK_TEXT_VIEW(logwindow))), "          ", 10);
+}
+
+void redraw_disks() {
+
+/* redraw_cb() can be called. */
+/* but this is nicer. */
+
+	on_toplevel_changed();
+	gtk_widget_destroy(thegrid);
+	editor();	
+}
+
+void main_combo() {
+
+	/* 
+	 * A combo box with disk names.
+	 */
+	combo_toplevel = gtk_combo_box_text_new();
+
+	gtk_widget_set_focus_on_click(combo_toplevel, TRUE);
+	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (combo_toplevel), 0, 0, 1, 1);
+	g_signal_connect (combo_toplevel, "changed", G_CALLBACK (on_toplevel_changed), NULL);
+
+	/* Add disk names */
+	toplevel_entries();
 }
 
 void add_grid() {
@@ -43,20 +69,6 @@ void scrolled() {
 	gtk_scrolled_window_set_propagate_natural_width (GTK_SCROLLED_WINDOW(scrolled_window), TRUE);
 }
 
-void main_combo() {
-
-	/* 
-	 * A combo box with disk names.
-	 */
-	combo_toplevel = gtk_combo_box_text_new();
-
-	gtk_widget_set_focus_on_click(combo_toplevel, TRUE);
-	gtk_grid_attach(GTK_GRID (grid), GTK_WIDGET (combo_toplevel), 0, 0, 1, 1);
-	g_signal_connect (combo_toplevel, "changed", G_CALLBACK (on_toplevel_changed), NULL);
-
-	/* Add disk names */
-	toplevel_entries();
-}
 
 void add_box() {
 

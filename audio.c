@@ -1,29 +1,21 @@
 /* Audio tab */
-#include "disk.h"
+#include "brut.h"
 
 GtkWidget *sndstat;
 GtkWidget *mxgrid;
 
 /* Functions */
 //void mixer();
-void cosmetics(char *);
-gboolean is_default(char *);
-void cleanup_audio();
-void vol_changed(GtkWidget *item, GtkWidget *);
-void sndstat_changed(GtkButton *, gpointer);
-GtkWidget *CreateRadio (GtkWidget *, GSList **, char *);
-void audio_sources(GtkWidget *); 
-void mixer();
-GtkWidget *audio_scrolled_window(GtkWidget *);
-void audio();
+static gboolean is_default(char *);
+static void cleanup_audio();
+static void vol_changed(GtkWidget *item, GtkWidget *);
+static void sndstat_changed(GtkButton *, gpointer);
+static GtkWidget *CreateRadio (GtkWidget *, GSList **, char *);
+static void audio_sources(GtkWidget *);
+static void mixer();
+static GtkWidget *audio_scrolled_window(GtkWidget *);
 
-void cosmetics(char *line) {
-	/* Zero terminate. */
-	int i = 0;
-	while((line[i] != '\n') && (i < MAXLINE))
-		i++;
-	line[i] = '\0';
-}
+void audio();
 
 gboolean is_default(char *line) {
 	/* 

@@ -1,5 +1,7 @@
 /* language related info */
-#include "disk.h"
+#include "brut.h"
+
+#include "disks/disk.h"
 
 lang en = {
 	.overview="Overview - All Disks                                                  ", 
@@ -56,6 +58,7 @@ lang en = {
 	.cwlan="<a href=\" \"> Wireless</a>",
 	.clan="<a href=\" \"> Ethernet</a>",
 	.caudio="<a href=\" \"> Sound</a>",
+	.cdmesg="<a href=\" \"> Dmesg</a>",
 
 
 	/* groups */
@@ -118,7 +121,8 @@ Have fun,\nBrut.\n",
 	.tabdevices="Devices",
 	.tabwlan="Wireless",
 	.tablan="Ethernet",
-	.tabaudio="Sound"
+	.tabaudio="Sound",
+	.tabdmesg="Dmesg"
 
 };
 
@@ -177,6 +181,7 @@ lang de = {
 	.cwlan="<a href=\" \"> WLAN</a>",
 	.clan="<a href=\" \"> LAN</a>",
 	.caudio="<a href=\" \"> Sound</a>",
+	.cdmesg="<a href=\" \"> Dmesg</a>",
 
 	/* groups */
 	.gname="Name",
@@ -238,7 +243,8 @@ Viel Spass,\nBrut.\n",
 	.tabdevices="Hardware",
 	.tabwlan="Wlan",
 	.tablan="LAN",
-	.tabaudio="Sound"
+	.tabaudio="Sound",
+	.tabdmesg="Dmesg"
 };
 
 void en_lang() {
@@ -285,44 +291,9 @@ void en_lang() {
 	strncpy(column[9], "Stripesize", 15);
 	strncpy(column[10], "Stripeoffset", 15);
 	/*  lunid lun ... */
-	
-	/* User tab treeview. */
-	strcpy(usercol[POS_UNAME], "Name");
-	strcpy(usercol[POS_UPASSWORD],"PW");
-	strcpy(usercol[POS_UCLASS], "Class");
-	strcpy(usercol[POS_UGROUPID], "GroupID");
-	strcpy(usercol[POS_USERID], "UserID");
-	strcpy(usercol[POS_UNKNOWN2], "--");
-	strcpy(usercol[POS_UNKNOWN3], "--");
-	strcpy(usercol[POS_UDESC], "Full Name");
-	strcpy(usercol[POS_UHOME], "Home directory");
-	strcpy(usercol[POS_USHELL], "Login Shell");
 
-
-	/* Pci devices columns */
-	strcpy(pcicol[0], "Name");
-	strcpy(pcicol[1], "Description");
-	strcpy(pcicol[2], "Vendor");
-	strcpy(pcicol[3], "Card");
-	strcpy(pcicol[4], "Chip");
-	strcpy(pcicol[5], "Slot");
-	strcpy(pcicol[6], "Class");
-	strcpy(pcicol[7], "Class");
-	strcpy(pcicol[8], "Sublass");
-	strcpy(pcicol[9], "--");
-	
-	/* Usb device columns */
-	strcpy(usbcol[0], "Name");
-	strcpy(usbcol[1], "Description");
-	strcpy(usbcol[2], "Bus");
-	strcpy(usbcol[3], "cfg");
-	strcpy(usbcol[4], "Mode");
-	strcpy(usbcol[5], "Speed");
-	strcpy(usbcol[6], "Power");
-	strcpy(usbcol[7], "Power2");
-	strcpy(usbcol[8], "empty");
-	strcpy(usbcol[9], "empty");
-
+	strings_user(LANG_EN);
+	strings_devices(LANG_EN);
 }
 
 void de_lang() {
@@ -368,40 +339,6 @@ void de_lang() {
 	strncpy(column[9], "Stripesize", 15);
 	strncpy(column[10], "Stripeoffset", 15);
 	
-	/* User tab treeview. */
-	strcpy(usercol[POS_UNAME], "Name");
-	strcpy(usercol[POS_UPASSWORD],"PW");
-	strcpy(usercol[POS_UCLASS], "Login-Klasse");
-	strcpy(usercol[POS_UGROUPID], "GruppenID");
-	strcpy(usercol[POS_USERID], "UserID");
-	strcpy(usercol[POS_UNKNOWN2], "--");
-	strcpy(usercol[POS_UNKNOWN3], "--");
-	strcpy(usercol[POS_UDESC], "Ganzer Name");
-	strcpy(usercol[POS_UHOME], "Heimatverzeichnis");
-	strcpy(usercol[POS_USHELL], "Shell");
-
-	/* pci devices columns */
-	strcpy(pcicol[0], "Name");
-	strcpy(pcicol[1], "Beschreibung");
-	strcpy(pcicol[2], "Hersteller");
-	strcpy(pcicol[3], "Karte");
-	strcpy(pcicol[4], "Chip");
-	strcpy(pcicol[5], "Steckplatz");
-	strcpy(pcicol[6], "Typ");
-	strcpy(pcicol[7], "Typ");
-	strcpy(pcicol[8], "Subtyp");
-	strcpy(pcicol[9], "--");
-
-	/* Usb device columns */
-	strcpy(usbcol[0], "Name");
-	strcpy(usbcol[1], "Beschreibung");
-	strcpy(usbcol[2], "Bus");
-	strcpy(usbcol[3], "cfg");
-	strcpy(usbcol[4], "Modus");
-	strcpy(usbcol[5], "Geschwindigkeit");
-	strcpy(usbcol[6], "Power");
-	strcpy(usbcol[7], "Strom");
-	strcpy(usbcol[8], "--");
-	strcpy(usbcol[9], "--");
-
+	strings_user(LANG_DE);
+	strings_devices(LANG_DE);
 }

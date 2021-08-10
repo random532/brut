@@ -1,5 +1,21 @@
 /* User tab */
-#include "disk.h"
+#include "brut.h"
+
+/* User tab treeview column header */
+/* Global, because changing the language updates these. */
+#define UCOL 16
+char usercol[UCOL][25];
+
+#define POS_UNAME		0
+#define POS_UPASSWORD	1
+#define POS_UGROUPID	2
+#define POS_USERID		3
+#define POS_UCLASS		4
+#define POS_UNKNOWN2	5
+#define POS_UNKNOWN3	6
+#define POS_UDESC		7
+#define POS_UHOME		8
+#define POS_USHELL		9
 
 struct {
 	GtkWidget *uname;
@@ -13,6 +29,34 @@ struct {
 void redraw_user() {
 		gtk_widget_destroy(userbox);
 		users();
+}
+
+void strings_user(int l) {
+	if(l == LANG_DE) {
+		strcpy(usercol[POS_UNAME], "Name");
+		strcpy(usercol[POS_UPASSWORD],"PW");
+		strcpy(usercol[POS_UCLASS], "Login-Klasse");
+		strcpy(usercol[POS_UGROUPID], "GruppenID");
+		strcpy(usercol[POS_USERID], "UserID");
+		strcpy(usercol[POS_UNKNOWN2], "--");
+		strcpy(usercol[POS_UNKNOWN3], "--");
+		strcpy(usercol[POS_UDESC], "Ganzer Name");
+		strcpy(usercol[POS_UHOME], "Heimatverzeichnis");
+		strcpy(usercol[POS_USHELL], "Shell");
+	}
+
+	else if(l == LANG_EN) {
+		strcpy(usercol[POS_UNAME], "Name");
+		strcpy(usercol[POS_UPASSWORD],"PW");
+		strcpy(usercol[POS_UCLASS], "Class");
+		strcpy(usercol[POS_UGROUPID], "GroupID");
+		strcpy(usercol[POS_USERID], "UserID");
+		strcpy(usercol[POS_UNKNOWN2], "--");
+		strcpy(usercol[POS_UNKNOWN3], "--");
+		strcpy(usercol[POS_UDESC], "Full Name");
+		strcpy(usercol[POS_UHOME], "Home directory");
+		strcpy(usercol[POS_USHELL], "Login Shell");
+	}
 }
 
 void add_cb(GtkButton *item, gpointer a) {

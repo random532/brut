@@ -1,4 +1,5 @@
 #include "disk.h"
+#include "../brut.h"
 
 void create_combo_geom() {
 	combo_geom = gtk_combo_box_text_new();

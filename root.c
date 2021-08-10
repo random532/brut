@@ -1,49 +1,7 @@
-#include "disk.h"
+#include "brut.h"
 
 GtkWidget *p;
 GtkWidget *passwbox;
-
-void update_view() {
-
-	/* 
-	 * Restore the GUI elements. 
-	 */
-
-	gint n = gtk_notebook_get_current_page(GTK_NOTEBOOK (tabs));
-	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (tabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (tabs), n));
-	
-	if(strcmp(tab, l.tabdisks) == 0) {
-
-		/* redraw_cb() can be called. */
-		/* but this is nicer. */
-		on_toplevel_changed();
-		gtk_widget_destroy(thegrid);
-		editor();
-	}
-		
-	else if(strcmp(tab, l.tabgroup) == 0) {
-		gtk_widget_destroy(groupbox);
-		groups();
-	}
-
-	else if(strcmp(tab, l.tabuser) == 0) {
-		gtk_widget_destroy(userbox);
-		users();
-	}
-
-	else if(strcmp(tab, l.tabconfig) == 0) {
-		gtk_widget_destroy(configbox);
-		config();
-	}
-	else if(strcmp(tab, l.tabdevices) == 0) {
-		gtk_widget_destroy(devbox);
-		devices();
-	}
-	else if(strcmp(tab, l.tabwlan) == 0) {
-		AfterRootCmd();
-	}
-
-}
 
 void inform_user(int error, int sudo_failed, char *buf) {
 
@@ -122,7 +80,7 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 		free(cmd);
 
 	/* Restore GUI */
-	gtk_widget_destroy(passwbox);
+	gtk_widget_destroy(GTK_WIDGET (passwbox));
 	gtk_widget_show(menubox);
 	gtk_widget_show(tabs);
 	gtk_widget_show(logwindow);
@@ -132,14 +90,6 @@ void c_cb(GtkMenuItem *item, gpointer cmd) {
 void o_cb(GtkMenuItem *item, gpointer cmd) {
 		
 	/* "Okay" clicked. */
-
-	/* First draw something */
-/*	gtk_widget_destroy(passwbox);
-	passwbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
-	gtk_container_add (GTK_CONTAINER (fixed), passwbox);
-	gtk_container_add(GTK_CONTAINER(passwbox), gtk_label_new("Processing..."));
-	gtk_widget_show_all(passwbox);
-*/
 
 	/* Execute the sudo command. */
 	const gchar *pass;
@@ -177,14 +127,14 @@ void window_pw(char *cmd) {
 
 	/* A top level container. */
 	passwbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
-	gtk_container_add (GTK_CONTAINER (fixed), passwbox);
+	gtk_container_add(GTK_CONTAINER (fixed), passwbox);
 
 	/* some labels */
-	
+
 	GtkWidget *label = gtk_label_new(l.mexplain);
 	gtk_container_add(GTK_CONTAINER(passwbox), GTK_WIDGET(label));
 
-	if(opt.confirm == TRUE) {
+	if(opt.confirm == TRUE) { /* Maybe comment this out. Opt.confirm only applies to the disk tab. */
 		GtkWidget *label1 = gtk_label_new(cmd);
 		gtk_container_add(GTK_CONTAINER (passwbox), GTK_WIDGET(label1));	
 	}
@@ -246,6 +196,8 @@ char *sudo_backend(char *rcmd, char *password) {
 	 * as sudo has no command line option for the password.
 	 * Sudo fails to find anonymous pipes, and we don't want
 	 * sth like "echo password | sudo cmd".
+	 * 
+	 * Return stdout of child process.
 	 */
 	
 	char *pw;		/* Password */
@@ -262,10 +214,10 @@ char *sudo_backend(char *rcmd, char *password) {
 	int sudo_failed;	/* Whether sudo failed */
 	ssize_t written;	/* Bytes written to pipe */
 	
-	/* sudo password */
+	/* Put password in buffer */
 	pw = malloc (strlen(password) +5);
 	sprintf(pw, "%s\n%d", password, EOF); /* newline and EOF? */
-	
+
 	/* create named pipe */
 	pwfile = random_filename();
 
@@ -295,13 +247,13 @@ char *sudo_backend(char *rcmd, char *password) {
 	close(fd);
 	
 	/* get stdout of child */
-	buflen = 30; 
+	buflen = 30;	/* We increase this buffer later if necessary. */
 	buf = malloc(buflen);
-	memset(line, 0, sizeof line);
 	memset(buf, 0, buflen);
+	memset(line, 0, sizeof line);
 	
 	sudo_failed = 0;
-	
+
 	while(fgets(line, sizeof line, child)) {
 		len = strlen(line);
 		if(len > 0) {
@@ -311,7 +263,7 @@ char *sudo_backend(char *rcmd, char *password) {
 			if(buf != NULL)
 				strncat(buf, line, len);
 			if(strncmp(line, "sudo:", 5) == 0) {
-				sudo_failed = 1; 
+				sudo_failed = 1;
 				break;
 			}
 		}
@@ -319,7 +271,7 @@ char *sudo_backend(char *rcmd, char *password) {
 
 	/* end child process */	
 	error = pclose(child);
-	
+
 	/* destroy pipe */
 	if (unlink(pwfile) != 0)
 		printf("unlink() failed\n");
@@ -327,8 +279,31 @@ char *sudo_backend(char *rcmd, char *password) {
 	free(pw);
 	free(cmd);
 
-	/* inform user */
+	/* Did our child process succeed? Show in debug window. */
 	inform_user(error, sudo_failed, buf);
 
 	return buf;
+}
+
+void execute_me(char *cmd, int what) {
+
+	/* Execute a shell command and handle permissions. */
+
+	if(!root() )  { /* try sudo */
+		if(pw_needed()) {
+			window_pw(cmd);
+			return;
+		}
+		else {
+			/* no password needed */
+			cmd = sudo(cmd, "empty", 0);
+			if(cmd == NULL) {
+				printf("restart recommended..\n");
+				return;
+			}
+		}
+	}
+	submit(cmd, 0); //XXX: 0? Or use variable?
+	free(cmd);
+	update_view();
 }

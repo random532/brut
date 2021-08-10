@@ -1,5 +1,14 @@
 /* Devices */
-#include "disk.h"
+#include "brut.h"
+
+/* pci devices column header */
+#define PCICOL 10 /* lol.. DEVCLASS */
+char pcicol[PCICOL][20];
+
+/* usb devices column header */
+#define USBCOL 10
+char usbcol[USBCOL][20];
+
 
 GtkWidget *topgrid;	/* Grid at the top */
 GtkWidget *updt;	/* Update button */
@@ -9,11 +18,14 @@ GtkWidget *devtabs;
 GtkWidget *tabusb;
 GtkWidget *tabpci;
 GtkWidget *tabacpi;
+GtkWidget *tabbat;
+GtkWidget *tabcpu;
 
 GtkWidget *pcibox;
 GtkWidget *usbbox;
 GtkWidget *acpibox;
-
+GtkWidget *batbox;
+GtkWidget *cpubox;
 
 GtkTreeStore *devts;
 
@@ -45,7 +57,25 @@ GtkTreeIter accelerator;
 //GtkTreeIter parent;
 //GtkTreeIter	child;	/* Device */
 
-void dev_cleanup() {
+static GtkWidget *add_scrolled(GtkWidget *);
+static int battinfo();
+static void dev_cleanup();
+static void devacpi();
+void devices();
+static void devices_add_tabs();
+static void devbat();
+static void devcpu();
+static void devpci();
+static void devusb();
+static void fill_pci_tv(GtkWidget *);
+static void fill_usb_tv(GtkWidget *);
+static GtkWidget *new_treeview(GtkWidget *, char [10][20], int);
+static void on_dev_changed(GtkMenuItem *, gpointer);
+static gboolean perms();
+void strings_devices();
+
+
+static void dev_cleanup() {
 
 	/* 
 	 * Destroy the top level box and
@@ -66,6 +96,12 @@ void dev_cleanup() {
 	if(GTK_IS_WIDGET (tabacpi))
 		gtk_widget_destroy(tabacpi);
 
+	if(GTK_IS_WIDGET (tabbat))
+		gtk_widget_destroy(tabbat);
+
+	if(GTK_IS_WIDGET (tabcpu))
+		gtk_widget_destroy(tabcpu);
+
 	if(GTK_IS_WIDGET (pcibox))
 		gtk_widget_destroy(pcibox);
 
@@ -75,19 +111,82 @@ void dev_cleanup() {
 	if(GTK_IS_WIDGET (acpibox))
 		gtk_widget_destroy(acpibox);
 
+	if(GTK_IS_WIDGET (batbox))
+		gtk_widget_destroy(batbox);
+
+	if(GTK_IS_WIDGET (cpubox))
+		gtk_widget_destroy(cpubox);
+
 devbox = NULL;
 devtabs = NULL;
 tabusb = NULL;
 tabpci = NULL;
 tabacpi = NULL;
+tabbat = NULL;
+tabcpu = NULL;
 
 pcibox = NULL;
 usbbox = NULL;
 acpibox = NULL;
-
+batbox = NULL;
+cpubox = NULL;
 }
 
-GtkWidget *add_scrolled(GtkWidget *box) {
+void strings_devices(int l) {
+
+	if(l == LANG_DE) {
+		/* pci device columns */
+		strcpy(pcicol[0], "Name");
+		strcpy(pcicol[1], "Beschreibung");
+		strcpy(pcicol[2], "Hersteller");
+		strcpy(pcicol[3], "Karte");
+		strcpy(pcicol[4], "Chip");
+		strcpy(pcicol[5], "Steckplatz");
+		strcpy(pcicol[6], "Typ");
+		strcpy(pcicol[7], "Typ");
+		strcpy(pcicol[8], "Subtyp");
+		strcpy(pcicol[9], "--");
+
+		/* Usb device columns */
+		strcpy(usbcol[0], "Name");
+		strcpy(usbcol[1], "Beschreibung");
+		strcpy(usbcol[2], "Bus");
+		strcpy(usbcol[3], "cfg");
+		strcpy(usbcol[4], "Modus");
+		strcpy(usbcol[5], "Geschwindigkeit");
+		strcpy(usbcol[6], "Power");
+		strcpy(usbcol[7], "Strom");
+		strcpy(usbcol[8], "--");
+		strcpy(usbcol[9], "--");
+	}
+	else if(l == LANG_EN) {
+		/* Pci device columns */
+		strcpy(pcicol[0], "Name");
+		strcpy(pcicol[1], "Description");
+		strcpy(pcicol[2], "Vendor");
+		strcpy(pcicol[3], "Card");
+		strcpy(pcicol[4], "Chip");
+		strcpy(pcicol[5], "Slot");
+		strcpy(pcicol[6], "Class");
+		strcpy(pcicol[7], "Class");
+		strcpy(pcicol[8], "Sublass");
+		strcpy(pcicol[9], "--");
+
+		/* Usb device columns */
+		strcpy(usbcol[0], "Name");
+		strcpy(usbcol[1], "Description");
+		strcpy(usbcol[2], "Bus");
+		strcpy(usbcol[3], "cfg");
+		strcpy(usbcol[4], "Mode");
+		strcpy(usbcol[5], "Speed");
+		strcpy(usbcol[6], "Power");
+		strcpy(usbcol[7], "Power2");
+		strcpy(usbcol[8], "empty");
+		strcpy(usbcol[9], "empty");
+	}
+}
+
+static GtkWidget *add_scrolled(GtkWidget *box) {
 	/* Scrolled window. */
 	GtkWidget *scrolled_window = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (scrolled_window),
@@ -99,7 +198,7 @@ GtkWidget *add_scrolled(GtkWidget *box) {
 	return scrolled_window;
 }
 
-gboolean perms() {
+static gboolean perms() {
 	if(!root()) {
 		if(pw_needed() == TRUE) {
 			/* We need the passwort! */
@@ -109,7 +208,72 @@ gboolean perms() {
 	return TRUE;
 }
 
-GtkWidget *new_treeview(GtkWidget *box, char array[10][20], int members) {
+static int battinfo() {
+
+ 	/* A scrolled window */
+	GtkWidget *w = add_scrolled(batbox);
+
+	/* A container */
+	GtkWidget *g = gtk_grid_new();
+	gtk_grid_set_column_homogeneous(GTK_GRID(g), FALSE);
+	gtk_grid_set_row_spacing(GTK_GRID(g), 0);
+	gtk_grid_set_column_spacing(GTK_GRID(g), 0);
+	gtk_container_add(GTK_CONTAINER (w), g);
+
+	char txt[50];
+	char *cmd;
+	GtkWidget *label;
+	int units = 0;
+
+	cmd = command("sysctl  -n hw.acpi.battery.units");
+	if(cmd != NULL) {
+		snprintf(txt, 50, "Battery units: %s\n", cmd);
+		units = atoi(cmd);
+		label = gtk_label_new(txt);
+		gtk_label_set_xalign(GTK_LABEL (label), 0.0);
+		gtk_grid_attach(GTK_GRID (g), label, 0, 0, 1, 1);
+		free(cmd);
+	}
+	else {
+		gtk_grid_attach(GTK_GRID (g), gtk_label_new("No battery information. Cannot read sysctls."), 0, 0, 1, 1);
+		return 0;
+	}
+
+	cmd = command("sysctl  -n hw.acpi.battery.state");
+	if(cmd != NULL) {
+		if(strncmp(cmd, "1", 1) == 0)
+			snprintf(txt, 50, "Battery state: No AC Line.\n");
+		else
+			snprintf(txt, 50, "Battery state: On AC Line, charging. \n");
+		label = gtk_label_new(txt);
+		gtk_label_set_xalign(GTK_LABEL (label), 0.0);
+		gtk_grid_attach(GTK_GRID (g), label, 0, 1, 1, 1);
+		free(cmd);
+	}
+
+	cmd = command("sysctl  -n hw.acpi.battery.time");
+	if(cmd != NULL) {
+		snprintf(txt, 50, "Battery time: %s minutes\n", cmd);
+		label = gtk_label_new(txt);
+		gtk_label_set_xalign(GTK_LABEL (label), 0.0);
+		gtk_grid_attach(GTK_GRID (g), label, 0, 2, 1, 1);
+		free(cmd);
+	}
+
+	cmd = command("sysctl  -n hw.acpi.battery.life");
+	if(cmd != NULL) {
+		snprintf(txt, 50, "Battery life: %s / 100 \n", cmd);
+		label = gtk_label_new(txt);
+		gtk_label_set_xalign(GTK_LABEL (label), 0.0);
+		gtk_grid_attach(GTK_GRID (g), label, 0, 3, 1, 1);
+		free(cmd);
+	}
+	gtk_grid_attach(GTK_GRID (g), gtk_label_new("---"), 0, 4, 1, 1);
+
+	return units;
+}
+
+static GtkWidget *new_treeview(GtkWidget *box, char array[10][20], int members) {
 
 	GtkWidget *view = gtk_tree_view_new();
 	
@@ -152,7 +316,7 @@ GtkWidget *new_treeview(GtkWidget *box, char array[10][20], int members) {
 	return view;
 }
 
-void fill_pci_tv(GtkWidget *tv) {
+static void fill_pci_tv(GtkWidget *tv) {
 
 	/*
 	 * Add default device classes.
@@ -322,7 +486,7 @@ void fill_pci_tv(GtkWidget *tv) {
 
 }
 
-void devpci() {
+static void devpci() {
 
 	/* Cleanup */
 	if(GTK_IS_WIDGET(pcibox))
@@ -342,7 +506,7 @@ void devpci() {
 	gtk_widget_show_all(pcibox);
 }
 
-void fill_usb_tv(GtkWidget *tv) {
+static void fill_usb_tv(GtkWidget *tv) {
 
 		
 	/* 
@@ -455,7 +619,7 @@ void fill_usb_tv(GtkWidget *tv) {
 	}
 }
 
-void devusb() {
+static void devusb() {
 
 	/* Cleanup */
 	if(GTK_IS_WIDGET(usbbox))
@@ -472,7 +636,7 @@ void devusb() {
 	gtk_widget_show_all(usbbox);
 }
 
-void devacpi() {
+static void devacpi() {
 
 	/* Cleanup */
 	if(GTK_IS_WIDGET(acpibox))
@@ -489,7 +653,51 @@ void devacpi() {
 	gtk_widget_show_all(acpibox);
 }
 
-void on_dev_changed(GtkMenuItem *item, gpointer p) {
+static void devbat() {
+
+	/* Cleanup */
+	if(GTK_IS_WIDGET(batbox))
+		gtk_widget_destroy(batbox);
+
+	/* A container. */
+	batbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
+	gtk_container_add (GTK_CONTAINER (tabbat), batbox);
+	
+	/* A scrolled window */
+	GtkWidget *w = add_scrolled(batbox);
+
+	/* general battery info */
+	int units = battinfo();
+
+	/* show each battery. */
+/*	while(units != 0) {
+		units--;
+		printf("acpiconf -i %i\n", units);
+	}
+*/
+	gtk_widget_show_all(batbox);
+}
+
+static void devcpu() {
+
+	/* Cleanup */
+	if(GTK_IS_WIDGET(cpubox))
+		gtk_widget_destroy(cpubox);
+
+	/* A container. */
+	cpubox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
+	gtk_container_add (GTK_CONTAINER (tabcpu), cpubox);
+	
+	/* A scrolled window */
+	GtkWidget *w = add_scrolled(cpubox);
+	GtkWidget *cpu = gtk_label_new(command("sysctl -n hw.model"));
+	if(cpu != NULL)
+		gtk_container_add (GTK_CONTAINER (w), cpu);
+	
+	gtk_widget_show_all(cpubox);
+}
+
+static void on_dev_changed(GtkMenuItem *item, gpointer p) {
 
 	gint n = gtk_notebook_get_current_page(GTK_NOTEBOOK (devtabs));
 	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (devtabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (devtabs), n));
@@ -502,9 +710,13 @@ void on_dev_changed(GtkMenuItem *item, gpointer p) {
 		devusb();
 	else if(strcmp(tab, "ACPI") == 0)
 		devacpi();
+	else if(strcmp(tab, "Battery") == 0)
+		devbat();
+	else if(strcmp(tab, "CPU") == 0)
+		devcpu();
 }
 
-void devices_add_tabs() {
+static void devices_add_tabs() {
 	
 	devtabs = gtk_notebook_new();
 //	gtk_notebook_set_tab_pos(task_tabs, GTK_POS_LEFT);
@@ -515,10 +727,14 @@ void devices_add_tabs() {
 	tabusb = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tabpci = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tabacpi = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tabcpu = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tabbat = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
 	gtk_notebook_append_page(GTK_NOTEBOOK (devtabs), tabpci, gtk_label_new("PCI"));
 	gtk_notebook_append_page(GTK_NOTEBOOK (devtabs), tabusb, gtk_label_new("USB"));
 	gtk_notebook_append_page(GTK_NOTEBOOK (devtabs), tabacpi, gtk_label_new("ACPI"));
+	gtk_notebook_append_page(GTK_NOTEBOOK (devtabs), tabcpu, gtk_label_new("CPU"));
+	gtk_notebook_append_page(GTK_NOTEBOOK (devtabs), tabbat, gtk_label_new("Battery"));
 
 	g_signal_connect_after(G_OBJECT (devtabs), "switch-page", G_CALLBACK(on_dev_changed), devtabs);
 }

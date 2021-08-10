@@ -1,4 +1,5 @@
 #include "disk.h"
+#include "../brut.h"
 
 char *is_mounted(char *part) {
 
@@ -74,6 +75,44 @@ char *is_mounted_fuse(char *partition) {
 		return NULL;
 }
 
+char *do_mountpoint(GtkMenuItem *gmenu) {
+
+	char *mp;
+	const gchar *label = gtk_menu_item_get_label(gmenu); //XXX: free(label) ??
+
+	/* mountpoint */
+	if(strncmp(label, "/mnt", 4) == 0) {
+		mp = malloc(10);
+		memset(mp, 0, 10);
+		strncpy(mp, "/mnt", 4);
+		return mp;
+	}
+	else if(strncmp(label, "/media", 6) == 0) {
+		mp = malloc(10);
+		memset(mp, 0, 10);
+		strncpy(mp, "/media", 6);
+		return mp;
+	}
+	else {
+		/* other path */
+		/* file chooser dialog */
+		GtkWidget * dialog;
+		GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
+		dialog = gtk_file_chooser_dialog_new("Mointpoint", GTK_WINDOW (window), action, "Cancel", GTK_RESPONSE_CANCEL, "Mount", GTK_RESPONSE_ACCEPT, NULL);
+		gint res = gtk_dialog_run(GTK_DIALOG (dialog));
+		if(res == GTK_RESPONSE_ACCEPT) {
+			GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
+			mp = gtk_file_chooser_get_filename(chooser);
+			gtk_widget_destroy(dialog);
+			return mp;
+		}
+		else {
+			gtk_widget_destroy(dialog);
+			return NULL;
+		}
+	}
+}
+
 void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	
 	/*
@@ -84,59 +123,47 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	char *fs;	/* File system */
 	char *path;	/* Mount path */
 	char *cmd;	/* Mount command */
-	const gchar *label; /* Users choice of mountpoint */
+	int cmdlen;	/* Length of mount command. */
 	int success = 0;
 	int plen;	/* Partition length */
 	int mlen = 0;	/* Mount path length (?) */
-	
-	label = gtk_menu_item_get_label(gmenu);
+
 	part = selected_item(tree1, POS_PART);
 	plen = strlen(part);
 	fs = selected_item(tree1, POS_FS);
 	
-	if( (part == NULL) || (fs == NULL) || (label == NULL) )
+	if((part == NULL) || (fs == NULL))
 		return;
-	
-	/* mountpoint */
-	path = malloc(10);
-	memset(path, 0, 10);
-	if( strncmp(label, "/mnt", 4) == 0) 
-		strncpy(path, label, 4);
-	else if( strncmp(label, "/media", 6) == 0)  
-		strncpy(path, label, 6);
-	else {
-		/* other path */
-		/* file chooser dialog */
-		GtkWidget * dialog;
-		GtkFileChooserAction action = GTK_FILE_CHOOSER_ACTION_SELECT_FOLDER;
-		dialog = gtk_file_chooser_dialog_new("Mointpoint", GTK_WINDOW (window), action, "Cancel", GTK_RESPONSE_CANCEL, "Mount", GTK_RESPONSE_ACCEPT, NULL);
-		gint res = gtk_dialog_run(GTK_DIALOG (dialog));
-		if(res == GTK_RESPONSE_ACCEPT) {
-			GtkFileChooser *chooser = GTK_FILE_CHOOSER (dialog);
-			path = gtk_file_chooser_get_filename(chooser);
-			mlen = strlen(path);
-			gtk_widget_destroy(dialog);
-		}
-		else {
-			gtk_widget_destroy(dialog);
-			return;
-		}
+
+	path = do_mountpoint(gmenu);
+	if(path == NULL) {
+		msg("No mount point selected.");
+		return;
 	}
-	
+	mlen = strlen(path);
+	if(mlen > 1024)
+		printf("Warning: Mountpoint exceeds FreeBSDs MAX_PATH of 1024.\n");
+
 	/* 
 	 * We have all we need.
 	 * So build the mount command.
 	 */
-	 
-	int x = 50;
-	cmd = malloc(plen + mlen + x + 1);
-	memset(cmd, 0, plen + mlen + x + 1);
+
+	cmdlen = plen + mlen + 50;
+	cmd = malloc(cmdlen + 1);
+	if(cmd == NULL) {
+		printf("mount.c: malloc failed.\n");
+		free(path);
+		free(cmd);
+		return;
+	}
+	memset(cmd, 0, cmdlen + 1);
 
 	int error = 0;
 	if(strncmp(fs, "ufs", 3) == 0) 
-		snprintf(cmd, plen+mlen+x, "mount /dev/%s %s", part, path);
+		snprintf(cmd, cmdlen, "mount /dev/%s %s", part, path);
 	else if(strncmp(fs, "msdosfs", 7) == 0) 
-		snprintf(cmd, plen+mlen+x, "mount -t msdosfs /dev/%s %s", part, path);
+		snprintf(cmd, cmdlen, "mount -t msdosfs /dev/%s %s", part, path);
 	else if(strncmp(fs, "ntfs", 4) == 0) {
 		
 		/* see if ntfs-3g is installed. XXX: Never reached. */
@@ -144,29 +171,29 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 			msg("To mount ntfs file systems, please install this package: fusefs-ntfs. Also kldload fuse.");
 			error = 1;
 		}
-		snprintf(cmd, plen+mlen+x, "ntfs-3g /dev/%s %s", part, path);
+		snprintf(cmd, cmdlen, "ntfs-3g /dev/%s %s", part, path);
 	}
 	else if(strncmp(fs, "cd9660", 6) == 0)
-		snprintf(cmd, plen+mlen+x, "mount_cd9660 /dev/%s %s", part, path);
+		snprintf(cmd, cmdlen, "mount_cd9660 /dev/%s %s", part, path);
 	else if(strncmp(fs, "ext2fs", 6) == 0) {
 		if (!command_exist("/bin/fuse-ext2")) {
 			msg("To mount ext2 file systems, please install this package: fusefs-ext2. Also kldload fuse.");
 			error = 1;
 		}
-		snprintf(cmd, plen+mlen+x, "fuse-ext2 /dev/%s %s", part, path);
+		snprintf(cmd, cmdlen, "fuse-ext2 /dev/%s %s", part, path);
 	}
 	else if(strncmp(fs, "exfat", 5) == 0) {
 		if (!command_exist("/sbin/mount.exfat")) {
 			msg("To mount exfat file systems, please build this package via ports: sysutils/fusefs-exfat. Also kldload fuse(?).");
 			error = 1;
 		}
-		snprintf(cmd, plen+mlen+x, "mount.exfat /dev/%s %s", part, path);
+		snprintf(cmd, cmdlen, "mount.exfat /dev/%s %s", part, path);
 	}
 	else if(strncmp(fs, "geli", 4) == 0)
-		snprintf(cmd, plen+mlen+x, "mount /dev/%s %s", part, path);
+		snprintf(cmd, cmdlen, "mount /dev/%s %s", part, path);
 
 	else if(strncmp(fs, "zfs", 3) == 0)
-		snprintf(cmd, plen+mlen+x, "mount -t zfs /dev/%s %s", part, path);
+		snprintf(cmd, cmdlen, "mount -t zfs /dev/%s %s", part, path);
 
 	else if(strncmp(fs, "n/a", 3) == 0) {
 		/* no read write permission on partition */
@@ -177,7 +204,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		msg("undocumented file system.");
 		error = 1;
 	}
-	
+
 	if(error) {
 		free(path);
 		free(cmd);
@@ -201,6 +228,7 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 	else if(pw_needed()) {
 		window_pw(cmd);
 		free(path);
+		return;
 	}
 	else {
 		/* no password needed */
@@ -213,11 +241,11 @@ void mountfs(GtkMenuItem *gmenu, gpointer gp) {
 		free(path);
 	}
 
-	on_toplevel_changed(); 		/* redraw everything */
+	on_toplevel_changed(); 		/* redraw everything, but keep current disk, so no update_view(). */
 }
 
 void unmountfs() {
-	
+
 	char *m;	 /* mountpoint */
 	char *cmd;
 	int len;
@@ -229,9 +257,13 @@ void unmountfs() {
 	
 	/* Build the unmount command. */	
 	len = strlen(m);
-	cmd = malloc (len + 20);
-	memset(cmd, 0, len+20);
-	snprintf(cmd, len+20, "umount %s", m);
+	if((len == 0) || (len > 1024))
+		printf("Warning: path to unmount is probably bad.\n");
+
+	len = len + 20;
+	cmd = malloc(len);
+	memset(cmd, 0, len);
+	snprintf(cmd, len, "umount %s", m);
 	free(m);
 
 	/* Execute the unmount command. */

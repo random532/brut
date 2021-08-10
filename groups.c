@@ -1,5 +1,5 @@
 /* Group tab */
-#include "disk.h"
+#include "brut.h"
 
 GtkWidget *groupconfirm; /* a box positioned right next to the treeview. */
 GtkWidget *hint;
@@ -9,29 +9,6 @@ void remove_groupconfirm() {
 			gtk_widget_destroy(groupconfirm);
 		gtk_container_add(GTK_CONTAINER (groupbox), gtk_label_new(l.ginfoclick));
 		gtk_widget_show_all(groupbox);
-}
-
-void execute_me(char *cmd, int what) {
-	
-	todo = what; //XXX: unused???
-
-	if(!root() )  { /* try sudo */
-		if(pw_needed() ) {
-			window_pw(cmd);
-			return;
-		}
-		else {
-			/* no password needed */
-			cmd = sudo(cmd, "empty", 0);
-			if(cmd == NULL) {
-				printf("restart recommended..\n");
-				return;
-			}
-		}
-	}
-	submit(cmd, 0);
-	free(cmd);
-	update_view();
 }
 
 void button_pressed_cb(GtkButton *item, gpointer cmd) {

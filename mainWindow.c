@@ -1,5 +1,5 @@
 /* Main window  */
-#include "disk.h"
+#include "brut.h"
 
 /* Functions */
 
@@ -16,7 +16,7 @@ void top_window();
 void top_window() {
 	/* main window */
 	window = gtk_window_new(GTK_WINDOW_TOPLEVEL);
-	gtk_window_set_title (GTK_WINDOW (window), "Control Panel");
+	gtk_window_set_title (GTK_WINDOW (window), "Brut - Control Panel");
 	gtk_widget_set_size_request (window, 800, 500); /* width, height */
 	gtk_window_set_position (GTK_WINDOW(window), GTK_WIN_POS_CENTER_ALWAYS);
 	gtk_container_set_border_width (GTK_CONTAINER (window), 10);
@@ -64,6 +64,8 @@ void on_tabs_changed(GtkMenuItem *item, gpointer user_data) {
 		audio();
 	else if(strcmp(tab, l.tablan) == 0)
 		lan();
+	else if(strcmp(tab, l.tabdmesg) == 0)
+		dmesg();
 
 
 	/* Clear log info. */
@@ -97,6 +99,7 @@ void add_tabs() {
 	tab9 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab10 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 	tab11 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+	tab12 = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
 
 	gtk_container_set_border_width(GTK_CONTAINER (tab1), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab2), 10);
@@ -109,6 +112,7 @@ void add_tabs() {
 	gtk_container_set_border_width(GTK_CONTAINER (tab9), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab10), 10);
 	gtk_container_set_border_width(GTK_CONTAINER (tab11), 10);
+	gtk_container_set_border_width(GTK_CONTAINER (tab12), 10);
 
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab0, gtk_label_new(l.tabcontrol));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab1, gtk_label_new(l.tabdisks));
@@ -122,6 +126,7 @@ void add_tabs() {
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab9, gtk_label_new(l.tabwlan));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab10, gtk_label_new(l.tablan));
 	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab11, gtk_label_new(l.tabaudio));
+	gtk_notebook_append_page(GTK_NOTEBOOK (tabs), tab12, gtk_label_new(l.tabdmesg));
 
 	g_signal_connect_after(G_OBJECT (tabs), "switch-page", G_CALLBACK(on_tabs_changed), NULL);
 }
@@ -243,4 +248,47 @@ int main(int argc, char *argv[]) {
 	/* and go! */
 	gtk_main();
 	return EXIT_SUCCESS;
+}
+
+void update_view() {
+
+	/* 
+	 * Restore the GUI elements. 
+	 */
+
+	gint n = gtk_notebook_get_current_page(GTK_NOTEBOOK (tabs));
+	const gchar *tab = gtk_notebook_get_tab_label_text(GTK_NOTEBOOK (tabs), gtk_notebook_get_nth_page(GTK_NOTEBOOK (tabs), n));
+
+	if(strcmp(tab, l.tabdisks) == 0) {
+		redraw_disks();
+	}
+		
+	else if(strcmp(tab, l.tabgroup) == 0) {
+		gtk_widget_destroy(groupbox);
+		groups();
+	}
+
+	else if(strcmp(tab, l.tabuser) == 0) {
+		gtk_widget_destroy(userbox);
+		users();
+	}
+
+	else if(strcmp(tab, l.tabconfig) == 0) {
+		gtk_widget_destroy(configbox);
+		config();
+	}
+	else if(strcmp(tab, l.tabdevices) == 0) {
+		gtk_widget_destroy(devbox);
+		devices();
+	}
+	else if(strcmp(tab, l.tabwlan) == 0) {
+		AfterRootCmd();
+	}
+	else if(strcmp(tab, l.tabdmesg) == 0) {
+		gtk_widget_destroy(dmesgbox);
+		dmesg();
+	}
+
+	else
+		printf("redraw nothing?!\n");
 }
