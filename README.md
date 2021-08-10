@@ -44,6 +44,4 @@ Or build as a standalone binary:<br>
 3. Run "make LOCALBASE=/usr/local"<br>
 4. Start the binary (./brut).<br><br>
 
-If there is a need for it, I can also add binaries.
-
 --------------------------
