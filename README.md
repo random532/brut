@@ -29,6 +29,8 @@ Currently there are no plans to use polkit.<br><br>
 
 --------------------------
 5. How do I install it?<br>
+*edit: brut is now officially a port. So at some point, "pkg install brut" will do.
+
 Install it just like any other port:<br>
 - Make sure you have /usr/ports directory.<br>
 - Download ports/Makefile and ports/pkg-descr<br>
@@ -37,12 +39,11 @@ Install it just like any other port:<br>
 - The start command is: brut :)<br><br>
 
 Or build as a standalone binary:<br>
-1. Download the source files (no need for the /ports, /screenshots, /binary folder).
+1. Download the source files.
 2. Make sure you have gtk3 and sudo installed.<br>
 3. Run "make LOCALBASE=/usr/local"<br>
 4. Start the binary (./brut).<br><br>
 
-Or download the binary located under /binary/brut (compiled on 12.1 amd64).<br>
-Change permissions, "chmod +x ./brut", then run it.<br><br>
+If there is a need for it, I can also add binaries.
 
 --------------------------
