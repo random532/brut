@@ -1,9 +1,10 @@
 /*
  * TODO:
  * -Bugs?
+ * - Improve code quality
+ * - Finish wireless
  */
 #pragma once
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -38,7 +39,6 @@
 #define USR 	4
 int todo;
 
-
 /* Options */
 struct {
 
@@ -49,7 +49,7 @@ struct {
 } opt;
 
 
-	/* Global GUI elements  */
+/* Global GUI elements  */
 GtkWidget *window; 	/* main window */
 GtkWidget *fixed;
 
@@ -72,6 +72,8 @@ GtkWidget *tab8;	/* Devices */
 GtkWidget *tab9;	/* Wireless */
 GtkWidget *tab10;	/* Ethernet */
 GtkWidget *tab11;	/* Audio */
+GtkWidget *tab12;	/* Dmesg */
+
 
 /* Each tab has one box that serves as a reference point. */
 /* Global in case we redraw the tab. */
@@ -87,7 +89,7 @@ GtkWidget *devbox;		/* Devices */
 GtkWidget *wbox;		/* Wireless */
 GtkWidget *audiobox;	/* Audio */
 GtkWidget *lanbox;		/* Ethernet */
-
+GtkWidget *dmesgbox;		/* Dmesg */
 
 /* Strings for different languages. */
 typedef struct {
@@ -146,6 +148,7 @@ typedef struct {
 	char cwlan[30];
 	char clan[35];
 	char caudio[30];
+	char cdmesg[30];
 
 	/* Group options */
 	char gname[10];
@@ -206,100 +209,82 @@ typedef struct {
 	char tabwlan[20];
 	char tablan[10];
 	char tabaudio[10];
+	char tabdmesg[10];
 
 } lang;
 lang l;
 
-	/* (most) functions */
+	/* Global functions */
 //#ifndef FUNCTIONS_H_INCLUDED
 //#define FUNCTIONS_H_INCLUDED
 
 /* lang.c */
 void de_lang();
 void en_lang();
-
 void strings_user(int);
 void strings_devices(int);
 
 /* subroutines.c */
-int add_slices();
-int add_geoms();
-int add_partitions();
 char *add_to_list(char *, char *);
-void ask( char *);
-void ask_cb(GtkDialog *, gint, gpointer);
+//void ask(char *);
+//void ask_cb(GtkDialog *, gint, gpointer);
 void change_fontsize(gboolean);
-char *check_free_space(char *, char *, char *);
-void clean_up_pointers();
 char* command(char *);
 int command_exist(char *);
+void cosmetics(char *);
 int execute_cmd(char *, int);
-void fsscan();
 int find_p(char *);
 void format_string(char *);
-char *get_disks();
-char *get_partition_type(char *);
-char *get_type(char *);
-char *get_scheme(const gchar *);
+// char *get_partition_type(char *); ???
 void msg(char *);
 char *random_filename();
-char *read_disk(char *);
 int root();
 char *selected_item(GtkWidget *, int);
 int submit(char *, int);
-void on_response(GtkDialog *, gint, gpointer);
+//void on_response(GtkDialog *, gint, gpointer);
 int vari(char *, int);
-char *what_file_system(char *);
+
+/* disk_subroutines.c */
+void ask(char *);
 
 /* root.c */
+void execute_me(char *, int);
 int pw_needed();
 char *sudo(char *, char *, int);
 char *sudo_backend(char *, char *);
-int test_pw(char *);
-void update_view();
+// int test_pw(char *); not in there!
 void window_pw(char *);
 
 /* menubar.c */
 void add_menubar();
 void redraw_menubar();
 
-/* mount.c */
-char *is_mounted(char *);
-char *is_mounted_fuse(char *);
-void mountfs(GtkMenuItem *, gpointer);
-void unmountfs();
-void usermount(char *, char *);
-int vfs_usermount();
-int volume_cmp(char *, char *);
-
 /* mainWindow.c */
 /* int main() */
 void add_menubox();
 void on_tabs_changed(GtkMenuItem *item, gpointer user_data);
 void top_window();
+void update_view();
 
 /* disk.c */
 void disk();
 void redraw_disks();
 
-/* groups.c */
-void groups();
-void execute_me(char *, int);
-
 void about();	/* about.c */
-void users();	/* user.c */
-void tasks();	/* tasks.c */
+void audio();	/* audio.c */
 void config();	/* config.c */
+void control();	/* control.c */
+void dmesg();	/* dmesg.c */
 void devices();	/* devices.c */
+void groups();	/* groups.c */
 void lan();		/* Ethernet */
+void tasks();	/* tasks.c */
+void timetab();	/* time.c */
+void users();	/* user.c */
+
 void wireless();	/* wireless.c */
 void AfterRootCmd();
 
-void audio();	/* audio.c */
-void cosmetics(char *); 
-
-void control();		/* control.c */
-void timetab();		/* time.c */
 
 lang en;
 lang de;

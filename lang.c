@@ -58,6 +58,7 @@ lang en = {
 	.cwlan="<a href=\" \"> Wireless</a>",
 	.clan="<a href=\" \"> Ethernet</a>",
 	.caudio="<a href=\" \"> Sound</a>",
+	.cdmesg="<a href=\" \"> Dmesg</a>",
 
 
 	/* groups */
@@ -120,7 +121,8 @@ Have fun,\nBrut.\n",
 	.tabdevices="Devices",
 	.tabwlan="Wireless",
 	.tablan="Ethernet",
-	.tabaudio="Sound"
+	.tabaudio="Sound",
+	.tabdmesg="Dmesg"
 
 };
 
@@ -179,6 +181,7 @@ lang de = {
 	.cwlan="<a href=\" \"> WLAN</a>",
 	.clan="<a href=\" \"> LAN</a>",
 	.caudio="<a href=\" \"> Sound</a>",
+	.cdmesg="<a href=\" \"> Dmesg</a>",
 
 	/* groups */
 	.gname="Name",
@@ -240,7 +243,8 @@ Viel Spass,\nBrut.\n",
 	.tabdevices="Hardware",
 	.tabwlan="Wlan",
 	.tablan="LAN",
-	.tabaudio="Sound"
+	.tabaudio="Sound",
+	.tabdmesg="Dmesg"
 };
 
 void en_lang() {
@@ -336,5 +340,5 @@ void de_lang() {
 	strncpy(column[10], "Stripeoffset", 15);
 	
 	strings_user(LANG_DE);
-	strings_devices(LANG_EN);
+	strings_devices(LANG_DE);
 }

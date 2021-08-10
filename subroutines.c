@@ -1,5 +1,38 @@
 #include "brut.h"
 
+char *add_to_list(char *pname, char *mylist) {
+
+	/* Add a string to an existing string. */
+	/* Adjust the buffer size. */
+
+
+	int len, buflen;
+	len = strlen(pname);
+
+	if(mylist == NULL) {
+		len = len + 5;
+		mylist = malloc(len);
+		if(mylist != NULL)
+			strcpy(mylist, pname);
+	}
+
+	else {
+		buflen = strlen(mylist);
+		buflen = buflen + len + 2;
+		mylist = realloc(mylist, buflen);
+		strcat(mylist, " ");
+		strcat(mylist, pname);
+	}
+	return(mylist);
+}
+
+void cosmetics(char *line) {
+	/* Zero terminate. */
+	int i = 0;
+	while((line[i] != '\n') && (i < MAXLINE))
+		i++;
+	line[i] = '\0';
+}
 
 /* remove brackets, i.e. () from a string */
 void format_string(char *mystring) {
@@ -28,8 +61,13 @@ void change_fontsize(gboolean increase) {
 	on_tabs_changed(NULL, NULL);
 }
 
-/* execute a shell command */
 int execute_cmd(char *cmd, int inform) {
+
+	/* 
+	 * Execute a shell command. 
+	 * Stdout goes to the debug window.
+	 * Return either 1 or 0 (success).
+	 */
 
 	if(cmd == NULL)
 		return 1;
@@ -42,8 +80,8 @@ int execute_cmd(char *cmd, int inform) {
 	if (fp == NULL)
 		msg("couldnt popen");
 
-	char info[200];
-	memset(info, 0, 200);
+	char info[MAXLINE];
+	memset(info, 0, MAXLINE);
 
 	while(fgets(info, sizeof info, fp)) { /* pointless? */
 
@@ -51,26 +89,27 @@ int execute_cmd(char *cmd, int inform) {
 	if((inform == 1) && (strlen(info) != 0))
 		msg(info);
 	int suc = pclose(fp); /* /256 */;
-		
+
 	return suc;
 }
 
-/* Send a string to logwindow. */
 void msg(char *blah) {
 
+	/* Send a string to log window. */
+	if(blah == NULL)
+		return;
 	int len = strlen(blah);
 	if(len > 0)
 		gtk_text_buffer_set_text(GTK_TEXT_BUFFER (gtk_text_view_get_buffer(GTK_TEXT_VIEW(logwindow))), blah, len);
 }
 
+char *command(char *cmd) {
 
-char* command(char *cmd) {
-
-/* 
- * Execute a command.
- * Return the result in a buffer.
- * We only read MAXLINE chars per line, which is 250.
- */
+	/* 
+	 * Execute a shell command.
+	 * Return stdout in a buffer.
+	 * We only read MAXLINE chars per line, which is 250.
+	 */
 
 
 	if(cmd == NULL)
@@ -94,7 +133,7 @@ char* command(char *cmd) {
 		msg("fopen failed");
 		return NULL;
 	}
-	while( fgets(line, MAXLINE, fp)) {
+	while(fgets(line, MAXLINE, fp)) {
 		
 		/* Add contents to our buffer. */
 		len = strlen(line);
@@ -119,7 +158,7 @@ int vari(char *line, int max) {
 	
 	/* in a string like " name: variable" find the variable */
 	int i = 0;
-	while( (strncmp(&line[i], ":", 1) != 0) && (i < max) )
+	while((strncmp(&line[i], ":", 1) != 0) && (i < max))
 		i++;
 	i++;
 	
@@ -174,7 +213,7 @@ int submit(char *cmd, int conf) {
 		else
 			error = execute_cmd(cmd, 1);
 	}
-	
+
 	else if(todo == FS) {
 		if( conf == 1)
 			ask(cmd);
@@ -189,14 +228,6 @@ int submit(char *cmd, int conf) {
 	return error;
 }
 
-void fsscan() {
-	
-	todo = MOUNT;
-	/* this is abit odd */
-	char *cmd = malloc(10);
-	strncpy(cmd, "whoami", 7); /* random command to start sudo timeout */
-	window_pw(cmd);
-}
 void destroyme(GtkMenuItem *item, gpointer user_data) {
 	// XXX: Obsolete?
 	gtk_widget_destroy(user_data);

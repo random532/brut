@@ -41,6 +41,8 @@ void ChangeTab(GtkWidget *item, gpointer page) {
 		newtab = 9;
 	else if(strcmp(label, l.clan) == 0)
 		newtab = 10;
+	else if(strcmp(label, l.cdmesg) == 0)
+		newtab = 12;
 
 	gtk_notebook_set_current_page(GTK_NOTEBOOK(tabs), newtab);
 }
@@ -64,6 +66,7 @@ void attach_hardware(GtkWidget *g) {
 	gtk_label_set_markup(GTK_LABEL(d), l.cdevices);
 	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(hw), d);
+
 }
 
 /* Time widget */
@@ -113,18 +116,24 @@ void attach_system(GtkWidget *g) {
 	gtk_grid_attach(GTK_GRID(g), csys, 1, 0, 1, 1);
 	gtk_container_add(GTK_CONTAINER(csys), gtk_label_new(l.csystem));
 
-	/* Audio */
+	/* Config */
 	GtkWidget *d = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(d), l.cconfigfiles);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
+	gtk_container_add(GTK_CONTAINER(csys), d);
+
+	/* Dmesg */
+	d = gtk_label_new(NULL);
+	gtk_label_set_markup(GTK_LABEL(d), l.cdmesg);
+	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
+	gtk_container_add(GTK_CONTAINER(csys), d);
+
+	/* Audio */
+	d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.caudio);
 	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
 	gtk_container_add(GTK_CONTAINER(csys), d);
 
-	/* Config */
-	d = gtk_label_new(NULL);
-	gtk_label_set_markup(GTK_LABEL(d), l.cconfigfiles);
-	g_signal_connect(d, "activate-link", G_CALLBACK (ChangeTab), NULL);
-	gtk_container_add(GTK_CONTAINER(csys), d);
-	
 	/* About */
 	d = gtk_label_new(NULL);
 	gtk_label_set_markup(GTK_LABEL(d), l.cabout);
