@@ -166,31 +166,6 @@ else {
 return free_megabytes;
 }
 
-char *add_to_list(char *pname, char *mylist) {
-
-	/* add a string to an existing string */
-	/* also adjust the buffer size */
-
-
-	int len, buflen;
-	len = strlen(pname);
-
-	if(mylist == NULL) {
-		len = len + 5;
-		mylist = malloc(len);
-		if(mylist != NULL)
-			strcpy(mylist, pname);
-	}
-
-	else {
-		buflen = strlen(mylist);
-		buflen = buflen + len + 2;
-		mylist = realloc(mylist, buflen);
-		strcat(mylist, " ");
-		strcat(mylist, pname);
-	}
-return(mylist);
-}
 
 void clean_up_pointers() {
 	if(all_disks != NULL) {
@@ -264,10 +239,24 @@ char *what_file_system(char *partition) {
 }
 
 
+/*
 void on_response(GtkDialog *dialog, gint response_id, gpointer user_data)
 {
 	// XXX: Obsolete?
 	gtk_widget_destroy(GTK_WIDGET (dialog));	
+}
+*/
+
+void ask_cb(GtkDialog *dialog, gint response_id, gpointer cmd) {
+	/* YES -> execute, No -> skip */
+	if((response_id == GTK_RESPONSE_YES) && (cmd != NULL) )
+		submit(cmd, 0);
+	free(cmd);
+	gtk_widget_destroy(GTK_WIDGET (dialog));
+	/* XXX: redraw? */
+	on_toplevel_changed();
+	gtk_widget_destroy(thegrid);
+	editor();
 }
 
 /* ask for comfirmation */
@@ -285,17 +274,6 @@ void ask(char *cmd) {
 	g_signal_connect(message, "response", G_CALLBACK(ask_cb), c);
 }
 
-void ask_cb(GtkDialog *dialog, gint response_id, gpointer cmd) {
-	/* YES -> execute, No -> skip */
-	if((response_id == GTK_RESPONSE_YES) && (cmd != NULL) )
-		submit(cmd, 0);
-	free(cmd);
-	gtk_widget_destroy(GTK_WIDGET (dialog));
-	/* XXX: redraw? */
-	on_toplevel_changed();
-	gtk_widget_destroy(thegrid);
-	editor();
-}
 
 int find_p(char *partition) {
 
@@ -465,4 +443,13 @@ char *read_disk(char *diskname) {
 	
 	pclose(fp);
 	return diskinfo;
+}
+
+void fsscan() {
+	
+	todo = MOUNT;
+	/* this is abit odd */
+	char *cmd = malloc(10);
+	strncpy(cmd, "whoami", 7); /* random command to start sudo timeout */
+	window_pw(cmd);
 }

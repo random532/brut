@@ -192,4 +192,29 @@ void g_zero();
 char *get_capacity(char *);
 char *get_label(char *, char *);
 
+/* mount.c */
+char *is_mounted(char *);
+char *is_mounted_fuse(char *);
+void mountfs(GtkMenuItem *, gpointer);
+void unmountfs();
+void usermount(char *, char *);
+int vfs_usermount();
+int volume_cmp(char *, char *);
+
+/* disk_subroutines.c */
+int add_slices();
+int add_geoms();
+int add_partitions();
+//void ask(char *);
+void ask_cb(GtkDialog *, gint, gpointer);
+char *check_free_space(char *, char *, char *);
+void clean_up_pointers();
+char *get_disks();
+char *get_scheme(const gchar *);
+char *get_type( char *);
+int find_p(char *);
+void fsscan();
+char *read_disk(char *);
+char *what_file_system(char *);
+
 //#endif

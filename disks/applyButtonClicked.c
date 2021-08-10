@@ -13,11 +13,11 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 	int error = 0;
 		
 	/* what did our user choose? */
-	const gchar *action = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom) );
+	const gchar *action = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_geom));
 	/* big loop */
 	if(action == NULL) {
 		free(cmd);
-		return;		
+		return;
 	}
 	if(strncmp(action, "create", 6) == 0)
 		cmd = gpart_create(cmd);	
@@ -45,7 +45,9 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 	if(cmd == NULL) /* error */
 		return;
 
-	if(!root() )  { /* try sudo */
+	/* Don't call execute_me(cmd), because we redraw in a certain way. (?) */
+
+	if(!root())  { /* try sudo */
 		if(pw_needed() ) {
 			window_pw(cmd);
 			goto end;
@@ -61,10 +63,10 @@ void on_edit_clicked(GtkMenuItem *item, gpointer user_data) {
 	}
 
 	submit(cmd, opt.confirm);
-	if(opt.confirm == FALSE)	/* keep it until user makes his choice */
+	if(opt.confirm == FALSE)	/* keep it until user makes his choice. */
 		free(cmd);
-	/* also redraw everything */
-end:	
+	/* also redraw everything. */
+end:
 	on_toplevel_changed();
 	gtk_widget_destroy(thegrid);
 	editor();
@@ -72,25 +74,25 @@ end:
 
 const char *get_combo_box_disk(int inform) {
 
-	const gchar *gdisk = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_disks) );
+	const gchar *gdisk = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_disks));
 		if(gdisk == NULL) {
 			if(inform == 1)
 				msg(l.chose_disk);
 			return NULL;
 		}
-	if( (strlen(gdisk) == 0) || (strlen(gdisk) >= 20 ) )
+	if( (strlen(gdisk) == 0) || (strlen(gdisk) >= 20)) /*XXX: hardcoded max disk name length */
 		return NULL; /* this should never happen though */	
 	return gdisk;
 }
 
 const char *get_combo_box_scheme() {
 
-	const gchar *gscheme = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_schemes) );
+	const gchar *gscheme = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_schemes));
 		if(gscheme == NULL) {
 			msg(l.chose_scheme);
 			return NULL;
 		}
-	if( (strlen(gscheme) == 0)  || (strlen(gscheme) >= 20 ) )
+	if((strlen(gscheme) == 0)  || (strlen(gscheme) >= 20))
 		return NULL; /* should never be that long */
 
 	return gscheme;
@@ -102,7 +104,7 @@ char *get_combo_box_partition(int inform) {
 /* make it char instead of const char */
 /* also format it. */
 
-	const gchar *gpartition = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_partitions) );
+	const gchar *gpartition = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_partitions));
 	if(gpartition == NULL) {
 		if( inform == 1)
 			msg(l.chose_partition);
@@ -110,11 +112,11 @@ char *get_combo_box_partition(int inform) {
 	}
 	
 	int len = strlen(gpartition);
-	if( (len == 0) || (len > 30) ) {
+	if((len == 0) || (len > 30)) {
 		free((void *)gpartition);
 		return NULL;
 	}
-		
+
 	char *buffer = malloc(len+10);
 	memset(buffer, 0, (len+10));
 	strncpy(buffer, gpartition, len);
@@ -124,7 +126,7 @@ char *get_combo_box_partition(int inform) {
 
 const char *get_combo_box_type(int inform) {
 
-	const gchar *gtype = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_types) );
+	const gchar *gtype = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_types));
 	if(gtype == NULL) {
 		if(inform == 1)
 			msg(l.chose_type);
@@ -132,14 +134,14 @@ const char *get_combo_box_type(int inform) {
 	}
 
 	int len = strlen(gtype);
-	if( (len == 0) || (len > 20) ) {
+	if((len == 0) || (len > 20)) {
 		free((void *)gtype);
 		return NULL;
 	}
 	return gtype;
 }
 
-char *gpart_create( char *cmd) {
+char *gpart_create(char *cmd) {
 
 	int entry = 0;
 	const gchar *gscheme = get_combo_box_scheme();
@@ -165,7 +167,7 @@ char *gpart_create( char *cmd) {
 	return cmd;
 }
 
-char *gpart_destroy( char *cmd) {
+char *gpart_destroy(char *cmd) {
 
 	const gchar *gdisk = get_combo_box_disk(1);
 	if( gdisk == NULL) {
@@ -176,7 +178,7 @@ char *gpart_destroy( char *cmd) {
 	return cmd;
 }
 
-char *gpart_modify( char *cmd) {
+char *gpart_modify(char *cmd) {
 	
 	int type = 0;
 	int label = 0;
@@ -198,57 +200,57 @@ char *gpart_modify( char *cmd) {
 
 
 	const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));
-	if( (gtk_widget_is_visible (text_label)) && (strlen(glabel) > 0) && (strlen(glabel) <= 20) )
+	if((gtk_widget_is_visible (text_label)) && (strlen(glabel) > 0) && (strlen(glabel) <= 20))
 			label = 1;
 
-	if( (label) && (!type) )
+	if((label) && (!type))
 		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -l %s -i %i %s", glabel, index, gpartition);
-	else if( (label) && (type) )
+	else if((label) && (type))
 		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -t %s -l %s -i %i %s", gtype, glabel, index, gpartition);
-	else if( (!label) && (type) )
+	else if((!label) && (type))
 		snprintf(cmd, CMDSIZE, "/sbin/gpart modify -t %s -i %i %s", gtype, index, gpartition);
 	else {
 		msg(l.chose_type);
 		return NULL;
-	} 
+	}
 
 	free(gpartition);
 	return cmd;
 }
 
-char *gpart_add( char *cmd) {
+char *gpart_add(char *cmd) {
 
 	int maxlen = ENTRY_MAX+2;
 	const char *gdisk = get_combo_box_disk(1);
-	if( (gdisk == NULL) || (strlen(gdisk) > 25) ) {
+	if((gdisk == NULL) || (strlen(gdisk) > 25)) {
 		free(cmd);
 		return NULL;
 	}
 
 	const char *gtype = get_combo_box_type(1);
-	if( (gtype == NULL) || (strlen(gtype) > 25) ) {
+	if((gtype == NULL) || (strlen(gtype) > 25)) {
 		free(cmd);
 		return NULL;
 	}
-		
+
 	/* gpart add -t gtype -s gsize -a galignment -l glabel geom */
 	snprintf(cmd, 50, "/sbin/gpart add -t %s ", gtype);
 	const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
-	if( (strlen(gsize) > 0) && (strlen(gsize) < maxlen) ) {	
+	if((strlen(gsize) > 0) && (strlen(gsize) < maxlen)) {	
 		strncat(cmd, " -s ", 4);
 		strncat(cmd, gsize, maxlen);	
 		strncat(cmd, " ", 1);
 	}
 
 	const gchar *galignment = gtk_entry_get_text(GTK_ENTRY (text_alignment));
-	if( (strlen(galignment) > 0) && (strlen(galignment) < maxlen ) ) {
+	if((strlen(galignment) > 0) && (strlen(galignment) < maxlen)) {
 		strncat(cmd, " -a ", 4);
 		strncat(cmd, galignment, maxlen);
 		strncat(cmd, " ", 1);
 	}
 
 	const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));
-	if( gtk_widget_is_visible (text_label) && (strlen(glabel) > 0) && (strlen(glabel) < maxlen ) ) {
+	if(gtk_widget_is_visible (text_label) && (strlen(glabel) > 0) && (strlen(glabel) < maxlen)) {
 		strncat(cmd, " -l ", 4);
 		strncat(cmd, glabel, maxlen);
 		strncat(cmd, " ", 1);
@@ -261,7 +263,7 @@ char *gpart_add( char *cmd) {
 	return cmd;
 }
 
-char *gpart_delete( char *cmd) {
+char *gpart_delete(char *cmd) {
 
 	char *gpartition = get_combo_box_partition(1);
 	if(gpartition == NULL) {
@@ -279,7 +281,7 @@ char *gpart_delete( char *cmd) {
 	return cmd;
 }
 
-char *gpart_resize( char *cmd) {
+char *gpart_resize(char *cmd) {
 
 	int a = 0;
 	char *gpartition = get_combo_box_partition(1);
@@ -292,7 +294,7 @@ char *gpart_resize( char *cmd) {
 		free(cmd);
 		return NULL;
 	}
-	
+
 	const gchar *gsize = gtk_entry_get_text(GTK_ENTRY (text_size));
 	if((gsize == NULL) || (strlen(gsize) == 0) || (strlen(gsize) >= 20)) {
 		msg(l.chose_size);
@@ -313,18 +315,18 @@ char *gpart_resize( char *cmd) {
 	return cmd;
 }
 
-char *gpart_set( char *cmd ) {
+char *gpart_set(char *cmd ) {
 
 	int set = 0;
-	const gchar *gcmd = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom) );
-	if (gcmd == NULL) {	/* is never true */
+	const gchar *gcmd = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_geom));
+	if(gcmd == NULL) {	/* is never true */
 		msg("Error.Don't know if set or unset.\n");
 		free(cmd);
 		return NULL;
 	}
 	if(strncmp(gcmd, "set", 3) == 0)
 		set = 1;
-	else if((strncmp(gcmd, "unset", 5)) == 0 )
+	else if((strncmp(gcmd, "unset", 5)) == 0)
 		set = 0;
 
 	char *gpartition = get_combo_box_partition(1);
@@ -337,8 +339,8 @@ char *gpart_set( char *cmd ) {
 		free(cmd);
 		return NULL;
 	}
-	
-	const gchar *gbootoptions = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_bootoptions) );
+
+	const gchar *gbootoptions = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_bootoptions));
 	if((gbootoptions == NULL) || (strlen(gbootoptions) == 0) || (strlen(gbootoptions)>= 20)) {
 		msg(l.chose_bootoptions);
 		free(cmd);
@@ -354,17 +356,17 @@ char *gpart_set( char *cmd ) {
 	return cmd;
 }
 
-char *gpart_filesystem( char *cmd) {
+char *gpart_filesystem(char *cmd) {
 
 	/* double check this */
-	const gchar *gf = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_filesystems) );
+	const gchar *gf = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_filesystems));
 		if(gf == NULL) {
 			msg(l.chose_fs);
 			free(cmd);
 			return NULL; 
 	}
 	const gchar *gpartition = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_partitions));
-	if( gpartition == NULL) {
+	if(gpartition == NULL) {
 		msg(l.chose_partition);
 		free(cmd);
 		return NULL;
@@ -379,7 +381,7 @@ char *gpart_filesystem( char *cmd) {
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(toggle_soft)) == TRUE)
 			strncat(cmd, "-U ", 4);
 		const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
-		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
+		if((strlen(glabel) != 0) && (strlen(glabel) <= 20 )) {
 			strncat(cmd, " -L ", 4);
 			strcat(cmd, glabel);
 			strncat(cmd, " ", 1);
@@ -390,7 +392,7 @@ char *gpart_filesystem( char *cmd) {
 	else if(strncmp(gf, "FAT32", 5) == 0) {
 		strncat(cmd, "newfs_msdos ", 13);
 		const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
-		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
+		if((strlen(glabel) != 0) && (strlen(glabel) <= 20)) {
 			strncat(cmd, " -L ", 4);
 			strcat(cmd, glabel);
 			strncat(cmd, " ", 1);
@@ -399,7 +401,7 @@ char *gpart_filesystem( char *cmd) {
 		strcat(cmd, gpartition);
 	}
 	else if(strncmp(gf, "ntfs", 4) == 0) {
-		
+
 		/* check whether mkntfs is installed */
 		if (!command_exist("/sbin/mkntfs")) {
 			msg("To make ntfs file systems, please install this package: fusefs-ntfs.");
@@ -408,12 +410,12 @@ char *gpart_filesystem( char *cmd) {
 			return NULL;
 		}
 		strncat(cmd, "mkntfs ", 8);
-		if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (toggle_fast)) == TRUE)
+		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (toggle_fast)) == TRUE)
 			strncat(cmd, "-f ", 4);
 		if(gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON (toggle_comp)) == TRUE)
 			strncat(cmd, "-C ", 4);		
 		const gchar *glabel = gtk_entry_get_text(GTK_ENTRY (text_label));	/* label */
-		if( (strlen(glabel) != 0) && (strlen(glabel) <= 20 ) ) {
+		if((strlen(glabel) != 0) && (strlen(glabel) <= 20)) {
 			strncat(cmd, " -L ", 4);
 			strcat(cmd, glabel);
 			strncat(cmd, " ", 1);
@@ -421,73 +423,79 @@ char *gpart_filesystem( char *cmd) {
 		strncat(cmd, "/dev/", 6);
 		strcat(cmd, gpartition);
 	}
-	
+
 	free((void *) gpartition);
 	free((void *) gf);
 	return cmd;
 }
 
-char *gpart_bootcode( char *cmd ) {
-	
-	int i=0;
-	int index = 0;
+char *gpart_bootcode(char *cmd ) {
+
+	/* In FreeBSD, default PATH_MAX is 1024, NAME_MAX is 255. */
+	int maxpath = 255;
+	int maxname = 1024;
+
+	int i = 0; /* Either 1 (disk) or zero (partition). */
+	int index = 0;	/* disk or partition index */
 	const char *gdisk;
 	char *gpartition;
-	
-	const gchar *gf = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (combo_bootcode) );
+
+	const gchar *gf = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT (combo_bootcode));
 	if(gf == NULL) {
-		msg("Partition? Disk?");
+		msg("Choose: Partition? Or Disk?");
 		free(cmd);
 		return NULL; 
 	}
 	if(strncmp(gf, "Partition", 9) == 0) {
 		i=0;
 		gpartition = get_combo_box_partition(1);
-		if( gpartition == NULL) {
+		if(gpartition == NULL) {
 			msg(l.chose_partition);
 			free(cmd);
 			return NULL;
 		}
 		index = find_p(gpartition);
-		if( index == 0) {
+		if(index == 0) {
 			free(cmd);
 			return NULL;
 		}
 	}
-	
+
 	else if(strncmp(gf, "Disk", 4) == 0) {
-		i=1; 
+		i=1;
 		gdisk = get_combo_box_disk(1);
-		if( gdisk == NULL) {
+		if(gdisk == NULL) {
 			msg(l.chose_disk);
 			free(cmd);
 			return NULL;
 		}
 	}
-	
+
 	const char *fname = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(gfile));
-	if (fname  == NULL) {
+	if((fname  == NULL) || (strlen(fname) == 0)) {
 		msg("No File!");
 		free(cmd);
 		return NULL;
 	}
-	int len =strlen(fname);
-	if(len >= 100 ) {
+
+	int len = strlen(fname);
+	if(len >= (maxpath + maxname)) {
 		msg("File name too long, sorry..");
 		free(cmd);
 		return NULL;
 	}
-	cmd = realloc(cmd, len+100);
-	if( cmd == NULL) {
+	len = len + 100; /* Enough buffer space for the command. */
+	cmd = realloc(cmd, len);
+	if(cmd == NULL) {
 		msg("realloc() failed.");
 		return NULL;
 	}
-	memset(cmd, 0, len+100);
+	memset(cmd, 0, len);
 
-	if(i) 
-		snprintf(cmd, len+100, "/sbin/gpart bootcode -b %s /dev/%s", fname, gdisk);
+	if(i)
+		snprintf(cmd, len, "/sbin/gpart bootcode -b %s /dev/%s", fname, gdisk);
 	else {
-		snprintf(cmd, len+100, "/sbin/gpart bootcode -p %s -i %i %s", fname, index, gpartition);
+		snprintf(cmd, len, "/sbin/gpart bootcode -p %s -i %i %s", fname, index, gpartition);
 		free(gpartition);
 	}
 	free((void *) gf);
