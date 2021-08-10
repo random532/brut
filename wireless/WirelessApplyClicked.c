@@ -6,13 +6,20 @@
 #include "wireless.h"
 
 void ApplyClicked( GtkWidget *, gpointer);
-void ExecCreate();
-void ExecDestroy();
-void ExecConnect();
-void ExecUp();
-void ExecDown();
-void ExecScan();
-void ExecModify();
+static char *build_modify_command(char *, char *, const char *, char *, char *, char *, char *);
+static int do_unencrypted(char *, char *);
+static int do_encrypted(char *, char *);
+static void ExecCreate();
+static void ExecDestroy();
+static void ExecConnect();
+static void ExecUp();
+static void ExecDown();
+static void ExecScan();
+static void ExecModify();
+static char *get_ap();
+static char *GetBssid(char *);
+static char *GetSsid(char *);
+static char *get_interface();
 
 void ApplyClicked( GtkWidget *w, gpointer p) {
 
@@ -60,22 +67,20 @@ void ApplyClicked( GtkWidget *w, gpointer p) {
 		ExecDown();
 		//wireless(); XXX: ???
 	}
-	
-	printf("ApplyClicked finished.\n");
 }
 
 void ExecCreate() {
 
 	const gchar *dev =  gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (GTK_COMBO_BOX_TEXT (wdev)));
 	if((dev == NULL) || (strlen(dev) == 0)) {
-		msg("No wlan devices chosen. Driver issues?");
+		msg("Choose a wlan device. If none appears, is driver attached?");
 		return;
 	}
 
 	/* Gather the options. */
 	const gchar *mode =  gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (GTK_COMBO_BOX_TEXT (wmodes)));
 	if((mode == NULL) || (strlen(mode) == 0)) {
-		msg("No wireless mode chosen.");
+		msg("No wireless mode."); /* Never reached. */
 		return;
 	}
 
@@ -127,7 +132,9 @@ void ExecScan() {
 	memset(line, 0, MAXLINE);
 	memset(cmd, 0, CMDSIZE);
 
-	GtkWidget *g = DrawHosts();
+	GtkWidget *box = DrawHosts();
+
+	GtkWidget *label;
 
 	sprintf(cmd, "ifconfig %s list scan", what);
 	FILE *fp = popen(cmd, "r");
@@ -135,9 +142,10 @@ void ExecScan() {
 		return;
 	while(fgets(line, MAXLINE, fp)) {
 		cosmetics(line);
+		label = gtk_label_new(line);
+		gtk_label_set_xalign(GTK_LABEL (label), 0.0);
 		/* XXX: This might look better in a treeview. */
-		gtk_grid_attach(GTK_GRID (g), gtk_label_new(line), 0, row, 1, 1);
-		gtk_grid_attach(GTK_GRID (g), gtk_label_new("-- "), 1, row, 1, 1);
+		gtk_grid_attach(GTK_GRID (box), label, 0, row, 1, 1);
 
 		row++;
 		memset(line, 0, MAXLINE);
@@ -145,30 +153,54 @@ void ExecScan() {
 	pclose(fp);
 	
 	if(row == 0)
-		gtk_grid_attach(GTK_GRID (g), gtk_label_new("No results!"), 0, row, 1, 1);
+		gtk_grid_attach(GTK_GRID (box), gtk_label_new("No results!"), 0, row, 1, 1);
 
 
-	gtk_grid_attach(GTK_GRID (g), gtk_label_new("   "), 0, (row+1), 1, 1);
+	gtk_grid_attach(GTK_GRID (box), gtk_label_new("   "), 0, (row+1), 1, 1);
 	gtk_widget_show_all(woptions);
 }
 
-char *build_modify_command(char *iface, char *domain, const char *country) {
+char *build_modify_command(char *iface, char *domain, const char *country, char *inet, char *modes, char *debug, char *power) {
 
 	char *cmd = malloc(MAXLINE);
 	if(cmd == NULL)
 		return cmd;
 	memset(cmd, 0, MAXLINE);
 	snprintf(cmd, MAXLINE, "ifconfig %s ", iface);
-	
-	if((domain != NULL) && (strncmp(domain, "default", 7) != 0)) {
-		strncat(cmd, "regdomain ",10); 
+
+	if((domain != NULL) && (strncmp(domain, "---", 3) != 0)) {
+		strncat(cmd, "regdomain ", 10);
 		strcat(cmd, domain);
 	}
 
 	if((country != NULL) && (strlen(country) > 0))
 		strncat(cmd, " country ",9); 
 		strcat(cmd, country);
-	
+
+	if((inet != NULL) && (strncmp(inet, "---", 3) != 0)) {
+		strcat(cmd, inet);
+		strcat(cmd, " ");
+	}
+
+	if((modes != NULL) && (strncmp(modes, "---", 3) != 0)) {
+		strncat(cmd, "mode ",10); 
+		strcat(cmd, modes);
+	}
+
+	if((debug != NULL) && (strncmp(debug, "---", 3) != 0)) {
+		if(strncmp(debug, "debug", 4) == 0)
+			strcat(cmd, " debug ");
+		else
+			strcat(cmd, " -debug ");
+	}
+
+	if((power != NULL) && (strncmp(power, "---", 3) != 0)) {
+		if(strncmp(power, "power", 5) == 0)
+			strcat(cmd, " powersave ");
+		else
+			strcat(cmd, " -powersave ");
+	}
+
 	return cmd;	
 }
 
@@ -177,7 +209,11 @@ void ExecModify() {
 	char *iface;
 	char *domain;
 	const char *country;
-	
+	char *inet;
+	char *modes;
+	char *debug;
+	char *power;
+
 	/* 1. Retrieve options. */
 	
 	iface = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (winterface));
@@ -187,6 +223,11 @@ void ExecModify() {
 	}
 
 	domain = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wregdomain));
+	inet = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (winet));
+	modes = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (w11g));
+	debug = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wdebug));
+	power = gtk_combo_box_text_get_active_text( GTK_COMBO_BOX_TEXT (wpower));
+
 
 	country = gtk_entry_get_text(GTK_ENTRY (wcountry));
 	if(!gtk_widget_is_visible(GTK_WIDGET (wcountry)) || (wcountry == NULL)) {
@@ -194,23 +235,26 @@ void ExecModify() {
 		return;
 	}
 
+
+
 	/* 2. Build the command. */
 
-	char *cmd = build_modify_command(iface, domain, country);
+	char *cmd = build_modify_command(iface, domain, country, inet, modes, debug, power);
 	exec2 = FALSE;
 
 	/* 3. Clean up. */
 	free(iface);
 	if(domain != NULL)
 		free(domain);
-
+	if(inet != NULL)
+		free(inet);
+	if(modes != NULL)
+		free(modes);
 
 	/* 4. Execute. */
 	if(cmd != NULL) {
-		printf("executing: %s\n", cmd);
 		execute_me(cmd, USR);
 	}
-	printf("execution finished.\n");
 }
 
 void ExecDown() {
@@ -276,7 +320,6 @@ char *get_ap() {
 
 		/* make it a buffer. */
 		int len = strlen(custom);
-		printf("custom ssid chosen: %s, len=%d\n", custom, len);
 		ssid = malloc(len+5);
 		memset(ssid, 0, len+5);
 		strncpy(ssid, custom, len);
@@ -304,7 +347,6 @@ int do_unencrypted(char *interface, char *ssid) {
 	}
 	memset(cmd, 0, MAXLINE);
 	snprintf(cmd, MAXLINE, "ifconfig %s ssid \"%s\"", interface, ssid);
-	printf("%s\n", cmd);
 	free(ssid);
 	free(interface);
 	exec2 = FALSE;
@@ -330,7 +372,6 @@ int do_encrypted(char *interface, char* ssid) {
 	char *cmd = malloc(MAXLINE); /* Make it big. */
 	memset(cmd, 0, MAXLINE);
 	snprintf(cmd, MAXLINE, "echo 'ctrl_interface=/var/run/wpa_supplicant\nnetwork={\nssid=\"%s\"\npsk=\"%s\"\n}\n' > %s", ssid, gpass, tmpfile);
-	printf("%s\n", cmd);
 	FILE *fp = popen(cmd, "r");
 	pclose(fp);
 
@@ -372,3 +413,36 @@ void ExecConnect() {
 	return;	
 }
 
+char *GetSsid(char *string) {
+
+	if((string == NULL) || (strlen(string) < 32))
+		return NULL;	/* some error. */
+	char *ssid = malloc(40);
+	if(ssid == NULL)
+		return NULL;
+	
+	strncpy(ssid, string, 32);
+	
+	/* Remove spaces at the end. Zero terminate. */
+	int i = 31;
+	while(strncmp(&ssid[i], " ", 1) == 0)
+		i--;
+	ssid[i+1] = '\0';
+
+	return ssid;
+}
+
+char *GetBssid(char *string) {
+	
+	int start = 33; /* Skip ssid. */
+	char *bssid = malloc(20);
+	if(bssid == NULL)
+		return bssid;
+	
+	memset(bssid, 0, 20);
+	while(strncmp(&string[start], " ", 1) == 0) //&& (start <= 40))
+		start++;
+
+	strncpy(bssid, &string[start], 18);
+	return bssid;
+}

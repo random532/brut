@@ -6,46 +6,26 @@
 #include "../brut.h"
 #include "wireless.h"
 
+void wireless();
+void CleanWireless();
+void AfterRootCmd();
+static void WTopbox();
+GtkWidget *WScrolled(GtkWidget *);
+GtkWidget *ComboCommands();
+GtkWidget *ComboWlanDevices();
+GtkWidget *ComboWlanInterfaces();
+static void WGridEntries();
+void command_changed( GtkWidget *, gpointer);
+void winterface_changed( GtkWidget *, gpointer);
+static void WEditor();
+static GtkWidget *WTreeview(GtkWidget *);
+static void WFillTree(GtkWidget *tv);
+static void WBottomView();
 
 void CleanWireless() {
 
 	if(GTK_IS_WIDGET (wbox))
 		gtk_widget_destroy(wbox);
-}
-
-char *GetSsid(char *string) {
-
-	if((string == NULL) || (strlen(string) < 32))
-		return NULL;	/* some error. */
-	char *ssid = malloc(40);
-	if(ssid == NULL)
-		return NULL;
-	
-	strncpy(ssid, string, 32);
-	
-	/* Remove spaces at the end. Zero terminate. */
-	int i = 31;
-	while(strncmp(&ssid[i], " ", 1) == 0)
-		i--;
-	ssid[i+1] = '\0';
-	printf("ssid: %s!!!\n", ssid);
-
-	return ssid;
-}
-
-char *GetBssid(char *string) {
-	
-	int start = 33; /* Skip ssid. */
-	char *bssid = malloc(20);
-	if(bssid == NULL)
-		return bssid;
-	
-	memset(bssid, 0, 20);
-	while(strncmp(&string[start], " ", 1) == 0) //&& (start <= 40))
-		start++;
-
-	strncpy(bssid, &string[start], 18);
-	return bssid;
 }
 
 void AfterRootCmd() {
@@ -70,7 +50,7 @@ void WTopbox() {
 	/* A box at the upper half. */
 	topbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
 	gtk_container_add (GTK_CONTAINER (wbox), topbox);
-	gtk_widget_set_size_request(topbox, 300, 200); /* width, height */
+	gtk_widget_set_size_request(topbox, 300, 160); /* width, height */
 }
 
 GtkWidget *WScrolled(GtkWidget *box) {
@@ -265,7 +245,6 @@ void WFillTree(GtkWidget *tv) {
 	if((devlist == NULL) || (strlen(devlist) == 0))
 		return;
 
-
 	dev = strtok_r(devlist, " ", &brk);
 	while(dev) {
 
@@ -282,6 +261,10 @@ void WFillTree(GtkWidget *tv) {
 		/* next device */
 		dev = strtok_r( NULL, " ", &brk);
 	}
+
+		/* hack: this fixes the treeview. */
+		gtk_tree_store_append(wtree, &parent, NULL);
+		gtk_tree_store_set(wtree, &parent, 0, gtk_label_new("---"), -1);
 	
 	free(devlist);
 	
@@ -295,7 +278,7 @@ void WFillTree(GtkWidget *tv) {
 void WBottomView() {
 
 	/* A top level container. */
-	botbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 15);
+	botbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 5);
 	gtk_container_add (GTK_CONTAINER (wbox), botbox);
 	
 	/* A scrolled window. */
@@ -307,7 +290,7 @@ void WBottomView() {
 	/* Fill the treestore. */
 	WFillTree(tv);
 
-	/* Update treeview nicely. XXX: Still problems displaying this! */
+	/* Update treeview nicely. */
 	gtk_widget_hide(sw);
 	gtk_widget_show(sw);
 }
